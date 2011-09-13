@@ -1,0 +1,6 @@
+$(function () {
+
+    ktah.Lobby = function () {
+
+    }
+});
