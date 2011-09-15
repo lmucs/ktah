@@ -1,3 +1,4 @@
 // STUB
 
 ktah = {};
+ktah.types = {};

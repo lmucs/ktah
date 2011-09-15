@@ -1,12 +1,17 @@
 /**
- *
  * pioneer.js
  *
- * constructor for a pioneer character
+ * The type of pioneers.  Pioneers in ktah (TODO - describe these things)
  */
+$(function () {
+    ktah.types.Pioneer = function (name, level, exp) {
+        this.name = name;
+        this.level = level;
+        this.learningExp = exp;
+    }
 
-function pioneer(name, level)
-{
-  this.name = name;
-  this.level = level;
-}
+    ktah.types.Pioneer.prototype.inspect = function (resource) {
+            // STUB
+            alert("Whoa I see " + resource);
+    }
+})
