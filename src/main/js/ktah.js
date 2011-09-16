@@ -4,7 +4,7 @@
  * ALL GLORY TO KTAH!
  */
 
-// TODO: Do we want to include jQuery here, or keept it in our html file?
+// TODO: Do we want to include jQuery here, or keep it in our html file?
 
 var ktah = {
 
