@@ -19,4 +19,10 @@ include('../js/lib/copperlicht.js');
 include('../js/lib/base2.min.js');
 
 /***** TYPES *****/
+include('../js/types/characters/character.js');
 include('../js/types/characters/pioneer.js');
+include('../js/types/characters/architect.js');
+include('../js/types/characters/chemist.js');
+include('../js/types/characters/herder.js');
+include('../js/types/characters/land-master.js');
+include('../js/types/characters/tinker.js');
