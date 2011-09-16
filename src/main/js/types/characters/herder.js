@@ -11,7 +11,7 @@
  */
 
 $(function () {
-    ktah.types.Architect = function () {
+    ktah.types.Herder = function () {
         return{
             // Public properties
             zombieFlesh: 0,
