@@ -10,33 +10,17 @@
  */
 
 $(function () {
-    ktah.types.Pioneer = function () {
-        return{
-            // Public properties
-            learningExp: 0,
-            
-            // "Constructor"
-            create: function (learnedExp) {
-                this.learningExp = learnedExp;
-            },
+    ktah.types.Pioneer = ktah.types.Character.extend({
         
-            // The inspect ability of the Pioneer allows him to mark
-            // resources and hideouts, giving him learning XP as well
-            inspect: function (resource) {
-                this.learningExp += 50;
-                // TODO: Mark resource for team mates
-            }
-            
-            // Old code commented out for fear that my way is the wrong way
-            // ktah.types.Pioneer = function (name, level, exp) {
-            //    this.name = name;
-            //    this.level = level;
-            //    this.learningExp = exp;
-            // }
-            // ktah.types.Pioneer.prototype.inspect = function (resource) {
-            //     // STUB
-            //     alert("Whoa I see " + resource);
-            // }
-        }
-    }
+        // Constructor stub
+        constructor: function () {
+            // TODO
+        },
+        
+        // Public properties
+        wood: 0,
+        water: 0,
+        learningExp: 0
+        
+    });
 });

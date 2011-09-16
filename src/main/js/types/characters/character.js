@@ -6,21 +6,11 @@
  */
 
 $(function () {
-    ktah.types.Character = function () {
-        return {
+    ktah.types.Character = base2.Base.extend({
             // Public properties
             name: "",
-            level: 0,
-            health: 10, // TODO: Arbitrary placeholder
-            characterClass: "",
-            
-            // "Constructor"
-            create: function (name, level, health, charClass) {
-                this.name = name;
-                this.level = level;
-                this.health = health;
-                this.characterClass = charClass;
-            }
-        };
-    };
+            level: 1,
+            health: 100, // TODO: Arbitrary placeholder
+            roundExp: 0
+    });
 });

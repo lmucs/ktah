@@ -11,20 +11,19 @@
  */
 
 $(function () {
-    ktah.types.Chemist = function () {
-        return{
-            // Public properties
-            stone: 0,
-            wood: 0,
-            water: 0,
-            zombieFlesh: 0,
-            atomicWaste: 0,
-            
-            // "Constructor"
-            create: function () {
-                
-            }
+    ktah.types.Chemist = ktah.types.Character.extend({
         
-        }
-    }
+        // Constructor stub
+        constructor: function () {
+            // TODO
+        },
+        
+        // Public properties
+        stone: 0,
+        wood: 0,
+        water: 0,
+        zombieFlesh: 0,
+        atomicWaste: 0
+        
+    });
 });

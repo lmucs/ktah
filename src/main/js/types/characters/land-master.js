@@ -12,19 +12,18 @@
  */
 
 $(function () {
-    ktah.types.LandMaster = function () {
-        return{
-            // Public properties
-            stone: 0,
-            wood: 0,
-            sand: 0,
-            water: 0,
-            
-            // "Constructor"
-            create: function () {
-                
-            }
+    ktah.types.LandMaster = ktah.types.Character.extend({
         
-        }
-    }
+        // Constructor stub
+        constructor: function () {
+            // TODO
+        },
+        
+        // Public properties
+        stone: 0,
+        wood: 0,
+        sand: 0,
+        water: 0
+        
+    });
 });

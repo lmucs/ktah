@@ -11,17 +11,16 @@
  */
 
 $(function () {
-    ktah.types.Herder = function () {
-        return{
-            // Public properties
-            zombieFlesh: 0,
-            atomicWaste: 0,
-            
-            // "Constructor"
-            create: function () {
-                
-            }
+    ktah.types.Herder = ktah.types.Character.extend({
         
-        }
-    }
+        // Constructor stub
+        constructor: function () {
+            // TODO
+        },
+        
+        // Public properties
+        zombieFlesh: 0,
+        atomicWaste: 0
+        
+    });
 });

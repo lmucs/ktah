@@ -12,18 +12,17 @@
  */
 
 $(function () {
-    ktah.types.Tinker = function () {
-        return{
-            // Public properties
-            stone: 0,
-            wood: 0,
-            atomicWaste: 0,
-            
-            // "Constructor"
-            create: function () {
-                
-            }
+    ktah.types.Tinker = ktah.types.Character.extend({
         
-        }
-    }
+        // Constructor stub
+        constructor: function () {
+            // TODO
+        },
+        
+        // Public properties
+        stone: 0,
+        wood: 0,
+        atomicWaste: 0
+        
+    });
 });
