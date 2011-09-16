@@ -12,6 +12,6 @@ $(function () {
 
     ktah.types.Pioneer.prototype.inspect = function (resource) {
             // STUB
-            alert("Whoa I see " + resource);
+            console.log("Whoa I see " + resource);
     }
-})
+});
