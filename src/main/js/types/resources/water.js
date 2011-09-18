@@ -1,12 +1,12 @@
 /**
- * stone.js
+ * water.js
  * 
  * Resource that can be found in random areas of the
- * map in the form of sizable rocks.
+ * map in the form of water hazards.
  */
 
 $(function () {
-    ktah.types.Stone = ktah.types.Resource.extend({
+    ktah.types.Water = ktah.types.Resource.extend({
         
         // Constructor stub
         constructor: function () {

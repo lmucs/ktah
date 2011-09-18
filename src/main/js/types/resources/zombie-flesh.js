@@ -1,12 +1,12 @@
 /**
- * stone.js
+ * zombie-flesh.js
  * 
- * Resource that can be found in random areas of the
- * map in the form of sizable rocks.
+ * Resource that can be found on random zombies after
+ * their expiration.
  */
 
 $(function () {
-    ktah.types.Stone = ktah.types.Resource.extend({
+    ktah.types.ZombieFlesh = ktah.types.Resource.extend({
         
         // Constructor stub
         constructor: function () {
