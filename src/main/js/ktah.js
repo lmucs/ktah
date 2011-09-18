@@ -19,10 +19,22 @@ include('../js/lib/copperlicht.js');
 include('../js/lib/base2.min.js');
 
 /***** TYPES *****/
-include('../js/types/characters/character.js');
-include('../js/types/characters/pioneer.js');
-include('../js/types/characters/architect.js');
-include('../js/types/characters/chemist.js');
-include('../js/types/characters/herder.js');
-include('../js/types/characters/land-master.js');
-include('../js/types/characters/tinker.js');
+    
+    // Character classes
+    include('../js/types/characters/character.js');
+    include('../js/types/characters/pioneer.js');
+    include('../js/types/characters/architect.js');
+    include('../js/types/characters/chemist.js');
+    include('../js/types/characters/herder.js');
+    include('../js/types/characters/land-master.js');
+    include('../js/types/characters/tinker.js');
+    
+    // Resources
+    include('../js/types/resources/resource.js');
+    include('../js/types/resources/stone.js');
+    include('../js/types/resources/atomic-waste.js');
+    include('../js/types/resources/metal.js');
+    include('../js/types/resources/sand.js');
+    include('../js/types/resources/water.js');
+    include('../js/types/resources/wood.js');
+    include('../js/types/resources/zombie-flesh.js');
