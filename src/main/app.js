@@ -12,6 +12,14 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.set("view options", {layout: false});
+  app.register('.html', {
+    compile: function(str, options){
+      return function(locals){
+        return str;
+      };
+    }
+  });
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
@@ -32,8 +40,13 @@ app.configure('production', function(){
 
 app.get('/', function(req, res){
   res.render('index', {
+  	layout: true,
     pageTitle: "K'tah!"
   });
+});
+
+app.get('/zombietest', function(req, res){
+  res.render('zombieTest.html');
 });
 
 app.listen(3000);
