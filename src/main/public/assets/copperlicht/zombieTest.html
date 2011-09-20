@@ -1,0 +1,63 @@
+<html>
+    <head>
+    	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    	<script type="text/javascript" src="copperlichtdata/copperlicht.js"></script>
+    </head>
+    <body>
+        
+        <!-- Auto-generated HTML; script lifted from Copperlicht tutorial to be later repurposed -->
+        
+    	<div align="center">
+    		<canvas id="3darea" width="640" height="480" style="background-color:#000000">
+    		</canvas>
+    	</div>
+    	<script type="text/javascript">
+    	<!--
+    	    var engine = startCopperLichtFromFile('3darea', 'copperlichtdata/zombieTest.ccbjs'),
+    	        zombieSceneNode = null,
+    	        scene = null,
+    	        key = null;
+    	    
+    	    // Called when loading the 3d scene has finished (from the coppercube file)
+    	    engine.OnLoadingComplete = function () {
+    	        scene = engine.getScene();
+    	        if (scene) {
+    	            // Grab the zombieSceneNode scene node
+    	            zombieSceneNode = scene.getSceneNodeFromName('ghoul');
+    	        }
+    	    }
+    	    
+    	    // Set up simple example keydown event
+    	    document.onkeypress = function (event) {
+    	        key = String.fromCharCode(event.keyCode);
+    	        
+    	        // When pressing w, move forward, s back
+    	        // a move left, d move right
+    	        switch (key) {
+    	            case 'w':
+    	               zombieSceneNode.Pos.X -= 1;
+    	               break;
+    	            case 's':
+    	               zombieSceneNode.Pos.X += 1;
+    	               break;
+    	            case 'a':
+    	               zombieSceneNode.Pos.Z -= 1;
+    	               break;
+    	            case 'd':
+    	               zombieSceneNode.Pos.Z += 1;
+    	               break;
+    	            default:
+    	               break;
+    	        }
+    	    }
+    	   
+    	-->
+    	</script>
+    	<br/>
+    	<div align="center">
+    		<small>Created using the <a href="http://www.ambiera.com/copperlicht/index.html">CopperLicht
+     		JavaScript 3D Engine</a> and the <a href="http://www.ambiera.com/coppercube/index.html">CopperCube 
+    		3D Editor</a></small>
+    	</div>
+    </body>
+</html>
