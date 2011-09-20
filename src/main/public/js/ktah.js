@@ -10,11 +10,14 @@ var ktah = {
 
 };
 
-// TODO: Should all of these includess be in their own script (init.js), and then just that is included here?
+// TODO: Should all of these includes be in their own script (init.js), and then just that is included here?
 
 /***** LIBRARIES *****/
 $.getScript('../js/lib/copperlicht.js');
 $.getScript('../js/lib/base2.min.js');
+
+/***** MODULES *****/
+$.getScript('../js/modules/copperlicht-ui.js');
 
 /***** TYPES *****/
     
