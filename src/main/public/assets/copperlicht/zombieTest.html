@@ -2,6 +2,7 @@
     <head>
     	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     	<script type="text/javascript" src="copperlichtdata/copperlicht.js"></script>
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
     	<title>Simple zombie demo</title>
     </head>
     <body>
@@ -9,16 +10,27 @@
         <!-- Auto-generated HTML; script lifted from Copperlicht tutorial to be later repurposed -->
         
     	<div align="center">
-    		<canvas id="3darea" width="640" height="480" style="background-color:#000000">
+    		<canvas id="game" width="640" height="480" style="background-color:#000000">
     		</canvas>
     	</div>
     	<script type="text/javascript">
     	<!--
-    	    var engine = startCopperLichtFromFile('3darea', 'copperlichtdata/zombieTest.ccbjs'),
+    	    var engine = startCopperLichtFromFile('game', 'copperlichtdata/zombieTest.ccbjs'),
     	        zombieSceneNode = null,
     	        scene = null,
-    	        key = null;
+    	        key = null,
     	    
+            // Rate of movement per second
+            moveRate = 1.0,
+            lastTime = 0.0,
+            timeDiff = 0.0,
+
+            // Variables for keyboard controls
+            wDown = false,
+            aDown = false,
+            sDown = false,
+            dDown = false;
+
     	    // Called when loading the 3d scene has finished (from the coppercube file)
     	    engine.OnLoadingComplete = function () {
     	        scene = engine.getScene();
@@ -29,29 +41,84 @@
     	    }
     	    
     	    // Set up simple example keydown event
-    	    document.onkeypress = function (event) {
+    	    document.onkeydown = function (event) {
+    	        key = String.fromCharCode(event.keyCode);
+
+    	        // When pressing w, move forward, s back
+    	        // a move left, d move right
+    	        switch (key) {
+    	            case 'w':
+    	            case 'W':
+                       wDown = true;
+    	               break;
+    	            case 's':
+    	            case 'S':
+                       sDown = true;
+    	               break;
+    	            case 'a':
+    	            case 'A':
+                       aDown = true;
+    	               break;
+    	            case 'd':
+    	            case 'D':
+                       dDown = true;
+    	               break;
+    	            default:
+    	               break;
+    	        }
+            }
+
+            // Set up simple example keydown event
+    	    document.onkeyup = function (event) {
     	        key = String.fromCharCode(event.keyCode);
     	        
     	        // When pressing w, move forward, s back
     	        // a move left, d move right
     	        switch (key) {
     	            case 'w':
-    	               zombieSceneNode.Pos.X -= 1;
+    	            case 'W':
+                       wDown = false;
     	               break;
     	            case 's':
-    	               zombieSceneNode.Pos.X += 1;
+    	            case 'S':
+                       sDown = false;
     	               break;
     	            case 'a':
-    	               zombieSceneNode.Pos.Z -= 1;
+    	            case 'A':
+                       aDown = false;
     	               break;
     	            case 'd':
-    	               zombieSceneNode.Pos.Z += 1;
+    	            case 'D':
+                       dDown = false;
     	               break;
     	            default:
     	               break;
     	        }
-    	    }
-    	   
+            }
+
+
+    	
+            mainLoop = function () {
+                //var secs = (new Date());
+                //timeDiff = secs - lastTime;
+                //lastTime = secs;
+                if (wDown && zombieSceneNode) {
+                    zombieSceneNode.Pos.X -= 1;//moveRate * timeDiff;
+                }
+                if (sDown && zombieSceneNode) {
+    	            zombieSceneNode.Pos.X += 1;//moveRate * timeDiff;
+    	        }
+                if (aDown && zombieSceneNode) {
+    	            zombieSceneNode.Pos.Z -= 1;//moveRate * timeDiff;
+                }
+                if (dDown && zombieSceneNode) {
+    	            zombieSceneNode.Pos.Z += 1;//moveRate * timeDiff;
+                }
+                setTimeout('mainLoop();', 20);
+            }
+
+            //var secs = (new Date()).getSeconds();
+            mainLoop()
     	-->
     	</script>
     	<br/>
