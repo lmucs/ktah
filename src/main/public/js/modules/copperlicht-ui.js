@@ -45,4 +45,7 @@ $(function () {
                 break;
          }
     });
+    
+    // Import the script linearly
+    ktah.utils.include();
 });

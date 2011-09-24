@@ -13,4 +13,7 @@ $(function () {
             health: 100, // TODO: Arbitrary placeholder
             roundExp: 0
     });
+    
+    // Import the script linearly
+    ktah.utils.include();
 });
