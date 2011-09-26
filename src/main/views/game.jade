@@ -11,3 +11,20 @@ html
     p you are in a game with id: #{gameId}
     canvas(id='game', width='960', height='480')
       p OH NOES YOU IDIOT GET A REAL BROWSER
+    #testbutton Click here!
+    script(type='text/javascript')
+      $('#testbutton').click(function () {
+        $.ajax({
+          type: 'POST',
+          url: '/game',
+          data: {game: "number", test: 'something'},
+          success: function (data) {
+            alert("got something!");
+            console.log(JSON.stringify(data));
+          },
+          error: function () {
+            alert("broooken");
+          },
+          dataType: 'application/json'
+        });
+      });

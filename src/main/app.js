@@ -56,6 +56,12 @@ app.get('/game/:gameId', function(req, res) {
   });
 });
 
+app.post('/game', function(req, res) {
+    console.log(req.body);
+    console.log(res);
+    res.send(req.body);
+});
+
 app.get('/zombietest', function(req, res) {
   res.render('zombieTest');
 });

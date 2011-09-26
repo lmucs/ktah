@@ -1,5 +1,15 @@
 /* TODO: Do we want to use a CSS reset to deal with stupid 
    cross browser differences? */
 #game {
-    border: 1px solid black;
+  border: 1px solid black;
+  display: block;
+  margin: 0px auto;
+}
+
+#testbutton {
+  display: inline;
+  border: 1px solid black;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
 }
