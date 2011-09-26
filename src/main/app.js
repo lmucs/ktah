@@ -58,8 +58,9 @@ app.get('/game/:gameId', function(req, res) {
 
 app.post('/game', function(req, res) {
     console.log(req.body);
-    console.log(res);
-    res.send(req.body);
+    // console.log(res);
+    res.contentType('application/json');
+    res.send(JSON.stringify({test: 1, test2: "two"}));
 });
 
 app.get('/zombietest', function(req, res) {

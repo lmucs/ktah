@@ -17,14 +17,17 @@ html
         $.ajax({
           type: 'POST',
           url: '/game',
-          data: {game: "number", test: 'something'},
+          data: JSON.stringify({game: "number", test: 'something'}),
           success: function (data) {
             alert("got something!");
             console.log(JSON.stringify(data));
           },
-          error: function () {
-            alert("broooken");
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
           },
-          dataType: 'application/json'
+          dataType: 'json',
+          contentType: 'application/json'
         });
       });
