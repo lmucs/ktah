@@ -18,32 +18,61 @@
     	    var engine = startCopperLichtFromFile('3darea', 'copperlichtdata/zombieTest.ccbjs'),
     	        zombieSceneNode = null,
     	        scene = null,
-    	        key = null,
-    	    
+    	        key = null;
+    	        engine.addScene(scene);
+			
             // Rate of movement per second
-            moveRate = 1.0,
+            var moveRate = 1.0,
             lastTime = 0.0,
             timeDiff = 0.0,
+            
+            // Camera positioning values
+            camSetDist = 10,
+            camDistRatio = 1.0,
+            
+            // Last direction travelled
+            difX = -1.0,
+            difZ = 0.0,
+            dirAngle = 0.0,
 
             // Variables for keyboard controls
-            wDown = false,
-            aDown = false,
-            sDown = false,
-            dDown = false;
-
+            wKey = aKey = sKey = dKey = false,
+			upKey = leftKey = downKey = rightKey = false;
+            
+            // Universal Camera Setup
+			var cam = new CL3D.CameraSceneNode();
+			var animator = new CL3D.AnimatorCameraFPS(cam, engine);										
+			cam.addAnimator(animator);										
+            
     	    // Called when loading the 3d scene has finished (from the coppercube file)
     	    engine.OnLoadingComplete = function () {
     	        scene = engine.getScene();
     	        if (scene) {
     	            // Grab the zombieSceneNode scene node
     	            zombieSceneNode = scene.getSceneNodeFromName('ghoul');
-    	        }
+    	        } else {
+				    return;
+				}
+				
+                // Finish setting up by adding camera to scene
+				scene.getRootSceneNode().addChild(cam);
+			    scene.setActiveCamera(cam);
     	    }
+            
+            // Default camera commands
+            camFollow = function(cam, target) {
+			    cam.Pos.X = target.Pos.X - difX * camDistRatio;
+			    cam.Pos.Y = target.Pos.Y + 20;
+			    cam.Pos.Z = target.Pos.Z - difZ * camDistRatio;
+                animator.lookAt(new CL3D.Vect3d(zombieSceneNode.Pos.X, zombieSceneNode.Pos.Y + 10, zombieSceneNode.Pos.Z));
+            }
     	    
-    	    // Set up simple example keydown event
+    	    // A more complicated keydown event. Uppercase and lowercase
+			// letters referenced due to keydown vs keypress differences
     	    document.onkeydown = function (event) {
     	        key = String.fromCharCode(event.keyCode);
 
+                // Displays key value, for learning new key cases
                 // alert(key);
 
     	        // When pressing w, move forward, s back
@@ -51,23 +80,23 @@
     	        switch (key) {
     	            case 'w':
     	            case 'W':
-    	            case '&':
-                       wDown = true;
+    	            case '&': // up arrow
+                       wKey = true;
     	               break;
     	            case 's':
     	            case 'S':
-    	            case '(':
-                       sDown = true;
+    	            case '(': // down arrow
+                       sKey = true;
     	               break;
     	            case 'a':
     	            case 'A':
-    	            case '%':
-                       aDown = true;
+    	            case '%': // left arrow
+                       aKey = true;
     	               break;
     	            case 'd':
     	            case 'D':
-    	            case "'":
-                       dDown = true;
+    	            case "'": // right arrow
+                       dKey = true;
     	               break;
     	            default:
     	               break;
@@ -84,49 +113,79 @@
     	            case 'w':
     	            case 'W':
     	            case '&':
-                       wDown = false;
+                       wKey = false;
     	               break;
     	            case 's':
     	            case 'S':
     	            case '(':
-                       sDown = false;
+                       sKey = false;
     	               break;
     	            case 'a':
     	            case 'A':
     	            case '%':
-                       aDown = false;
+                       aKey = false;
     	               break;
     	            case 'd':
     	            case 'D':
     	            case "'":
-                       dDown = false;
+                       dKey = false;
     	               break;
     	            default:
     	               break;
     	        }
             }
 
-
+            updatePos = function(zombieSceneNode, newX, newZ) {
+                    changeRate = 20;
+                    difX = (difX * (changeRate - 1) + newX)/changeRate;
+                    difZ = (difZ * (changeRate - 1) + newZ)/changeRate;
+                    camDistRatio = camSetDist/(Math.sqrt(Math.pow(difX, 2) + Math.pow(difZ, 2)));
+            }
     	
             mainLoop = function () {
+                // Timing stuff to make movement independent of framerate, WIP
                 //var secs = (new Date());
                 //timeDiff = secs - lastTime;
                 //lastTime = secs;
-                if (wDown && zombieSceneNode) {
-                    zombieSceneNode.Pos.X -= 1;//moveRate * timeDiff;
+                if (zombieSceneNode) {
+                    var newX = 0.0;
+                    var newZ = 0.0;
+                    
+                    if (wKey) {
+                        newX -= 1.0;
+                    }
+                    if (sKey) {
+                        newX += 1.0;
+                    }
+                    if (aKey) {
+                        newZ -= 1.0;
+                    }
+                    if (dKey) {
+                        newZ += 1.0;
+                    }
+                    // Update position and camera if any changes made
+                    if (newX != 0.0 || newZ != 0.0) {
+                        dirAngle = Math.tan(difZ / difX);
+                        updatePos(zombieSceneNode, newX, newZ);
+                        
+                        // Classic X/Z movement system
+                        zombieSceneNode.Pos.X += newX; //moveRate * timeDiff;
+                        zombieSceneNode.Pos.Z += newZ; //moveRate * timeDiff;
+                        
+                        // Experimental alternative movement system, WIP
+                        //zombieSceneNode.Pos.X += newX * Math.sin(dirAngle) + newZ * Math.cos(Math.PI / 2 - dirAngle);//moveRate * timeDiff;
+                        //zombieSceneNode.Pos.Z += newX * Math.cos(Math.PI / 2 - dirAngle) +  newX * Math.sin(dirAngle);//moveRate * timeDiff;
+                        
+                        // Finally, update Camera for new positions
+                        camFollow(cam, zombieSceneNode);
+                    }
+                    
                 }
-                if (sDown && zombieSceneNode) {
-    	            zombieSceneNode.Pos.X += 1;//moveRate * timeDiff;
-    	        }
-                if (aDown && zombieSceneNode) {
-    	            zombieSceneNode.Pos.Z -= 1;//moveRate * timeDiff;
-                }
-                if (dDown && zombieSceneNode) {
-    	            zombieSceneNode.Pos.Z += 1;//moveRate * timeDiff;
-                }
+                
                 setTimeout('mainLoop();', 20);
             }
 
+            // Timing stuff to make movement independent of framerate, WIP
             //var secs = (new Date()).getSeconds();
             mainLoop()
     	-->
