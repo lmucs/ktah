@@ -1,5 +1,8 @@
-HOST = null; // localhost
-PORT = 8001;
+//HOST = null; // localhost
+//PORT = 8001;
+
+//get express:
+var express = require('express'), app = module.exports = express.createServer();
 
 // when the daemon started
 var starttime = (new Date()).getTime();
@@ -120,15 +123,17 @@ setInterval(function () {
   }
 }, 1000);
 
-fu.listen(Number(process.env.PORT || PORT), HOST);
+//fu.listen(Number(process.env.PORT || PORT), HOST);
 
-fu.get("/", fu.staticHandler("index.html"));
-fu.get("/style.css", fu.staticHandler("style.css"));
-fu.get("/client.js", fu.staticHandler("client.js"));
-fu.get("/jquery-1.2.6.min.js", fu.staticHandler("jquery-1.2.6.min.js"));
+//This is where all of the page interaction is happening
+//fu.get("/", fu.staticHandler("index.html"));
+//fu.get("/style.css", fu.staticHandler("style.css"));
+//fu.get("/client.js", fu.staticHandler("client.js"));
+//fu.get("/jquery-1.2.6.min.js", fu.staticHandler("jquery-1.2.6.min.js"));
 
 
-fu.get("/who", function (req, res) {
+//fu.get("/who", function (req, res) {
+app.get("/who", function (req, res) {
   var nicks = [];
   for (var id in sessions) {
     if (!sessions.hasOwnProperty(id)) continue;
@@ -140,7 +145,8 @@ fu.get("/who", function (req, res) {
                       });
 });
 
-fu.get("/join", function (req, res) {
+//fu.get("/join", function (req, res) {
+app.get("/join", function (req, res) {
   var nick = qs.parse(url.parse(req.url).query).nick;
   if (nick == null || nick.length == 0) {
     res.simpleJSON(400, {error: "Bad nick."});
@@ -162,7 +168,8 @@ fu.get("/join", function (req, res) {
                       });
 });
 
-fu.get("/part", function (req, res) {
+//fu.get("/part", function (req, res) {
+app.get("/part", function (req, res) {
   var id = qs.parse(url.parse(req.url).query).id;
   var session;
   if (id && sessions[id]) {
@@ -172,7 +179,8 @@ fu.get("/part", function (req, res) {
   res.simpleJSON(200, { rss: mem.rss });
 });
 
-fu.get("/recv", function (req, res) {
+//fu.get("/recv", function (req, res) {
+app.get("/recv", function (req, res) {
   if (!qs.parse(url.parse(req.url).query).since) {
     res.simpleJSON(400, { error: "Must supply since parameter" });
     return;
@@ -192,7 +200,8 @@ fu.get("/recv", function (req, res) {
   });
 });
 
-fu.get("/send", function (req, res) {
+//fu.get("/send", function (req, res) {
+app.get("/send", function (req, res) {
   var id = qs.parse(url.parse(req.url).query).id;
   var text = qs.parse(url.parse(req.url).query).text;
 
@@ -207,3 +216,7 @@ fu.get("/send", function (req, res) {
   channel.appendMessage(session.nick, "msg", text);
   res.simpleJSON(200, { rss: mem.rss });
 });
+
+/*app.get('/test', function(req, res) {
+  res.render('test.txt');
+});*/

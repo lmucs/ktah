@@ -5,6 +5,7 @@
  */
 
 var express = require('express'), app = module.exports = express.createServer();
+var chatServer = require('./public/js/modules/chat/server.js');
 
 // Configuration
 
