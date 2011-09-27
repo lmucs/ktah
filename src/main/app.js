@@ -68,9 +68,5 @@ app.get('/zombietest', function(req, res) {
   res.render('zombieTest');
 });
 
-app.get('/zombietesthtml', function(req, res) {
-  res.render('zombieTest.html');
-});
-
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
