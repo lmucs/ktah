@@ -138,15 +138,19 @@ $(function() {
 
       if(wKey) {
         newX -= 1.0;
+        zombieSceneNode.Rot.Y = 270; //out of 360
       }
       if(sKey) {
         newX += 1.0;
+        zombieSceneNode.Rot.Y = 90; //out of 360
       }
       if(aKey) {
         newZ -= 1.0;
+        zombieSceneNode.Rot.Y = 180; //out of 360
       }
       if(dKey) {
         newZ += 1.0;
+        zombieSceneNode.Rot.Y = 0; //out of 360
       }
       // Update position and camera if any changes made
       if(newX != 0.0 || newZ != 0.0) {
