@@ -14,6 +14,4 @@ $(function () {
             roundExp: 0
     });
     
-    // Import the script linearly
-    ktah.utils.include();
 });

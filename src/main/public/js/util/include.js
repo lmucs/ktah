@@ -49,6 +49,7 @@ $(function () {
         if (n < numberOfImports) {
             var script = document.createElement("script");
             script.setAttribute("src", directories[n]);
+            script.onload = ktah.utils.include;
             document.getElementsByTagName("head")[0].appendChild(script);
             n++;
         }

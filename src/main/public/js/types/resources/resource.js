@@ -14,6 +14,4 @@ $(function () {
             
     });
     
-    // Import the script linearly
-    ktah.utils.include();
 });

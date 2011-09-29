@@ -172,8 +172,5 @@ $(function() {
   // Timing stuff to make movement independent of framerate, WIP
   //var secs = (new Date()).getSeconds();
   mainLoop()
-
-  // Import the script linearly
-  //TODO: Is this really where we should be doing this?
-  ktah.utils.include();
+  
 });
