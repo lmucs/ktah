@@ -5,7 +5,6 @@
  */
 
 var express = require('express'), app = module.exports = express.createServer();
-var chatServer = require('./public/js/modules/chat/server.js');
 
 // Configuration
 
@@ -47,6 +46,7 @@ app.configure('production', function() {
 //Controllers
 
 require('./controllers/game-controller.js')(app);
+require('./controllers/chat-controller.js')(app);
 
 // Routes
 
