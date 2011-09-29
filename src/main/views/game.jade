@@ -13,11 +13,11 @@ html
       p OH NOES YOU IDIOT GET A REAL BROWSER
     #testbutton Click here!
     script(type='text/javascript')
-      var gameId = #{gameId};
+      var gameUrl = '/game/' + #{gameId};
       $('#testbutton').click(function () {
         $.ajax({
           type: 'POST',
-          url: '/game',
+          url: gameUrl,
           data: JSON.stringify({game: "number", test: 'something'}),
           success: function (data) {
             alert("got something!");

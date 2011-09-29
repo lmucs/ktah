@@ -43,6 +43,11 @@ app.configure('development', function() {
 app.configure('production', function() {
   app.use(express.errorHandler());
 });
+
+//Controllers
+
+require('./controllers/game-controller.js')(app);
+
 // Routes
 
 app.get('/', function(req, res) {
@@ -57,13 +62,16 @@ app.get('/game/:gameId', function(req, res) {
   });
 });
 
-app.post('/game', function(req, res) {
-    console.log(req.body);
-    // console.log(res);
-    res.contentType('application/json');
-    res.send(JSON.stringify({test: 1, test2: "two"}));
+// Test for ajax posting
+app.post('/game/:gameId', function(req, res) {
+  var gameId = req.params.gameId;
+  console.log(req.body);
+  res.contentType('application/json');
+  res.send(JSON.stringify({gameId: gameId, test: 1, test2: "two"}));
 });
 
+
+// Current page for testing in game stuff.
 app.get('/zombietest', function(req, res) {
   res.render('zombieTest');
 });
