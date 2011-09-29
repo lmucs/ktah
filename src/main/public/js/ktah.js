@@ -6,7 +6,6 @@
 
 var ktah = {
 
-  types: {},
-  utils: {}
+  types: {}
 
 };

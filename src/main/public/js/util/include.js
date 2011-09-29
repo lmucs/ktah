@@ -41,21 +41,21 @@ $(function () {
     
     // Number of imports needed to be handled, plus a counter, n
     numberOfImports = directories.length,
-    n = 0;
+    n = 0,
     
     // Helper function to append the scripts (call once at start)
-    ktah.utils.include = function () {
+    include = function () {
         // Only import when there are more to go
         if (n < numberOfImports) {
             var script = document.createElement("script");
             script.setAttribute("src", directories[n]);
-            script.onload = ktah.utils.include;
+            script.onload = include;
             document.getElementsByTagName("head")[0].appendChild(script);
             n++;
         }
     };
     
     // Call once to get the ball rolling
-    ktah.utils.include();
+    include();
     
 });
