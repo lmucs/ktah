@@ -23,6 +23,16 @@ $(function() {
   // Last direction travelled
   difX = -1.0, difZ = 0.0, dirAngle = 0.0,
 
+  // Camera positioning values
+  camSetDist = 10,
+  camDistRatio = 1.0,
+  zoomDist = 10,
+  zoomDistMin = -3,
+  zoomDistMax = 15,
+  zoomSpeed = -2,
+  isometricView = true,
+  cameraStarted = false,
+
   // Variables for keyboard controls
   wKey = aKey = sKey = dKey = false, upKey = leftKey = downKey = rightKey = false;
 
@@ -47,10 +57,25 @@ $(function() {
   }
   // Default camera commands
   camFollow = function(cam, target) {
+    if (isometricView) {
+      isometricCam(cam, target);
+    } else {
+      shoulderCam(cam, target);
+    }
+  }
+  // Over the shoulder camera
+  shoulderCam = function(cam, target) {
     cam.Pos.X = target.Pos.X - difX * camDistRatio;
     cam.Pos.Y = target.Pos.Y + 20;
     cam.Pos.Z = target.Pos.Z - difZ * camDistRatio;
     animator.lookAt(new CL3D.Vect3d(zombieSceneNode.Pos.X, zombieSceneNode.Pos.Y + 10, zombieSceneNode.Pos.Z));
+  }
+  // Isometric camera
+  isometricCam = function(cam, target) {
+    cam.Pos.X = target.Pos.X + (camSetDist + zoomDist);
+    cam.Pos.Y = target.Pos.Y + (camSetDist + 2*zoomDist  + 10);
+    cam.Pos.Z = target.Pos.Z - (camSetDist + zoomDist);
+    camAnimator.lookAt(new CL3D.Vect3d(zombieSceneNode.Pos.X, zombieSceneNode.Pos.Y + 10, zombieSceneNode.Pos.Z));
   }
   // A more complicated keydown event. Uppercase and lowercase
   // letters referenced due to keydown vs keypress differences
@@ -121,6 +146,16 @@ $(function() {
         break;
     }
   }
+  // Mouse wheel for zooming
+  // see http://plugins.jquery.com/project/mousewheel for more info
+  // and http://plugins.jquery.com/plugin-tags/mousewheel
+  // using the event helper from http://brandonaaron.net/code/mousewheel/docs
+  $(document).mousewheel(function(event, delta) {
+    if (zoomDist + zoomSpeed * delta <= zoomDistMax && zoomDist + zoomSpeed * delta >= zoomDistMin) {
+      zoomDist += zoomSpeed * delta;
+      camFollow(cam, zombieSceneNode);
+    }
+  });
   updatePos = function(zombieSceneNode, newX, newZ) {
     changeRate = 20;
     difX = (difX * (changeRate - 1) + newX) / changeRate;
@@ -133,6 +168,11 @@ $(function() {
     //timeDiff = secs - lastTime;
     //lastTime = secs;
     if(zombieSceneNode) {
+
+      if (!cameraStarted) {
+        camFollow(cam, zombieSceneNode);
+        cameraStarted = true;
+      }
       var newX = 0.0;
       var newZ = 0.0;
 
