@@ -56,6 +56,12 @@ app.get('/', function(req, res) {
   });
 });
 
+app.get('/lobby', function(req, res) {
+  res.render('lobby', {
+    layout : true,
+  });
+});
+
 app.get('/game/:gameId', function(req, res) {
   res.render('game', {
     gameId : req.params.gameId
