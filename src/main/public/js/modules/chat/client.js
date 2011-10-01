@@ -1,10 +1,12 @@
 var CONFIG = { debug: false
-             , nick: "#"   // set in onConnect
-             , id: null    // set in onConnect
+             , nick: "#"   // get from user session cookie 
+             , id: null    // likewise
              , last_message_time: 1
              , focus: true //event listeners bound in onConnect
              , unread: 0 //updated in the message-processing loop
              };
+             
+
 
 var nicks = [];
 
@@ -392,12 +394,15 @@ function onConnect (session) {
     return;
   }
 
-  CONFIG.nick = session.nick;
-  CONFIG.id   = session.id;
-  starttime   = new Date(session.starttime);
-  rss         = session.rss;
-  updateRSS();
-  updateUptime();
+  //CONFIG.nick = session.nick;
+  CONFIG.nick = "Don"; //Dummy value for early dev
+  //CONFIG.id   = session.id;
+  CONFIG.id = 123456; //Dummy value for early dev
+  //TODO: Figure out starttime and rss later:
+  //starttime   = new Date(session.starttime);
+  //rss         = session.rss;
+  //updateRSS();
+  //updateUptime();
 
   //update the UI to show the chat
   showChat(CONFIG.nick);
@@ -442,8 +447,30 @@ $(document).ready(function() {
   });
 
   $("#usersLink").click(outputUsers);
+  
+  //New stuff written for K'tah to implement auto-joining:
+  showLoad();
+  var nick = 'Don'; //This is just a dummy value right now. Is supposed to come
+                    //from session.
+    //test:
+    alert(CONFIG.id);
+  $.ajax({ cache: false
+         , type: "POST" // XXX should be POST
+         , dataType: "json"
+         , url: "/chatjoin"
+         //, data: { nick: nick }
+         , data: {id: CONFIG.id}
+         , error: function () {
+             alert("error connecting to server");
+             //showConnect();
+           }
+         , success: onConnect
+         });
+  
 
+  //This is pointless in our version, since the user autoconnects
   //try joining the chat when the user clicks the connect button
+  /*
   $("#connectButton").click(function () {
     //lock the UI while waiting for a response
     showLoad();
@@ -477,6 +504,7 @@ $(document).ready(function() {
            });
     return false;
   });
+  */
 
   // update the daemon uptime every 10 seconds
   setInterval(function () {
