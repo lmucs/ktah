@@ -88,5 +88,5 @@ app.get('/chat', function(req, res) {
   });
 });
 
-app.listen(3001); //change this back
+app.listen(3000); //change this back
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
