@@ -1,6 +1,7 @@
 var CONFIG = { debug: false
              , nick: "#"   // get from user session cookie 
              , id: null    // likewise
+             , room: null  // should correspond to game (or lobby) number
              , last_message_time: 1
              , focus: true //event listeners bound in onConnect
              , unread: 0 //updated in the message-processing loop
@@ -314,11 +315,13 @@ function longPoll (data) {
   }
 
   //make another request
+    //test:
+    alert("id: " + CONFIG.id + " room: " + CONFIG.room);
   $.ajax({ cache: false
          , type: "GET"
-         , url: "/recv"
+         , url: "/chatrecv"
          , dataType: "json"
-         , data: { since: CONFIG.last_message_time, id: CONFIG.id }
+         , data: { since: CONFIG.last_message_time, id: CONFIG.id, room: CONFIG.room }
          , error: function () {
              addMessage("", "long poll error. trying again...", new Date(), "error");
              transmission_errors += 1;
@@ -397,7 +400,7 @@ function onConnect (session) {
   //CONFIG.nick = session.nick;
   CONFIG.nick = "Don"; //Dummy value for early dev
   //CONFIG.id   = session.id;
-  CONFIG.id = 123456; //Dummy value for early dev
+  //CONFIG.id = 123456; //Dummy value for early dev
   //TODO: Figure out starttime and rss later:
   //starttime   = new Date(session.starttime);
   //rss         = session.rss;
@@ -422,14 +425,19 @@ function onConnect (session) {
 
 //add a list of present chat members to the stream
 function outputUsers () {
+  /*
   var nick_string = nicks.length > 0 ? nicks.join(", ") : "(none)";
   addMessage("users:", nick_string, new Date(), "notice");
+  */
+  
+  //TODO: Make it change the div in the chat console with the list of
+  //everyone in the room
   return false;
 }
 
 //get a list of the users presently in the room, and add it to the stream
 function who () {
-  jQuery.get("/who", {}, function (data, status) {
+  jQuery.get("/chatwho", {}, function (data, status) {
     if (status != "success") return;
     nicks = data.nicks;
     outputUsers();
@@ -452,17 +460,18 @@ $(document).ready(function() {
   showLoad();
   var nick = 'Don'; //This is just a dummy value right now. Is supposed to come
                     //from session.
-    //test:
-    alert(CONFIG.id);
+  CONFIG.id = 123456 //dummy variable. Should come from the user's session
+  CONFIG.room = 0; //dummy variable. Should come from game number or number
+                   //assigned to lobby
+
   $.ajax({ cache: false
-         , type: "POST" // XXX should be POST
+         , type: "POST"
          , dataType: "json"
          , url: "/chatjoin"
-         //, data: { nick: nick }
-         , data: {id: CONFIG.id}
+         , data: { id: CONFIG.id, room: CONFIG.room }
          , error: function () {
              alert("error connecting to server");
-             //showConnect();
+             showConnect();
            }
          , success: onConnect
          });

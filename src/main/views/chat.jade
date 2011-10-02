@@ -2,21 +2,16 @@ head
   script(type='text/javascript', src='../js/modules/chat/client.js')
 
 #connect
-  form(action="/chatjoin")
-    fieldset
-      label(for="nick")
-        Name
-      input#nickInput.text(type="text", name="nick", value="")
-      input#connectButton.button(type="submit", name="", value="Join")
-  #loading
-    loading
-  #log
+  Chat failed to connect! Infinite Sadness :(
+#loading
+  loading
+#log
   
-  #toolbar
-    ul#status
-      li
-        a#usersLink(href="#")
-      li
-        uptime:
-        span#uptime
-    input#entry(tabindex="1", type="text")
+#toolbar
+  ul#status
+    li
+      a#usersLink(href="#")
+    li
+      uptime:
+      span#uptime
+  input#entry(tabindex="1", type="text")
