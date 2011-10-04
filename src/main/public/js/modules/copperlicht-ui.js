@@ -75,7 +75,7 @@ $(function() {
     cam.Pos.X = target.Pos.X + (camSetDist + zoomDist);
     cam.Pos.Y = target.Pos.Y + (camSetDist + 2*zoomDist  + 10);
     cam.Pos.Z = target.Pos.Z - (camSetDist + zoomDist);
-    camAnimator.lookAt(new CL3D.Vect3d(zombieSceneNode.Pos.X, zombieSceneNode.Pos.Y + 10, zombieSceneNode.Pos.Z));
+    animator.lookAt(new CL3D.Vect3d(zombieSceneNode.Pos.X, zombieSceneNode.Pos.Y + 10, zombieSceneNode.Pos.Z));
   }
   // A more complicated keydown event. Uppercase and lowercase
   // letters referenced due to keydown vs keypress differences
