@@ -15,6 +15,7 @@ include.includeInit([
   /***** LIBRARIES *****/
   '/js/lib/copperlicht.js',
   '/js/lib/base2.min.js',
+  '/js/lib/jquery.mousewheel.min.js',
   
   /***** MODULES *****/
   '/js/modules/copperlicht-ui.js',
