@@ -279,12 +279,19 @@ function longPoll (data) {
   //process any updates we may have
   //data will be null on the first call of longPoll
   if (data && data.messages) {
+      //test:
+      //alert('data.messages.length: ' + data.messages.length);
     for (var i = 0; i < data.messages.length; i++) {
       var message = data.messages[i];
+        //test:
+        //alert(message.body);
 
       //track oldest message so we only request newer messages from server
-      if (message.timestamp > CONFIG.last_message_time)
-        CONFIG.last_message_time = message.timestamp;
+        //test:
+        //alert('message.time: ' + message.time);
+        //alert('CONFIG.last_message_time: ' + CONFIG.last_message_time);
+      if (message.time > CONFIG.last_message_time)
+        CONFIG.last_message_time = message.time;
 
       //dispatch new messages to their appropriate handlers
       switch (message.type) {
@@ -292,7 +299,9 @@ function longPoll (data) {
           if(!CONFIG.focus){
             CONFIG.unread++;
           }
-          addMessage(message.nick, message.text, message.timestamp);
+          addMessage(message.id, message.body, message.time); //uncomment when this function doesn't break
+            //test:
+            //alert('adding message: ' + message.id + ' ' + message.body + ' ' + message.time);
           break;
 
         case "join":
@@ -303,6 +312,8 @@ function longPoll (data) {
           userPart(message.nick, message.timestamp);
           break;
       }
+        //test:
+        //alert('I got here');
     }
     //update the document title to include unread message count if blurred
     updateTitle();
@@ -316,7 +327,7 @@ function longPoll (data) {
 
   //make another request
     //test:
-    alert("id: " + CONFIG.id + " room: " + CONFIG.room);
+    //alert("id: " + CONFIG.id + " room: " + CONFIG.room);
   $.ajax({ cache: false
          , type: "GET"
          , url: "/chatrecv"
@@ -345,7 +356,9 @@ function send(msg) {
   if (CONFIG.debug === false) {
     // XXX should be POST
     // XXX should add to messages immediately
-    jQuery.get("/send", {id: CONFIG.id, text: msg}, function (data) { }, "json");
+    jQuery.get("/chatsend", {id: CONFIG.id, body: msg, room: CONFIG.room}, function (data) { alert('got here'); }, "json");
+      //test:
+      //alert('got here');
   }
 }
 
@@ -391,11 +404,14 @@ var rss;
 
 //handle the server's response to our nickname and join request
 function onConnect (session) {
+  //TODO: get sessions going
+  /*
   if (session.error) {
     alert("error connecting: " + session.error);
     showConnect();
     return;
   }
+  */
 
   //CONFIG.nick = session.nick;
   CONFIG.nick = "Don"; //Dummy value for early dev
@@ -477,47 +493,11 @@ $(document).ready(function() {
          });
   
 
-  //This is pointless in our version, since the user autoconnects
-  //try joining the chat when the user clicks the connect button
-  /*
-  $("#connectButton").click(function () {
-    //lock the UI while waiting for a response
-    showLoad();
-    var nick = $("#nickInput").attr("value");
-
-    //dont bother the backend if we fail easy validations
-    if (nick.length > 50) {
-      alert("Nick too long. 50 character max.");
-      showConnect();
-      return false;
-    }
-
-    //more validations
-    if (/[^\w_\-^!]/.exec(nick)) {
-      alert("Bad character in nick. Can only have letters, numbers, and '_', '-', '^', '!'");
-      showConnect();
-      return false;
-    }
-
-    //make the actual join request to the server
-    $.ajax({ cache: false
-           , type: "GET" // XXX should be POST
-           , dataType: "json"
-           , url: "/join"
-           , data: { nick: nick }
-           , error: function () {
-               alert("error connecting to server");
-               showConnect();
-             }
-           , success: onConnect
-           });
-    return false;
-  });
-  */
+  
 
   // update the daemon uptime every 10 seconds
   setInterval(function () {
-    updateUptime();
+    //updateUptime(); //TODO: Handle uptime
   }, 10*1000);
 
   if (CONFIG.debug) {
@@ -534,8 +514,11 @@ $(document).ready(function() {
   //interestingly, we don't need to join a room to get its updates
   //we just don't show the chat stream to the user until we create a session
   longPoll();
-
-  showConnect();
+  
+  //showConnect(); //From original.
+  //In k'tah chat, just show chat right away:
+  showChat(CONFIG.id); //or maybe just take nick
+  
 });
 
 //if we can, notify the server that we're going away.
