@@ -23,6 +23,14 @@ $(function() {
   // Last direction travelled
   difX = -1.0, difZ = 0.0, dirAngle = 0.0,
 
+  // Mouse Controls values
+  goalX = NaN, // where to travel to
+  goalZ = NaN, // where to travel to
+  engWidth = 640, // width of clickable area
+  engHeight = 480, // height of clickable area
+  mouseToDist = 25, // conversion ratio for mouse units to ingame distance units
+  walkSpeed = 1.0, // how fast character moves
+
   // Camera positioning values
   camSetDist = 10,
   camDistRatio = 1.0,
@@ -146,6 +154,14 @@ $(function() {
         break;
     }
   }
+  // Mouse Click/Down register for Mouse Movement
+  engine.handleMouseDown = function (event) {
+    var changeX = 2*((engine.getMouseDownX() - engWidth/2) / (engWidth/2));
+    var changeY = 2*((engine.getMouseDownY() - engHeight/2) / (engHeight/2));
+    goalX = zombieSceneNode.Pos.X + changeY * mouseToDist;
+    goalZ = zombieSceneNode.Pos.Z + changeX * mouseToDist;
+    //console.log("Seeking " + changeX + ", " + changeY);
+  }
   // Mouse wheel for zooming
   // see http://plugins.jquery.com/project/mousewheel for more info
   // and http://plugins.jquery.com/plugin-tags/mousewheel
@@ -191,6 +207,26 @@ $(function() {
       if(dKey) {
         newZ += 1.0;
         zombieSceneNode.Rot.Y = 0; //out of 360
+      }
+      // Handle goalX if it has a new number
+      if (goalX != zombieSceneNode.Pos.X) {
+        if (goalX > zombieSceneNode.Pos.X + 1) {
+          newX += walkSpeed;
+        } else if (goalX < zombieSceneNode.Pos.X - 1) { 
+          newX -= walkSpeed;
+        } else {
+          goalX = zombieSceneNode.Pos.X;
+        }
+      }
+      // Handle goalZ if it has a new number
+      if (goalZ != zombieSceneNode.Pos.Z) {
+        if (goalZ > zombieSceneNode.Pos.Z + 1) {
+          newZ += walkSpeed;
+        } else if (goalZ < zombieSceneNode.Pos.Z - 1) { 
+          newZ -= walkSpeed;
+        } else {
+          goalZ = zombieSceneNode.Pos.Z;
+        }
       }
       // Update position and camera if any changes made
       if(newX != 0.0 || newZ != 0.0) {
