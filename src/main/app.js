@@ -4,9 +4,24 @@
  * Module dependencies.
  */
 
-var express = require('express'), app = module.exports = express.createServer();
+var express = require('express'), 
+    app = module.exports = express.createServer();
+    
+    /* TESTING
+    // Configure database dependencies and constants    
+    var mysql = require('mysql'),
+    client = mysql.createClient({
+        user: 'aforney',
+        password: 'admin1',
+        host: 'mysql.cs.lmu.edu',
+        database: 'aforney2'
+    }),
+    DATABASE_NAME = 'aforney2',
+    ACCOUNTS_TABLE = 'ktah_accounts';
+    */
 
-// Configuration
+
+/***** CONFIGURATION *****/
 
 app.configure(function() {
   app.set('views', __dirname + '/views');
@@ -43,12 +58,27 @@ app.configure('production', function() {
   app.use(express.errorHandler());
 });
 
-//Controllers
+
+/***** DATABASE INTEGRATION *****/
+
+/* TESTING
+// Set up the accounts table
+client.query(
+  'CREATE TABLE ' + ACCOUNTS_TABLE
+  + '(accountId INT(11) UNSIGNED NOT NULL AUTO_INCREMENT, '
+  + 'accountName VARCHAR(255) NOT NULL, '
+  + 'password VARCHAR(255) NOT NULL, '
+  + 'PRIMARY KEY (accountId))'
+);
+*/
+
+/***** CONTROLLERS *****/
 
 require('./controllers/game-controller.js')(app);
 require('./controllers/chat-controller.js')(app);
 
-// Routes
+
+/***** ROUTES *****/
 
 app.get('/', function(req, res) {
   res.render('index', {
@@ -88,5 +118,5 @@ app.get('/chat', function(req, res) {
   });
 });
 
-app.listen(3000); //change this back
+app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
