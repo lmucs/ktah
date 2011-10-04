@@ -12,7 +12,7 @@ var express = require('express'),
     var mysql = require('mysql'),
     client = mysql.createClient({
         user: 'notTelling',
-        password: 'stillNotTelling',
+        password: 'youWishYouKnew',
         host: 'mysql.cs.lmu.edu',
         database: 'aforney2'
     }),
@@ -64,11 +64,18 @@ app.configure('production', function() {
 /* TESTING
 // Set up the accounts table
 client.query(
-  'CREATE TABLE ' + ACCOUNTS_TABLE
+  'CREATE TABLE IF NOT EXISTS ' + ACCOUNTS_TABLE
   + '(accountId INT(11) UNSIGNED NOT NULL AUTO_INCREMENT, '
   + 'accountName VARCHAR(255) NOT NULL, '
   + 'password VARCHAR(255) NOT NULL, '
   + 'PRIMARY KEY (accountId))'
+);
+
+// Add some test data
+client.query(
+  'INSERT INTO '+ ACCOUNTS_TABLE + ' '
+  + 'SET accountName = ?, password = ?',
+  ['super cool', 'this is a nice text']
 );
 */
 
