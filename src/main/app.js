@@ -11,8 +11,8 @@ var express = require('express'),
     // Configure database dependencies and constants    
     var mysql = require('mysql'),
     client = mysql.createClient({
-        user: 'aforney',
-        password: 'admin1',
+        user: 'notTelling',
+        password: 'stillNotTelling',
         host: 'mysql.cs.lmu.edu',
         database: 'aforney2'
     }),
