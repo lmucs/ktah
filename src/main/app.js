@@ -5,20 +5,17 @@
  */
 
 var express = require('express'), 
-    app = module.exports = express.createServer();
+    app = module.exports = express.createServer(),
     
-    /* TESTING
     // Configure database dependencies and constants    
-    var mysql = require('mysql'),
+    mysql = require('mysql'),
     client = mysql.createClient({
-        user: 'notTelling',
-        password: 'youWishYouKnew',
-        host: 'mysql.cs.lmu.edu',
-        database: 'aforney2'
-    }),
-    DATABASE_NAME = 'aforney2',
-    ACCOUNTS_TABLE = 'ktah_accounts';
-    */
+      ACCOUNTS_TABLE: 'ktah_accounts',
+      user: "",
+      password: "",
+      host: 'mysql.cs.lmu.edu',
+      database: 'aforney2'
+    });
 
 
 /***** CONFIGURATION *****/
@@ -61,23 +58,16 @@ app.configure('production', function() {
 
 /***** DATABASE INTEGRATION *****/
 
-/* TESTING
-// Set up the accounts table
-client.query(
-  'CREATE TABLE IF NOT EXISTS ' + ACCOUNTS_TABLE
-  + '(accountId INT(11) UNSIGNED NOT NULL AUTO_INCREMENT, '
-  + 'accountName VARCHAR(255) NOT NULL, '
-  + 'password VARCHAR(255) NOT NULL, '
-  + 'PRIMARY KEY (accountId))'
-);
+// Check that the proper credentials have been set,
+// otherwise, do not mess with database stuff
+if (process.env.KTAH_DB_USER && process.env.KTAH_DB_PASS) {
+  client.user = process.env.KTAH_DB_USER;
+  client.password = process.env.KTAH_DB_PASS;
+  require('./db-config.js')(client);
+} else {
+  console.log("DB-ERROR: User and / or Password were not set as environment variables. Aborting database config.")
+}
 
-// Add some test data
-client.query(
-  'INSERT INTO '+ ACCOUNTS_TABLE + ' '
-  + 'SET accountName = ?, password = ?',
-  ['super cool', 'this is a nice text']
-);
-*/
 
 /***** CONTROLLERS *****/
 
