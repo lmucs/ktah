@@ -1,0 +1,66 @@
+//
+// gamestate.json
+//
+// Example json object of the gamestate.
+//
+{
+  "gamestate": {
+    "environment": {
+      "game": 1
+      "round": 1,
+      "time": "1:30",
+      "monsters": [
+        {
+          "type": "basic-zombie",
+          "id": "000000",
+          "posX": 0,
+          "posZ": 0,
+          "health": "1",
+        },
+        {
+          "type": "basic-zombie",
+          "id": "000001",
+          "posX": 20,
+          "posZ": 500,
+          "health": "1"
+        },
+        {
+          "type": "monkey-zombie",
+          "id": "000002",
+          "posX": -37,
+          "posZ": 70,
+          "health": "1337"
+        }        
+      ],
+      "resources": [
+        "type": "wood",
+        "id": "12309754",
+        "posX": "",
+        "posY": ""
+      ],
+    }
+    "players": [
+      {
+        "id": "hodavidhara",
+        "class": "chemist",
+        "posX": 135,
+        "posZ": -43,
+        "state": "idle",        // Animation state: walking, running, attacking, etc
+        "health": "9001"        // Should max be stored here also? or will that be know in the character module?
+        "experience": "20482"
+        "resources": [],
+        "status": "jetpack"     // buffs and debuffs
+      },
+      {
+        "id": "blahlah",
+        "class": "architect",
+        "posX": 138,
+        "posZ": -50,
+        "state": "walking",
+        "health": "500"
+        "resources": []
+        "status": "ZOMBIEAFFLICTION!!!"    // buffs and debuffs
+      }
+    ]
+  }
+}
