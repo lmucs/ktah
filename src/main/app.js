@@ -63,7 +63,7 @@ app.configure('production', function() {
 if (process.env.KTAH_DB_USER && process.env.KTAH_DB_PASS) {
   client.user = process.env.KTAH_DB_USER;
   client.password = process.env.KTAH_DB_PASS;
-  require('./db-config.js')(client);
+  require('./public/js/modules/db-config.js')(client);
 } else {
   console.log("DB-ERROR: User and / or Password were not set as environment variables. Aborting database config.")
 }
