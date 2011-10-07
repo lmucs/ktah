@@ -10,11 +10,9 @@ var express = require('express'),
     // Configure database dependencies and constants    
     mysql = require('mysql'),
     client = mysql.createClient({
-      ACCOUNTS_TABLE: 'ktah_accounts',
-      user: "",
-      password: "",
-      host: 'mysql.cs.lmu.edu',
-      database: 'aforney2'
+      ACCOUNTS_TABLE: "ktah_accounts",
+      host: "mysql.cs.lmu.edu",
+      database: "aforney2"
     });
 
 
@@ -65,7 +63,7 @@ if (process.env.KTAH_DB_USER && process.env.KTAH_DB_PASS) {
   client.password = process.env.KTAH_DB_PASS;
   require('./public/js/modules/db-config.js')(client);
 } else {
-  console.log("DB-ERROR: User and / or Password were not set as environment variables. Aborting database config.")
+  console.log("DB-ERROR: User and / or Password were not set as environment variables. Aborting database config.");
 }
 
 
@@ -77,18 +75,25 @@ require('./controllers/chat-controller.js')(app);
 
 /***** ROUTES *****/
 
-app.get('/', function(req, res) {
-  res.render('index', {
-    layout : true,
-  });
-});
+// Routes for account management
+require('./public/js/modules/account-management.js')(app, client);
 
+
+// Routes for game initation
 app.get('/lobby', function(req, res) {
   res.render('lobby', {
-    layout : true,
+    layout : true
   });
 });
 
+app.get('/chat', function(req, res) {
+  res.render('chat', {
+    layout : true
+  });
+});
+
+
+// Routes for gameplay
 app.get('/game/:gameId', function(req, res) {
   res.render('game', {
     gameId : req.params.gameId
@@ -107,12 +112,6 @@ app.post('/game/:gameId', function(req, res) {
 // Current page for testing in game stuff.
 app.get('/zombietest', function(req, res) {
   res.render('zombieTest');
-});
-
-app.get('/chat', function(req, res) {
-  res.render('chat', {
-    layout : true,
-  });
 });
 
 app.listen(3000);
