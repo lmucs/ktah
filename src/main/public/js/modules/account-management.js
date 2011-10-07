@@ -55,9 +55,7 @@ module.exports = function (app, client) {
                     session.userInfo = results[0];
                     session.is_logged_in = true;
                     loginFlash = undefined;
-                    res.render('main', {
-                        layout: true
-                    });
+                    res.redirect('/main');
                 } else { // Or, no match
                     loginFlash = "Username / Password combination not found...";
                     res.redirect('home');
@@ -73,6 +71,17 @@ module.exports = function (app, client) {
         res.render('index' , {
             layout: true
         });
+    });
+    
+    app.get('/main', function(req, res) {
+        if (req.session.is_logged_in) {
+            res.render('main', {
+                layout: true,
+                user: req.session.userInfo.accountName
+            });
+        } else {
+            res.redirect("home");
+        }
     });
         
        

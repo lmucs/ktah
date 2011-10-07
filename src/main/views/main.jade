@@ -1,8 +1,9 @@
-#mainBG
-#main
-  h1 K'tah!
+#main.framePadding
   #logout
     form(method="POST", action="/main")
       input(type='submit', name="logout", value='Logout')
+  h1 K'tah!
   #navbar
     p Navigation stuff here: Lobbies, Account, Preferences, etc.
+  #welcome
+    p Welcome back to K'tah, #{user}.

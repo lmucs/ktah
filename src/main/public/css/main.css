@@ -71,5 +71,9 @@
 
 #logout {
     float: right;
-    margin-right: 15px;
+    margin: 15px 15px 0px 0px;
+}
+
+.framePadding {
+    padding: 10px;
 }
