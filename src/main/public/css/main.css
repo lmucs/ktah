@@ -68,3 +68,8 @@
 .badMessage {
   background-color: red;
 }
+
+#logout {
+    float: right;
+    margin-right: 15px;
+}
