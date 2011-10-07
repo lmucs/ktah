@@ -37,7 +37,7 @@
   border-radius: 5px;
 }
 
-#login {
+.loginFrame {
   width: 400px;
   padding: 20px;
   margin: 150px auto 0 auto;
@@ -45,4 +45,26 @@
   -moz-border-radius: 10px;
   border-radius: 10px;
   text-align: center;
+}
+
+.registerFrame {
+  margin: 0px auto 0 auto;
+  background-color: #D8D8D8;
+}
+
+#flashMessage {
+  color: white;
+  margin: 10px;
+  border: 1px solid black;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+
+.goodMessage {
+  background-color: green;
+}
+
+.badMessage {
+  background-color: red;
 }
