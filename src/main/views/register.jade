@@ -1,0 +1,22 @@
+#login.loginFrame
+  h1 K'tah Welcomes All...
+  h2 Register
+  - if (typeof(registerFlash) != 'undefined')
+    p#flashMessage.badMessage= registerFlash
+  form(method="POST", action="/register")
+    p Choose a username
+    - if (typeof(registerUserFlash) != 'undefined')
+      p#flashMessage.badMessage= registerUserFlash
+    input(type='text', name="user")
+    p Enter a password
+    - if (typeof(registerPassFlash) != 'undefined')
+      p#flashMessage.badMessage= registerPassFlash
+    input(type='password', name="pass1")
+    p Re-enter your password... or else!
+    input(type='password', name="pass2")
+    p Enter your email address
+    - if (typeof(registerEmailFlash) != 'undefined')
+      p#flashMessage.badMessage= registerEmailFlash
+    input(type='text', name="email")
+    br
+    input(type='submit', name="register", value='Register')

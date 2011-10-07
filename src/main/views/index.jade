@@ -1,5 +1,13 @@
-#login
+#login.loginFrame
   h1 K'tah Awaits...
   h2 Login
+  - if (typeof(loginFlash) != 'undefined')
+    p#flashMessage.goodMessage= loginFlash
   p Username
+  input(type='text', name="user")
   p Password
+  input(type='password', name="pass")
+  br
+  input(type='submit', name="login", value='Login')
+#register.loginFrame.registerFrame
+  a(href='./register') Register
