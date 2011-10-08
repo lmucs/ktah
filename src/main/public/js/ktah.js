@@ -27,7 +27,6 @@ include.includeInit([
   '/js/types/characters/architect.js',
   '/js/types/characters/chemist.js',
   '/js/types/characters/herder.js',
-  '/js/types/characters/land-master.js',
   '/js/types/characters/tinker.js',
   
   // Resources
