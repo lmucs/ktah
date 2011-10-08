@@ -5,13 +5,8 @@
  */
 
 module.exports = function (app, client) {
-    // Helper method to reset warning messages after they've been triggered
-    var resetWarnings = function () {
-         registerFlash = registerUserFlash = registerEmailFlash = registerPassFlash = undefined; 
-    },
-    
     // Imports for the validation
-    check = require('validator').check,
+    var check = require('validator').check,
     sanitize = require('validator').sanitize;
     
     
@@ -19,7 +14,6 @@ module.exports = function (app, client) {
     
     // Simple get router for the login page
     app.get('/', function(req, res) {
-        resetWarnings();
         // If the user has an active session, send them to the main page
         if (req.session.is_logged_in) {
             res.render('main', {
@@ -102,10 +96,7 @@ module.exports = function (app, client) {
             email = inputs.email
             user = inputs.user
             pass1 = inputs.pass1
-            pass2 = inputs.pass2;
-
-        // Reset the warnings if there were any from previous attempts at registration
-        resetWarnings();
+            pass2 = inputs.pass2,
         
         // Perform database checking for duplicates
         client.query(
@@ -114,51 +105,62 @@ module.exports = function (app, client) {
             function (err, results, fields) {
                 // If there are errors for some reason record them
                 if (err) {
-                    registerFlash = "Hey something went wrong, I'd try again...";
+                    req.registerFlash = "Hey something went wrong, I'd try again...";
                 }
                 
                 // Check that the passwords match
                 if (pass1 !== pass2) {
-                    registerPassFlash = "Your passwords don't match... type... very... carefully..."
+                    req.registerPassFlash = "Your passwords don't match... type... very... carefully...";
+                }
+                
+                // Next, the password
+                try {
+                    // Protect against XSS attack
+                    if (pass1 !== sanitize(pass1).xss()) {throw new Error}
+                } catch (e) {
+                    req.registerPassFlash = "Your password contains some suspicious characters, try another...";
+                }
+                
+                try {
+                    check(pass1).len(7);
+                } catch (e) {
+                    req.registerPassFlash = "Your password must be at least 7 characters long...";
                 }
                 
                 // Only perform checks if results were found from the query
                 if (results.length != 0) {
                     if (results[0].accountName === user) {
-                        registerUserFlash = "Looks like the username " + user + " was taken. Be more creative...";
+                        req.registerUserFlash = "Looks like the username " + user + " was taken. Be more creative...";
                     }
                       
                     if (results[0].email === email) {
-                        registerEmailFlash = "You, or an impostor, have already registered " + email + "...";
+                        req.registerEmailFlash = "You, or an impostor, have already registered " + email + "...";
                     }
                 } else { // If there were not duplicates found in the db, check that the strings are valid
                     // Start with validating and sanitizing the username
                     try {
                         check(user).notNull().is("^[a-zA-Z0-9_]*$");
                     } catch (e) {
-                        registerUserFlash = "Your username must contain at least 1 character choosing from numbers and letters alone..."
-                    }
-                    
-                    // Next, the password
-                    try {
-                        check(pass1).len(7);
-                        // Protect against XSS attack
-                        if (pass1 !== sanitize(pass1).xss()) {throw new Error}
-                    } catch (e) {
-                        registerPassFlash = "Your password must be at least 7 characters long...";
+                        req.registerUserFlash = "Your username must contain at least 1 character choosing from numbers and letters alone..."
                     }
                     
                     // Finally, the email
                     try {
                         check(email).notNull().isEmail();
                     } catch (e) {
-                        registerEmailFlash = "Your email must be of the form somebody@something.huh and cannot be blank..."
+                        req.registerEmailFlash = "Your email must be of the form somebody@something.huh and cannot be blank...";
                     }
                 }
                 
                 // If there are errors, return to the register page with messages
-                if (registerFlash || registerUserFlash || registerEmailFlash || registerPassFlash) {
-                    res.redirect('back');
+                if (req.registerFlash || req.registerUserFlash || req.registerEmailFlash || req.registerPassFlash) {
+                    res.render('register', {
+                        registerFlash : req.registerFlash,
+                        registerUserFlash : req.registerUserFlash,
+                        registerEmailFlash : req.registerEmailFlash,
+                        registerPassFlash : req.registerPassFlash,
+                        layout : true
+                    });
                 } else { // Otherwise, no errors, return to the login page with a success after adding to DB
                     // First, add data to DB  
                     client.query(
