@@ -6,7 +6,7 @@
 {
   "gamestate": {
     "environment": {
-      "game": 1
+      "game": 1,
       "round": 1,
       "time": "1:30",
       "monsters": [
@@ -37,7 +37,7 @@
         "id": "12309754",
         "posX": "",
         "posY": ""
-      ],
+      ]
     }
     "players": [
       {
@@ -46,8 +46,8 @@
         "posX": 135,
         "posZ": -43,
         "state": "idle",        // Animation state: walking, running, attacking, etc
-        "health": "9001"        // Should max be stored here also? or will that be know in the character module?
-        "experience": "20482"
+        "health": "9001",        // Should max be stored here also? or will that be know in the character module?
+        "experience": "20482",
         "resources": [],
         "status": "jetpack"     // buffs and debuffs
       },
@@ -57,8 +57,8 @@
         "posX": 138,
         "posZ": -50,
         "state": "walking",
-        "health": "500"
-        "resources": []
+        "health": "500",
+        "resources": [],
         "status": "ZOMBIEAFFLICTION!!!"    // buffs and debuffs
       }
     ]

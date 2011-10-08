@@ -20,6 +20,6 @@ module.exports = function(app) {
     }
   };
   
-  app.post('/gamestate/:gameId', GameController.post);
-  app.get('/gamestate/:gameId', GameController.get);
+  app.post('/gameinfo/:gameId', GameController.post);
+  app.get('/gameinfo/:gameId', GameController.get);
 }
