@@ -299,9 +299,7 @@ function longPoll (data) {
           if(!CONFIG.focus){
             CONFIG.unread++;
           }
-          addMessage(message.id, message.body, message.time); //uncomment when this function doesn't break
-            //test:
-            //alert('adding message: ' + message.id + ' ' + message.body + ' ' + message.time);
+          addMessage(message.nick, message.body, message.time);
           break;
 
         case "join":
@@ -354,11 +352,14 @@ function longPoll (data) {
 //submit a new message to the server
 function send(msg) {
   if (CONFIG.debug === false) {
+    var time = new Date().getTime()
+    
     // XXX should be POST
-    // XXX should add to messages immediately
-    jQuery.get("/chatsend", {id: CONFIG.id, body: msg, room: CONFIG.room}, function (data) { alert('got here'); }, "json");
-      //test:
-      //alert('got here');
+    jQuery.get("/chatsend", {body: msg, room: CONFIG.room, time: time}, function (data) { /*alert('got here');*/ }, "json");
+    
+    //add the message immediately to one's own console:
+    addMessage(CONFIG.nick, msg, time);
+    
   }
 }
 
@@ -403,7 +404,7 @@ var starttime;
 var rss;
 
 //handle the server's response to our nickname and join request
-function onConnect (session) {
+function onConnect (data) {
   //TODO: get sessions going
   /*
   if (session.error) {
@@ -412,11 +413,10 @@ function onConnect (session) {
     return;
   }
   */
-
-  //CONFIG.nick = session.nick;
-  CONFIG.nick = "Don"; //Dummy value for early dev
-  //CONFIG.id   = session.id;
-  //CONFIG.id = 123456; //Dummy value for early dev
+  
+  //Set local references for nick and id:
+  CONFIG.nick = data.nick;
+  CONFIG.id   = data.id;
   //TODO: Figure out starttime and rss later:
   //starttime   = new Date(session.starttime);
   //rss         = session.rss;
@@ -440,15 +440,15 @@ function onConnect (session) {
 }
 
 //add a list of present chat members to the stream
-function outputUsers () {
-  /*
+function outputUsers (nicks) {
+  
   var nick_string = nicks.length > 0 ? nicks.join(", ") : "(none)";
   addMessage("users:", nick_string, new Date(), "notice");
-  */
+  
   
   //TODO: Make it change the div in the chat console with the list of
   //everyone in the room
-  return false;
+  return true;
 }
 
 //get a list of the users presently in the room, and add it to the stream
@@ -456,7 +456,7 @@ function who () {
   jQuery.get("/chatwho", {}, function (data, status) {
     if (status != "success") return;
     nicks = data.nicks;
-    outputUsers();
+    outputUsers(nicks);
   }, "json");
 }
 
@@ -474,11 +474,14 @@ $(document).ready(function() {
   
   //New stuff written for K'tah to implement auto-joining:
   showLoad();
-  var nick = 'Don'; //This is just a dummy value right now. Is supposed to come
+  //var nick = 'Don'; //This is just a dummy value right now. Is supposed to come
                     //from session.
-  CONFIG.id = 123456 //dummy variable. Should come from the user's session
-  CONFIG.room = 0; //dummy variable. Should come from game number or number
+  //CONFIG.id = 123456 //dummy variable. Should come from the user's session
+  //CONFIG.room = 0; //dummy variable. Should come from game number or number
                    //assigned to lobby
+  CONFIG.room = parseInt($("#roomNumber").html());
+    //test:
+    //alert("room number: " + CONFIG.room);
 
   $.ajax({ cache: false
          , type: "POST"
@@ -523,5 +526,6 @@ $(document).ready(function() {
 
 //if we can, notify the server that we're going away.
 $(window).unload(function () {
-  jQuery.get("/part", {id: CONFIG.id}, function (data) { }, "json");
+  //XXX: Should be POST
+  jQuery.post("/chatpart", {room: CONFIG.room}, function (data) { }, "json");
 });

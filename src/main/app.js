@@ -86,9 +86,11 @@ app.get('/lobby', function(req, res) {
   });
 });
 
-app.get('/chat', function(req, res) {
+//this is for testing chat:
+app.get('/chat/:room', function(req, res) {
   res.render('chat', {
     layout : true
+    , gameId : req.params.room
   });
 });
 

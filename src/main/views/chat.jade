@@ -1,17 +1,18 @@
-head
-  script(type='text/javascript', src='../js/modules/chat/client.js')
-
-#connect
-  Chat failed to connect! Infinite Sadness :(
-#loading
-  loading
-#log
-  
-#toolbar
-  ul#status
-    li
-      a#usersLink(href="#")
-    li
-      uptime:
-      span#uptime
-  input#entry(tabindex="1", type="text")
+script(type='text/javascript', src='../js/modules/chat/client.js')
+#chat
+  #roomNumber
+    #{gameId}
+  #connect
+    Chat failed to connect! Infinite Sadness :(
+  #loading
+    loading
+  #log
+    
+  #toolbar
+    ul#status
+      li
+        a#usersLink(href="#")
+      li
+        uptime:
+        span#uptime
+    input#entry(tabindex="1", type="text")
