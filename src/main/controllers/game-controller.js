@@ -9,6 +9,7 @@ module.exports = function(app) {
     games: {},
     get: function (req, res) {
       var gameId = req.params.gameId;
+      res.contentType('application/json');
       res.send(JSON.stringify(GameController.games[gameId]));
     },
     post: function (req, res) {
@@ -20,6 +21,6 @@ module.exports = function(app) {
     }
   };
   
-  app.post('/gameinfo/:gameId', GameController.post);
-  app.get('/gameinfo/:gameId', GameController.get);
+  app.post('/gamestate/:gameId', GameController.post);
+  app.get('/gamestate/:gameId', GameController.get);
 }
