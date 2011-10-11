@@ -7,7 +7,8 @@
 module.exports = function (app, client) {
     // Imports for the validation
     var check = require('validator').check,
-    sanitize = require('validator').sanitize,
+        sanitize = require('validator').sanitize,
+        sechash = require('sechash'),
     
     // Helper function to sanitize pre-DB layer user input
     sanitizeAuthentication = function (userInput) {
@@ -35,11 +36,12 @@ module.exports = function (app, client) {
     app.post('/', function(req, res) {
         var inputs = req.body,
             user = inputs.user,
-            pass = inputs.pass,
+            pass = sechash.basicHash('md5', inputs.pass),
             session = req.session;
         
         // Sanitize the user input before running through DB
         if (sanitizeAuthentication(user) || sanitizeAuthentication(pass)) {
+            console.log("I'M HERE AND SHOULDN'T BE!");
             req.loginBadFlash = "Errors found in username / password; try again...";
             res.render('index', {
                 layout : true,
@@ -47,7 +49,6 @@ module.exports = function (app, client) {
             });
         } else {
             // Perform database check for authentication
-            // TODO: TOTALLY SECURE. NO ONE COULD POSSIBLY ATTACK THIS WHATSOEVER. LIKE FORT KNOX UP IN THIS...
             client.query(
                 'select accountId, accountName from ' + client.ACCOUNTS_TABLE
                 + ' where accountName="' + user + '" and password="'
@@ -61,6 +62,7 @@ module.exports = function (app, client) {
                         session.userInfo = results[0];
                         session.is_logged_in = true;
                         res.redirect('/main');
+                        return;
                     } else { // Or, no match
                         req.loginBadFlash = "Username / Password combination not found...";
                     }
@@ -180,7 +182,9 @@ module.exports = function (app, client) {
                             layout : true
                         });
                     } else { // Otherwise, no errors, return to the login page with a success after adding to DB
-                        // First, add data to DB  
+                        // Begin be encrypting the user password
+                        pass1 = sechash.basicHash('md5', pass1);
+                        // Then, add data to DB  
                         client.query(
                             'insert into ' + client.ACCOUNTS_TABLE + " "
                             + "set accountName = '" + user + "', "
