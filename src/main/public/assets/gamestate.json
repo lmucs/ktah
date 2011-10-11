@@ -42,7 +42,7 @@
     "players": [
       {
         "id": "hodavidhara",
-        "class": "chemist",
+        "character": "chemist",
         "posX": 135,
         "posZ": -43,
         "state": "idle",        // Animation state: walking, running, attacking, etc
@@ -53,7 +53,7 @@
       },
       {
         "id": "blahlah",
-        "class": "architect",
+        "character": "architect",
         "posX": 138,
         "posZ": -50,
         "state": "walking",
