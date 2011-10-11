@@ -77,3 +77,14 @@
 .framePadding {
     padding: 10px;
 }
+
+#navbar {
+    text-align: center;
+    background-color: #D8D8D8;
+    border: 1px double black;
+}
+
+.navItem {
+    padding: 5px 10px 5px 10px;
+    display: inline-block;
+}
