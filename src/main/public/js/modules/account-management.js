@@ -27,8 +27,10 @@ module.exports = function (app, client) {
             });
         } else {
             res.render('index', {
-                layout : true 
+                layout : true,
+                loginFlash : req.session.loginFlash
             });
+            req.session.loginFlash = undefined;
         }
     });
     
@@ -50,8 +52,8 @@ module.exports = function (app, client) {
             // Perform database check for authentication
             client.query(
                 'select accountId, accountName from ' + client.ACCOUNTS_TABLE
-                + ' where accountName="' + user + '" and password="'
-                + pass + '"',
+                + ' where accountName=? and password=?',
+                [user, pass],
                 function (err, results, fields) {
                     // If there's an error, report it then reload the page
                     if (err) {
@@ -80,9 +82,7 @@ module.exports = function (app, client) {
     /***** LOGOUT ROUTER *****/
     app.post('/main', function(req, res) {
         req.session.is_logged_in = false;
-        res.render('index' , {
-            layout: true
-        });
+        res.redirect('/');
     });
     
     app.get('/main', function(req, res) {
@@ -92,7 +92,7 @@ module.exports = function (app, client) {
                 user: req.session.userInfo.accountName
             });
         } else {
-            res.redirect("home");
+            res.redirect("/");
         }
     });
         
@@ -128,7 +128,8 @@ module.exports = function (app, client) {
             // Perform database checking for duplicates
             client.query(
                 'SELECT accountName, email FROM ' + client.ACCOUNTS_TABLE + 
-                ' WHERE email="' + email + '" OR accountName="' + user + '"',
+                ' WHERE email=? OR accountName=?',
+                [email, user],
                 function (err, results, fields) {
                     // If there are errors for some reason record them
                     if (err) {
@@ -183,20 +184,19 @@ module.exports = function (app, client) {
                     } else { // Otherwise, no errors, return to the login page with a success after adding to DB
                         // Begin by encrypting the user password
                         pass1 = sechash.basicHash('md5', pass1);
-                        // Then, add data to DB  
+                        
+                        // Then, add data to DB
                         client.query(
-                            'insert into ' + client.ACCOUNTS_TABLE + " "
-                            + "set accountName = '" + user + "', "
-                            + "password = '" + pass1 + "', "
-                            + "email = '" + email + "'"
+                            "insert into " + client.ACCOUNTS_TABLE + " "
+                             + "set accountName = ?, "
+                             + "password = ?, "
+                             + "email = ?",
+                             [user, pass1, email]
                         );
                         
-                        req.loginFlash = 'Account created successfully for ' + req.body.user + '!';
+                        req.session.loginFlash = 'Account created successfully for ' + req.body.user + '!';
                         // Next, return to the login screen for them to head in to K'tah!
-                        res.render('index', {
-                            layout : true,
-                            loginFlash : req.loginFlash
-                        });
+                        res.redirect('/');
                     }
                 }
             );
