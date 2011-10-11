@@ -41,7 +41,6 @@ module.exports = function (app, client) {
         
         // Sanitize the user input before running through DB
         if (sanitizeAuthentication(user) || sanitizeAuthentication(pass)) {
-            console.log("I'M HERE AND SHOULDN'T BE!");
             req.loginBadFlash = "Errors found in username / password; try again...";
             res.render('index', {
                 layout : true,
@@ -182,7 +181,7 @@ module.exports = function (app, client) {
                             layout : true
                         });
                     } else { // Otherwise, no errors, return to the login page with a success after adding to DB
-                        // Begin be encrypting the user password
+                        // Begin by encrypting the user password
                         pass1 = sechash.basicHash('md5', pass1);
                         // Then, add data to DB  
                         client.query(
