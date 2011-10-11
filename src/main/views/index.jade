@@ -3,6 +3,8 @@
   h2 Login
   - if (typeof(loginFlash) != 'undefined')
     p#flashMessage.goodMessage= loginFlash
+  - if (typeof(loginBadFlash) != 'undefined')
+    p#flashMessage.badMessage= loginBadFlash
   form(method="POST", action="/")
     p Username
     input(type='text', name="user")
