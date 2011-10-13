@@ -39,7 +39,7 @@ $(function () {
         contentType: 'application/json'
       });
       // redirect to the correct url
-      window.location = '/game/' + gameId;
+      window.location = '/room/' + gameId;
     });
     
     $('#join').click(function () {
@@ -79,7 +79,7 @@ $(function () {
             });
             
             // redirect to game url
-            window.location = '/game/' + gameId;
+            window.location = '/room/' + gameId;
           } else {
             alert("game does not exist!");
           }

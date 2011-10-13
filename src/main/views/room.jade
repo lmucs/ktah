@@ -1,0 +1,9 @@
+#main
+  h1 Game Lobby: #{gameId}
+  #button-upper-right
+    form(method='POST', action='/room/#{gameId}')
+      input(type='submit', name="enter", value='Enter!')
+  #room-options
+    p Players and their class selection will go here
+  #game-room-chat
+    p Chat stuff will go here!

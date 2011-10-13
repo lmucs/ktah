@@ -90,8 +90,8 @@ app.get('/lobby', function(req, res) {
 //this is for testing chat:
 app.get('/chat/:room', function(req, res) {
   res.render('chat', {
-    layout : true
-    , gameId : req.params.room
+    layout : true, 
+    gameId : req.params.room
   });
 });
 
@@ -101,6 +101,17 @@ app.get('/game/:gameId', function(req, res) {
   res.render('game', {
     gameId : req.params.gameId
   });
+});
+
+app.get('/room/:gameId', function(req, res) {
+  res.render('room', {
+    layout : true,
+    gameId : req.params.gameId
+  });
+});
+
+app.post('/room/:gameId', function(req, res) {
+  res.redirect('/game/' + req.params.gameId);
 });
 
 // Test for ajax posting
