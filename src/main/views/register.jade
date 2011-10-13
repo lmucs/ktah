@@ -7,18 +7,19 @@
     p Choose a username
     - if (typeof(registerUserFlash) != 'undefined')
       p#flashMessage.badMessage= registerUserFlash
-    input(type='text', name='user')
+    input(type='text', id='user', name='user')
     p Enter a password
     - if (typeof(registerPassFlash) != 'undefined')
       p#flashMessage.badMessage= registerPassFlash
-    input(type='password', name='pass1')
+    input(type='password', id='pass1', name='pass1')
     p Re-enter your password... or else!
-    input(type='password', name='pass2')
+    input(type='password', id='pass2', name='pass2')
     p Enter your email address
     - if (typeof(registerEmailFlash) != 'undefined')
       p#flashMessage.badMessage= registerEmailFlash
-    input(type='text', name='email')
+    input(type='text', id='email', name='email')
     br
-    input(type='submit', name='register', value='Register')
+    input(type='submit', id='register', name='register')
 #register.loginFrame.registerFrame
   a(href='./') Back to Login
+script(type="text/javascript", src="../js/display/register-display.js")

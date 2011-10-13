@@ -7,10 +7,11 @@
     p#flashMessage.badMessage= loginBadFlash
   form(method="POST", action="/")
     p Username
-    input(type='text', name="user")
+    input(type="text", id="user", name="user")
     p Password
-    input(type='password', name="pass")
+    input(type="password", id="pass", name="pass")
     br
-    input(type='submit', name="login", value='Login')
+    input(type="submit", id="login", name="login")
 #register.loginFrame.registerFrame
   a(href='./register') Register
+script(type="text/javascript", src="../js/display/login-display.js")

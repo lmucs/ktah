@@ -76,7 +76,7 @@ require('./controllers/chat-controller.js')(app);
 /***** ROUTES *****/
 
 // Routes for account management
-require('./public/js/modules/account-management.js')(app, client);
+require('./controllers/account-controller.js')(app, client);
 
 
 // Routes for game initation
