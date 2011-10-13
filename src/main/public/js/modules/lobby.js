@@ -4,8 +4,11 @@ $(function () {
 // 
     // }
     
+    var userName = $('#userName').attr('data');
+    
     $('#create').click(function () {
-      var gameId = prompt("What would you like to call your game?", Math.random()*1000);
+      var gameId = prompt("What would you like to call your game?", "");
+      
       //TODO: create gamestate here
       var gamestate = JSON.stringify({
         environment: {
@@ -13,14 +16,15 @@ $(function () {
         },
         players: [
           {
-            name: "player1",
-            character: "chemist",
-            posX: 135,
-            posZ: -43,
-            theta: 90
+            name: userName,
+            character: "",
+            posX: 0,
+            posZ: 0,
+            theta: 0
           }
         ]
       });
+      
       // post the gamestate to the server
       $.ajax({
         type: 'POST',
@@ -43,8 +47,8 @@ $(function () {
       var gamestate = null;
       // TODO: actually need to create the player from session info and such
       var player = {
-        name: "player2",
-        character: "architect",
+        name: userName,
+        character: "",
         posX: 0,
         posZ: 0,
         theta: 0

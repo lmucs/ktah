@@ -82,7 +82,8 @@ require('./public/js/modules/account-management.js')(app, client);
 // Routes for game initation
 app.get('/lobby', function(req, res) {
   res.render('lobby', {
-    layout : true
+    layout : true,
+    userName: req.session.userInfo.accountName
   });
 });
 
