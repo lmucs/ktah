@@ -101,3 +101,36 @@
     padding: 5px;
     border: 2px solid black;
 }
+
+.room-player-list {
+    margin: 5px 10px 5px 10px;
+    background-color: #0C0874;
+    color: white;
+    border: 1px solid black;
+    padding: 5px;
+}
+
+.topMargin {
+    margin-top: 10px;
+}
+
+.topLeftMargin {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+#links {
+  width: 760px;
+  padding: 20px;
+  margin: 150px auto 0 auto;
+  border: 1px solid black;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  text-align: center;
+  margin: 0px auto 0 auto;
+  background-color: #D8D8D8;
+}
+
+.currentPlayer {
+    color: yellow;
+}

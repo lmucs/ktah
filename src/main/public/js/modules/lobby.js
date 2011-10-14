@@ -4,10 +4,26 @@ $(function () {
 // 
     // }
     
-    var userName = $('#userName').attr('data');
+    var userName = $('#userName').attr('data'),
+    
+        // Helper function to determine if player is present in lobby
+        checkForPlayer = function (player, gamestate) {
+            for (var i = 0; i < gamestate.players.length; i++) {
+                if (player.name === gamestate.players[i].name) {
+                    return true;
+                }
+            }
+            return false;
+        }
     
     $('#create').click(function () {
       var gameId = prompt("What would you like to call your game?", "");
+      
+      // User may have aborted game creation...
+      if (gameId === null) {
+        alert("You didn't enter a game name!");
+        return;
+      }
       
       //TODO: create gamestate here
       var gamestate = JSON.stringify({
@@ -17,7 +33,7 @@ $(function () {
         players: [
           {
             name: userName,
-            character: "",
+            character: "Choosing class...",
             posX: 0,
             posZ: 0,
             theta: 0
@@ -48,7 +64,7 @@ $(function () {
       // TODO: actually need to create the player from session info and such
       var player = {
         name: userName,
-        character: "",
+        character: "Choosing class...",
         posX: 0,
         posZ: 0,
         theta: 0
@@ -60,9 +76,18 @@ $(function () {
           gamestate = data;
           
           // if we got a gamestate
-          if(gamestate !== null) {
-            // add your player to the game.
-            gamestate.players.push(player);            
+          if (gamestate !== null) {
+            // Can't join if there are already 4 players
+            if (gamestate.players.length === 4) {
+                alert("Cannot join; game is full!");
+                return;
+            }  
+            
+            // Check that player is not there presently
+            if (!checkForPlayer(player, gamestate)) {
+                // add your player to the game.
+                gamestate.players.push(player);
+            }   
             
             // post the new gamestate to the server
             $.ajax({
@@ -81,7 +106,7 @@ $(function () {
             // redirect to game url
             window.location = '/room/' + gameId;
           } else {
-            alert("game does not exist!");
+            alert("Game does not exist!");
           }
         },
         error: function (jqXHR, textStatus, errorThrown) {

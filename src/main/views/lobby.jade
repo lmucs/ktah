@@ -1,9 +1,11 @@
 #main
   h1 K'tah!
   #chat
-    p chat stuff will go here!    
+    p Welcome back to K'tah, #{userName}
   #game-list
     p list of games will go here!
   input(type='button', id='create', value='Create a game')
   input(type='button', id='join', value='Join a game')
-  input(type='hidden', id='userName', data="#{userName}")
+  input(type='hidden', id='userName', data='#{userName}')
+#links.registerFrame.loginFrame
+  a(href="/main") Back to Main Menu

@@ -1,9 +1,14 @@
 #main
-  h1 Game Lobby: #{gameId}
   #button-upper-right
     form(method='POST', action='/room/#{gameId}')
       input(type='submit', name="enter", value='Enter!')
+  h1.topLeftMargin Game Lobby: #{gameId}
   #room-options
     p Players and their class selection will go here
   #game-room-chat
     p Chat stuff will go here!
+#links.registerFrame.loginFrame
+  a(href="/lobby") Back to Lobby
+input(type='hidden', id='userName', data="#{userName}")
+input(type='hidden', id='gameId', data="#{gameId}")
+script(type='text/javascript', src='../js/display/game-room-display.js')

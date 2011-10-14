@@ -106,7 +106,8 @@ app.get('/game/:gameId', function(req, res) {
 app.get('/room/:gameId', function(req, res) {
   res.render('room', {
     layout : true,
-    gameId : req.params.gameId
+    gameId : req.params.gameId,
+    userName : req.session.userInfo.accountName
   });
 });
 
