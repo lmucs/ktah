@@ -9,6 +9,7 @@ $(function () {
     var gameId = $("#gameId").attr("data"),
         userName = $("#userName").attr("data"),
         playerList = $("#room-options"),
+        checkinSecs = new Date().getUTCSeconds(),
         
         // function to grab the game state
         getGamestate = function () {
@@ -16,7 +17,10 @@ $(function () {
                 type: 'GET',
                 url: '/gamestate/' + gameId,
                 // TODO: Use this to remove people from lobbies
-                data: { player: userName },
+                data: {
+                    player : userName,
+                    secondStamp : checkinSecs
+                },
                 success: function (data) {
                     gamestate = data;
                     // Clear players in list

@@ -36,7 +36,8 @@ $(function () {
             character: "Choosing class...",
             posX: 0,
             posZ: 0,
-            theta: 0
+            theta: 0,
+            timeOut: 0
           }
         ]
       });
@@ -67,7 +68,8 @@ $(function () {
         character: "Choosing class...",
         posX: 0,
         posZ: 0,
-        theta: 0
+        theta: 0,
+        timeOut: 0
       };      
       $.ajax({
         type: 'GET',
