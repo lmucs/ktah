@@ -1,11 +1,16 @@
 #main
+  #button-upper-right
+    input(type='button', id='create', value='Create a game')
+    input(type='button', id='join', value='Join a game')
   h1 K'tah!
-  #chat
-    p Welcome back to K'tah, #{userName}
+  hr
   #game-list
     p list of games will go here!
-  input(type='button', id='create', value='Create a game')
-  input(type='button', id='join', value='Join a game')
-  input(type='hidden', id='userName', data='#{userName}')
+  #lobby-players
+    p Players in lobby...
+  #chat
+    p Welcome back to K'tah, #{userName}
+input(type='hidden', id='userName', data='#{userName}')
 #links.registerFrame.loginFrame
   a(href="/main") Back to Main Menu
+script(type='text/javascript', src='../js/modules/lobby.js')

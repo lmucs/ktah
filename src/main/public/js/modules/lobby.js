@@ -16,7 +16,49 @@ $(function () {
                 }
             }
             return false;
-        }
+        },
+        
+        // Recurring function to update game list
+        updateGames = function () {
+            $.ajax({
+                type: 'GET',
+                url: '/gamestate',
+                success: function (data) {
+                    var allGames = data,
+                        gameList = $("#game-list");
+                    
+                    // Clear the list currently shown
+                    gameList.html("");
+                    
+                    // If there are no games... sad time!
+                    if (allGames.length === 0) {
+                        gameList.append(
+                            '<p class="lobby-noGames">Sad time! No games available...</p>'
+                        );
+                    } else {
+                        // List a new element for each player in the room
+                        for (var i = 0; i < allGames.length; i++) {
+                            // Add the HTML to the list area
+                            if (allGames[i] !== null) { 
+                                gameList.append(
+                                    '<div class="lobby-game"><div class="lobby-playerCount">'
+                                    + allGames[i].playerCount + ' / 4</div><div class="lobby-gameName"><strong>Game: </strong>'
+                                    + allGames[i].name + '</div><div class="lobby-classPreview">Class preview will go here...'
+                                    + '</div></div>'
+                                );
+                            }
+                        }
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                  console.log(jqXHR);
+                  console.log(textStatus);
+                  console.log(errorThrown);
+                },
+                dataType: 'json',
+                contentType: 'application/json'
+            });
+        };
     
     $('#create').click(function () {
       var gameId = prompt("What would you like to call your game?", ""),
@@ -145,4 +187,11 @@ $(function () {
         contentType: 'application/json'
       });
     });
+    
+    // Call the game update once to start
+    updateGames();
+    
+    // Update the games every 10 seconds
+    window.setInterval(updateGames, 10000);
+    
 });
