@@ -78,13 +78,19 @@ require('./controllers/chat-controller.js')(app);
 // Routes for account management
 require('./controllers/account-controller.js')(app, client);
 
+// Routes for lobby rooms
+require('./controllers/room-controller.js')(app);
 
 // Routes for game initation
 app.get('/lobby', function(req, res) {
-  res.render('lobby', {
-    layout : true,
-    userName: req.session.userInfo.accountName
-  });
+  if (req.session.is_logged_in) {
+    res.render('lobby', {
+      layout : true,
+      userName: req.session.userInfo.accountName
+    });
+  } else {
+      res.redirect('/');
+  }
 });
 
 //this is for testing chat:
@@ -98,21 +104,13 @@ app.get('/chat/:room', function(req, res) {
 
 // Routes for gameplay
 app.get('/game/:gameId', function(req, res) {
-  res.render('game', {
-    gameId : req.params.gameId
-  });
-});
-
-app.get('/room/:gameId', function(req, res) {
-  res.render('room', {
-    layout : true,
-    gameId : req.params.gameId,
-    userName : req.session.userInfo.accountName
-  });
-});
-
-app.post('/room/:gameId', function(req, res) {
-  res.redirect('/game/' + req.params.gameId);
+  if (req.session.is_logged_in) {
+    res.render('game', {
+      gameId : req.params.gameId
+    });
+  } else {
+    res.redirect('/');
+  }
 });
 
 // Test for ajax posting
