@@ -42,6 +42,7 @@
 
 .lobby-gameName {
     float: left;
+    display: inline;
     margin-right: 150px;
 }
 
@@ -52,11 +53,21 @@
     margin-top: 100px;
 }
 
+.lobby-game-mouseOver {
+    box-shadow: 5px 5px 2px #888;
+}
+
+/* Used as a jquery selector */
+.game {
+    
+}
+
 #game-list {
   border: 2px solid red;
   padding: 5px;
   height: 300px;
   margin-bottom: 10px;
+  cursor: default;
 }
   
 #ktahCanvas {

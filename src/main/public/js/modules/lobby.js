@@ -18,6 +18,25 @@ $(function () {
             return false;
         },
         
+        // Helper method to bind join methods to the lobby list
+        buttonizeGameList = function () {
+            $(".lobby-game").each(function (index) {
+                // Set up hover effect for mouse overs
+                $(this).hover(
+                function () {
+                    $(this).addClass('lobby-game-mouseOver');
+                },
+                function () {
+                    $(this).removeClass('lobby-game-mouseOver');
+                })
+                
+                // Bind the ajax call to the click
+                .click(function () {
+                    joinGame($(this).children(":nth-child(2)").children(":last-child").html());
+                });
+            });
+        },
+        
         // Recurring function to update game list
         updateGames = function () {
             $.ajax({
@@ -42,12 +61,15 @@ $(function () {
                             if (allGames[i] !== null) { 
                                 gameList.append(
                                     '<div class="lobby-game"><div class="lobby-playerCount">'
-                                    + allGames[i].playerCount + ' / 4</div><div class="lobby-gameName"><strong>Game: </strong>'
-                                    + allGames[i].name + '</div><div class="lobby-classPreview">Class preview will go here...'
+                                    + allGames[i].playerCount + ' / 4</div><div class="lobby-gameName"><strong>Game: </strong><span class="game">'
+                                    + allGames[i].name + '</span></div><div class="lobby-classPreview">Class preview will go here...'
                                     + '</div></div>'
                                 );
                             }
                         }
+                        
+                        // Lastly, buttonize the games that were populated
+                        buttonizeGameList();
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -58,134 +80,148 @@ $(function () {
                 dataType: 'json',
                 contentType: 'application/json'
             });
+        },
+        
+        // Function to join a game
+        joinGame = function (gameName) {
+          if (!gameName) {
+            var gameId = prompt("What game would you like to join?", "");
+          } else {
+            gameId = gameName;
+          }
+          var gamestate = null;
+          // TODO: actually need to create the player from session info and such
+          var player = {
+            name: userName,
+            character: "Choosing class...",
+            posX: 0,
+            posZ: 0,
+            theta: 0,
+            timeOut: 0,
+            readyState: "notReady"
+          };      
+          $.ajax({
+            type: 'GET',
+            url: '/gamestate/' + gameId,
+            success: function (data) {
+              gamestate = data;
+              
+              // if we got a gamestate
+              if (gamestate) {
+                // Can't join if there are already 4 players
+                if (gamestate.players.length === 4) {
+                    alert("Cannot join; game is full!");
+                    return;
+                }  
+                
+                // Check that player is not there presently
+                if (!checkForPlayer(player, gamestate)) {
+                    // add your player to the game.
+                    gamestate.players.push(player);
+                }   
+                
+                // post the new gamestate to the server
+                $.ajax({
+                  type: 'POST',
+                  url: '/gamestate/' + gameId,
+                  data: JSON.stringify(gamestate),
+                  error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                  },
+                  dataType: 'json',
+                  contentType: 'application/json'
+                });
+                
+                // redirect to game url
+                window.location = '/room/' + gameId;
+              } else {
+                alert("Game does not exist!");
+              }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.log(jqXHR);
+              console.log(textStatus);
+              console.log(errorThrown);
+            },
+            dataType: 'json',
+            contentType: 'application/json'
+          });
+        },
+        
+        // Function to create a game
+        createGame = function () {
+          var gameId = prompt("What would you like to call your game?", ""),
+              gameExists = false;
+          
+          // User may have aborted game creation...
+          if (gameId === null) {
+            alert("You didn't enter a game name!");
+            return;
+          }
+          
+          // Check that the game name isn't already taken
+          $.ajax({
+            type: 'GET',
+            url: '/gamestate/' + gameId,
+            success: function (data) {
+                // If the game already exists, don't create it
+                if (!data) {
+                      //TODO: create gamestate here
+                      var gamestate = JSON.stringify({
+                        environment: {
+                          game: gameId
+                        },
+                        players: [
+                          {
+                            name: userName,
+                            character: "Choosing class...",
+                            posX: 0,
+                            posZ: 0,
+                            theta: 0,
+                            timeOut: 0,
+                            readyState: "notReady"
+                          }
+                        ]
+                      });
+                        
+                      // post the gamestate to the server
+                      $.ajax({
+                        type: 'POST',
+                        url: '/gamestate/' + gameId,
+                        data: gamestate,
+                        error: function (jqXHR, textStatus, errorThrown) {
+                          console.log(jqXHR);
+                          console.log(textStatus);
+                          console.log(errorThrown);
+                        },
+                        dataType: 'json',
+                        contentType: 'application/json'
+                      });
+                      // redirect to the correct url
+                      window.location = '/room/' + gameId;
+                    } else {
+                      alert("Game name already exists!");
+                      return;
+                    }
+                },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.log(jqXHR);
+              console.log(textStatus);
+              console.log(errorThrown);
+            },
+            dataType: 'json',
+            contentType: 'application/json'
+          });
         };
     
     $('#create').click(function () {
-      var gameId = prompt("What would you like to call your game?", ""),
-          gameExists = false;
-      
-      // User may have aborted game creation...
-      if (gameId === null) {
-        alert("You didn't enter a game name!");
-        return;
-      }
-      
-      // Check that the game name isn't already taken
-      $.ajax({
-        type: 'GET',
-        url: '/gamestate/' + gameId,
-        success: function (data) {
-            // If the game already exists, don't create it
-            if (!data) {
-                  //TODO: create gamestate here
-                  var gamestate = JSON.stringify({
-                    environment: {
-                      game: gameId
-                    },
-                    players: [
-                      {
-                        name: userName,
-                        character: "Choosing class...",
-                        posX: 0,
-                        posZ: 0,
-                        theta: 0,
-                        timeOut: 0,
-                        readyState: "notReady"
-                      }
-                    ]
-                  });
-                    
-                  // post the gamestate to the server
-                  $.ajax({
-                    type: 'POST',
-                    url: '/gamestate/' + gameId,
-                    data: gamestate,
-                    error: function (jqXHR, textStatus, errorThrown) {
-                      console.log(jqXHR);
-                      console.log(textStatus);
-                      console.log(errorThrown);
-                    },
-                    dataType: 'json',
-                    contentType: 'application/json'
-                  });
-                  // redirect to the correct url
-                  window.location = '/room/' + gameId;
-                } else {
-                  alert("Game name already exists!");
-                  return;
-                }
-            },
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.log(jqXHR);
-          console.log(textStatus);
-          console.log(errorThrown);
-        },
-        dataType: 'json',
-        contentType: 'application/json'
-      });
+        createGame();
     });
     
     $('#join').click(function () {
-      var gameId = prompt("What game would you like to join?", "");
-      var gamestate = null;
-      // TODO: actually need to create the player from session info and such
-      var player = {
-        name: userName,
-        character: "Choosing class...",
-        posX: 0,
-        posZ: 0,
-        theta: 0,
-        timeOut: 0,
-        readyState: "notReady"
-      };      
-      $.ajax({
-        type: 'GET',
-        url: '/gamestate/' + gameId,
-        success: function (data) {
-          gamestate = data;
-          
-          // if we got a gamestate
-          if (gamestate) {
-            // Can't join if there are already 4 players
-            if (gamestate.players.length === 4) {
-                alert("Cannot join; game is full!");
-                return;
-            }  
-            
-            // Check that player is not there presently
-            if (!checkForPlayer(player, gamestate)) {
-                // add your player to the game.
-                gamestate.players.push(player);
-            }   
-            
-            // post the new gamestate to the server
-            $.ajax({
-              type: 'POST',
-              url: '/gamestate/' + gameId,
-              data: JSON.stringify(gamestate),
-              error: function (jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-              },
-              dataType: 'json',
-              contentType: 'application/json'
-            });
-            
-            // redirect to game url
-            window.location = '/room/' + gameId;
-          } else {
-            alert("Game does not exist!");
-          }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.log(jqXHR);
-          console.log(textStatus);
-          console.log(errorThrown);
-        },
-        dataType: 'json',
-        contentType: 'application/json'
-      });
+        joinGame();
     });
     
     // Call the game update once to start
