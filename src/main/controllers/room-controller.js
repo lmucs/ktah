@@ -16,8 +16,4 @@ module.exports = function(app) {
             res.redirect('/');
         }
     });
-    
-    app.post('/room/:gameId', function(req, res) {
-        res.redirect('/game/' + req.params.gameId);
-    });
 }

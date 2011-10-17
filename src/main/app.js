@@ -71,15 +71,11 @@ if (process.env.KTAH_DB_USER && process.env.KTAH_DB_PASS) {
 
 require('./controllers/game-controller.js')(app);
 require('./controllers/chat-controller.js')(app);
+require('./controllers/account-controller.js')(app, client);
+require('./controllers/room-controller.js')(app);
 
 
 /***** ROUTES *****/
-
-// Routes for account management
-require('./controllers/account-controller.js')(app, client);
-
-// Routes for lobby rooms
-require('./controllers/room-controller.js')(app);
 
 // Routes for game initation
 app.get('/lobby', function(req, res) {

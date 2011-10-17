@@ -1,7 +1,6 @@
 #main
   #button-upper-right
-    form(method='POST', action='/room/#{gameId}')
-      input(type='submit', name="enter", value='Enter!')
+    input(type='submit', id='readyButton', name='enter', value='Ready!')
   h1.topLeftMargin Game Lobby: #{gameId}
   #room-options
     p Players and their class selection will go here

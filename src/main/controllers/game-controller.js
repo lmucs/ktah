@@ -9,19 +9,32 @@ module.exports = function(app) {
     games: {},
     get: function (req, res) {
       var gameId = req.params.gameId,
-          gamestate = GameController.games[gameId];                    
-      
-      // With each GET make sure the player has checked in their time
-      if (req.query) {
-          for (var i = 0; i < gamestate.players.length; i++) {
-              if (gamestate.players[i].name === req.query.player) {
-                  gamestate.players[i].timeOut = (new Date).getTime();
+          gamestate = GameController.games[gameId],
+          readyCount = 0;
+          
+      if (gamestate) {
+          // With each GET make sure the player has checked in their time
+          if (req.query) {
+              for (var i = 0; i < gamestate.players.length; i++) {
+                  if (gamestate.players[i].name === req.query.player) {
+                      gamestate.players[i].timeOut = (new Date).getTime();
+                      gamestate.players[i].readyState = req.query.ready;
+                  }
+                  if (gamestate.players[i].readyState === "ready") {
+                      readyCount = readyCount + 1;
+                  }
               }
           }
+          
+          if (readyCount === gamestate.players.length) {
+              res.send(JSON.stringify("ready!"));
+          } else {
+              res.contentType('application/json');
+              res.send(JSON.stringify(gamestate));
+          }
+      } else {
+          res.send(false);
       }
-      
-      res.contentType('application/json');
-      res.send(JSON.stringify(gamestate));
     },
     post: function (req, res) {
       var gameId = req.params.gameId,
@@ -44,7 +57,10 @@ module.exports = function(app) {
           GameController.games[game].players.splice(j, 1);
           // If there are no more players left in the game, delete it
           if (GameController.games[game].players.length === 0) {
-              delete GameController.games.game;
+              delete GameController.games[game];
+              console.log("[-] Deleted Game: " + game);
+              console.log(GameController.games);
+              break;
           }
         }
       }

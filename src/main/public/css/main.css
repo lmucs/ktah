@@ -110,6 +110,10 @@
     padding: 5px;
 }
 
+.room-player-ready {
+    background-color: green;
+}
+
 .topMargin {
     margin-top: 10px;
 }
