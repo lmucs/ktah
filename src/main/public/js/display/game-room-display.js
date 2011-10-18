@@ -1,8 +1,8 @@
 /**
- * login-display.js
+ * game-room-display.js
  * 
  * Script for dealing with display elements in the
- * login screen.
+ * game room screen.
  */
 
 $(function () {

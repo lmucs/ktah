@@ -6,6 +6,7 @@
 
 $(function () {
     
+    // Name of the user in the current session
     var userName = $('#userName').attr('data'),
     
         // Helper function to determine if player is present in lobby
@@ -84,13 +85,15 @@ $(function () {
         
         // Function to join a game
         joinGame = function (gameName) {
+          // If nothing was passed in, user used the join game button, so prompt
+          // them for a game name. Otherwise, use the game they chose from the game list.
           if (!gameName) {
             var gameId = prompt("What game would you like to join?", "");
           } else {
             gameId = gameName;
           }
           var gamestate = null;
-          // TODO: actually need to create the player from session info and such
+          // create the player to be added to the game state.
           var player = {
             name: userName,
             character: "Choosing class...",
@@ -100,6 +103,8 @@ $(function () {
             timeOut: 0,
             readyState: "notReady"
           };      
+          
+          // get the gamestate of the game they are attempting to join
           $.ajax({
             type: 'GET',
             url: '/gamestate/' + gameId,
@@ -120,7 +125,7 @@ $(function () {
                     gamestate.players.push(player);
                 }   
                 
-                // post the new gamestate to the server
+                // post the updated gamestate to the server
                 $.ajax({
                   type: 'POST',
                   url: '/gamestate/' + gameId,
@@ -134,7 +139,7 @@ $(function () {
                   contentType: 'application/json'
                 });
                 
-                // redirect to game url
+                // redirect to waiting room url
                 window.location = '/room/' + gameId;
               } else {
                 alert("Game does not exist!");
@@ -153,6 +158,7 @@ $(function () {
         // Function to create a game
         createGame = function () {
           var gameId = prompt("What would you like to call your game?", ""),
+              // TODO: are we using the gameExists variable?
               gameExists = false;
           
           // User may have aborted game creation...
@@ -174,6 +180,7 @@ $(function () {
                           game: gameId
                         },
                         players: [
+                          // automatically add in the game creators player object
                           {
                             name: userName,
                             character: "Choosing class...",
@@ -216,6 +223,7 @@ $(function () {
           });
         };
     
+    // BUTTON BINDINGS
     $('#create').click(function () {
         createGame();
     });
