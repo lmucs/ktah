@@ -83,8 +83,8 @@ module.exports = function(app) {
   app.post('/gamestate/:gameId', GameController.post);
   app.get('/gamestate/:gameId', GameController.get);
   
-  // Remove empty games and disconnected players every 12 seconds
-  setInterval(trimDisconnects, 12000);
+  // Remove empty games and disconnected players every 3 seconds
+  setInterval(trimDisconnects, 3000);
   
   // Handler for returning the list of games to the lobby
   app.get('/gamestate', function(req, res) {

@@ -227,7 +227,7 @@ $(function () {
     // Call the game update once to start
     updateGames();
     
-    // Update the games every 10 seconds
-    window.setInterval(updateGames, 10000);
+    // Update the games every 3 seconds
+    window.setInterval(updateGames, 3000);
     
 });

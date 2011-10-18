@@ -8,27 +8,7 @@ html
     script(type='text/javascript', src='../js/ktah.js')    
   body
     h1 K'TAH!
-    p you are in a game with id: #{gameId}
+    p(id=#{gameId}, data=#{gameId}) you are in a game with id: #{gameId}
+    input(type="hidden", id="userName", data=#{userName})
     canvas(id='ktahCanvas', width='960', height='480')
       p OH NOES YOU IDIOT GET A REAL BROWSER
-    #testbutton Click here!
-    script(type='text/javascript')
-      var gameUrl = '/game/' + #{gameId};
-      $('#testbutton').click(function () {
-        $.ajax({
-          type: 'POST',
-          url: gameUrl,
-          data: JSON.stringify({game: "number", test: 'something'}),
-          success: function (data) {
-            alert("got something!");
-            console.log(JSON.stringify(data));
-          },
-          error: function (jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR);
-            console.log(textStatus);
-            console.log(errorThrown);
-          },
-          dataType: 'json',
-          contentType: 'application/json'
-        });
-      });

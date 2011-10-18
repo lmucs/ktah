@@ -102,7 +102,8 @@ app.get('/chat/:room', function(req, res) {
 app.get('/game/:gameId', function(req, res) {
   if (req.session.is_logged_in) {
     res.render('game', {
-      gameId : req.params.gameId
+      gameId : req.params.gameId,
+      userName : req.session.userInfo.accountName
     });
   } else {
     res.redirect('/');

@@ -63,8 +63,8 @@ $(function () {
     // Pull the current gamestate on entrance
     getGamestate();
     
-    // Update the room every 5 seconds to reflect players leaving / staying
-    window.setInterval(getGamestate, 5000);
+    // Update the room every 2 seconds to reflect players leaving / staying
+    window.setInterval(getGamestate, 2000);
     
     // Set the ready state button
     $("#readyButton").click(function () {

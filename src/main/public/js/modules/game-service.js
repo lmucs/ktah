@@ -5,71 +5,68 @@
  * to the back end, as well as builds the gamestate
  * object
  * 
- * TODO: should this handle setting the timer that updates
- * the game state, or do we want to mix that in with the
- * graphics drawing timer?
  */
 
-$(function(){
-  var playerInfo = {
-    "id": "hodavidhara",
-    "class": "chemist",
-    "posX": 135,
-    "posZ": -43,
-    "state": "idle",
-    "health": "9001",
-    "experience": "20482",
-    "resources": [],
-    "status": "jetpack"
+var gameId = $("#gameId").attr("data"),
+    userName = $("#userName").attr("data"),
+
+    postGamestate = function (gamestate) {
+      $.ajax({
+        type: 'POST',
+        url: '/gamestate/' + gameId,
+        data: JSON.stringify(gamestate),
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR);
+          console.log(textStatus);
+          console.log(errorThrown);
+        },
+        dataType: 'json',
+        contentType: 'application/json'
+      });
+    },
+  
+    getGamestate = function () {
+      $.ajax({
+        type: 'GET',
+        url: '/gamestate/' + gameId,
+        data: {
+          player : userName
+        },
+        success: function (data) {
+          ktah.gamestate = data;
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR);
+          console.log(textStatus);
+          console.log(errorThrown);
+        },
+        dataType: 'json',
+        contentType: 'application/json'
+      });
+    };
+
+$(function () {
+  
+  /* REMOVED BECAUSE IT BREAKS THINGS
+  var playerNumber = 0,
+  
+      updateGamestate = function () {
+        getGamestate();
+      };
+      
+  // Call the update once to get the ball rolling
+  updateGamestate();
+  
+  alert(JSON.stringify(ktah.gamestate));
+  
+  for (var i = 0; i < ktah.gamestate.players.length; i++) {
+    if (ktah.gamestate.players[i].name === userName) {
+      playerNumber = i;
+    }
   }
   
-  var createGame = function () {
-    // TODO:
-    // 1. create the game state
-    // 2. add player info to players array
-    // 3. post gamestate to the server
-  };
-  
-  var joinGame = function () {
-    // TODO:
-    // 1. get gamestate from server
-    // 2. add player info to the players array
-    // 3. post gamestate to the server
-  }
-  
-  ktah.gamestate = {
-    
-  }
+  // Then, have the function keep updating frequently
+  window.setInterval(updateGamestate, 1000);
+  */
+ 
 });
-
-var postGamestate = function (gamestate){
-  $.ajax({
-    type: 'POST',
-    url: '/gameinfo/' + gameId,
-    data: JSON.stringify({game: "number", test: 'something'}),
-    error: function (jqXHR, textStatus, errorThrown) {
-      console.log(jqXHR);
-      console.log(textStatus);
-      console.log(errorThrown);
-    },
-    dataType: 'json',
-    contentType: 'application/json'
-  });
-};
-
-var getGamestate = function (gamestate){
-  $.ajax({
-    type: 'GET',
-    url: '/gameinfo/' + gameId,
-    success: function (data) {
-      console.log(JSON.stringify(data));
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-      console.log(jqXHR);
-      console.log(textStatus);
-      console.log(errorThrown);
-    },
-    dataType: 'json',
-    contentType: 'application/json'
-  });
-};
