@@ -114,7 +114,7 @@ $(function () {
               // if we got a gamestate
               if (gamestate) {
                 // Can't join if there are already 4 players
-                if (gamestate.players.length === 4) {
+                if (gamestate.players.length >= 4) {
                     alert("Cannot join; game is full!");
                     return;
                 }  
@@ -177,7 +177,8 @@ $(function () {
                       //TODO: create gamestate here
                       var gamestate = JSON.stringify({
                         environment: {
-                          game: gameId
+                          game: gameId,
+                          readyState : false
                         },
                         players: [
                           // automatically add in the game creators player object

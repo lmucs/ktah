@@ -23,7 +23,7 @@ $(function () {
                 success: function (data) {
                     // TODO: Is this the right way to redirect with all ready?
                     console.log(data);
-                    if (data === "ready!") {
+                    if (data.environment.readyState) {
                         window.location = '/game/' + gameId;
                     } else {
                         gamestate = data;

@@ -9,6 +9,7 @@ $(function() {
 
   var engine = startCopperLichtFromFile('ktahCanvas', '../../assets/copperlicht/copperlichtdata/zombieTest.ccbjs'),
   zombieSceneNode = null,
+  zombieArray = [],
   scene = null,
   key = null;
   
@@ -54,12 +55,24 @@ $(function() {
   var animator = new CL3D.AnimatorCameraFPS(cam, engine);
   cam.addAnimator(animator);
 
+  // TODO: These function declarations need to be listed with comma separation
+  
   // Called when loading the 3d scene has finished (from the coppercube file)
   engine.OnLoadingComplete = function() {
     scene = engine.getScene();
     if(scene) {
-      // Grab the zombieSceneNode scene node
-      zombieSceneNode = scene.getSceneNodeFromName('ghoul');
+      // TEMPORARY: Populate the zombieArray, one for each player
+      for (var i = 0; i < playerCount; i++) {
+        if (i === 0) {
+          // "Zombie 0" gets the original ghoul
+          zombieArray[0] = scene.getSceneNodeFromName('ghoul');
+        } else {
+          // All other zombies are cloned and added to scene
+          zombieArray[i] = zombieArray[0].createClone(scene);
+        }
+      }
+      // Grab the zombie that the player is controlling
+      zombieSceneNode = zombieArray[playerNumber];
     } else {
       return;
     }
@@ -177,6 +190,12 @@ $(function() {
     difZ = (difZ * (changeRate - 1) + newZ) / changeRate;
     camDistRatio = camSetDist / (Math.sqrt(Math.pow(difX, 2) + Math.pow(difZ, 2)));
   }
+  
+  // Updates the positions of other players
+  updateTeam = function() {
+    
+  }
+  
   // To move any node from position origin to position destination at walkspeed
   goFromTo = function(origin, destination) {
     var newVal = 0;
@@ -254,11 +273,14 @@ $(function() {
 
         }
         updatePos(zombieSceneNode, newX, newZ);
+        
+        // Update the position of the other zombies
 
+        // TODO: Should this be in the main loop?
         // Finally, update Camera for new positions
         camFollow(cam, zombieSceneNode);
       }
-
+      
     }
 
     setTimeout('mainLoop();', 20);

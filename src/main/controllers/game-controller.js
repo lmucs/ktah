@@ -32,11 +32,12 @@ module.exports = function(app) {
           }
           
           if (readyCount === gamestate.players.length) {
-              res.send(JSON.stringify("ready!"));
-          } else {
-              res.contentType('application/json');
-              res.send(JSON.stringify(gamestate));
+              gamestate.environment.readyState = true;
           }
+          
+          res.contentType('application/json');
+          res.send(JSON.stringify(gamestate));
+          
       } else {
           res.send(false);
       }
@@ -46,6 +47,7 @@ module.exports = function(app) {
           gamestate = req.body;
       GameController.games[gameId] = gamestate;
       console.log(GameController.games);
+      console.log(); // For visuals...
       res.send({"success": true});
     }
   },
@@ -68,6 +70,7 @@ module.exports = function(app) {
               delete GameController.games[game];
               console.log("[-] Deleted Game: " + game);
               console.log(GameController.games);
+              console.log(); // For visuals...
               break;
           }
         }

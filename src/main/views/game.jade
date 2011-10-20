@@ -8,7 +8,7 @@ html
     script(type='text/javascript', src='../js/ktah.js')    
   body
     h1 K'TAH!
-    p(id=#{gameId}, data=#{gameId}) you are in a game with id: #{gameId}
-    input(type="hidden", id="userName", data=#{userName})
+    p(id="gameId", data="#{gameId}") You are in a game with id: #{gameId}
+    input(type="hidden", id="userName", data="#{userName}")
     canvas(id='ktahCanvas', width='960', height='480')
       p OH NOES YOU IDIOT GET A REAL BROWSER

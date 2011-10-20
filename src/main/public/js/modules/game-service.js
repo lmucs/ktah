@@ -9,6 +9,8 @@
 
 var gameId = $("#gameId").attr("data"),
     userName = $("#userName").attr("data"),
+    playerNumber = 0,
+    playerCount = 0,
 
     postGamestate = function (gamestate) {
       $.ajax({
@@ -25,7 +27,7 @@ var gameId = $("#gameId").attr("data"),
       });
     },
   
-    getGamestate = function () {
+    getGamestate = function (ktahStorage) {
       $.ajax({
         type: 'GET',
         url: '/gamestate/' + gameId,
@@ -33,7 +35,7 @@ var gameId = $("#gameId").attr("data"),
           player : userName
         },
         success: function (data) {
-          ktah.gamestate = data;
+          processGamestate(data);
         },
         error: function (jqXHR, textStatus, errorThrown) {
           console.log(jqXHR);
@@ -43,30 +45,27 @@ var gameId = $("#gameId").attr("data"),
         dataType: 'json',
         contentType: 'application/json'
       });
+    },
+    
+    // Helper function for maintaining the value of the gamestate
+    processGamestate = function (data) {
+      ktah.gamestate = data;
+      
+      for (var i = 0; i < ktah.gamestate.players.length; i++) {
+        if (ktah.gamestate.players[i].name === userName) {
+          playerNumber = i;
+          playerCount++;
+        }
+      }
     };
 
 $(function () {
   
-  /* REMOVED BECAUSE IT BREAKS THINGS
-  var playerNumber = 0,
-  
-      updateGamestate = function () {
-        getGamestate();
-      };
-      
   // Call the update once to get the ball rolling
-  updateGamestate();
+  getGamestate();
   
-  alert(JSON.stringify(ktah.gamestate));
-  
-  for (var i = 0; i < ktah.gamestate.players.length; i++) {
-    if (ktah.gamestate.players[i].name === userName) {
-      playerNumber = i;
-    }
-  }
   
   // Then, have the function keep updating frequently
-  window.setInterval(updateGamestate, 1000);
-  */
+  window.setInterval(getGamestate, 1000);
  
 });
