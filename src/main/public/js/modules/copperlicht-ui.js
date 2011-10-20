@@ -90,7 +90,7 @@ $(function() {
     scene.setActiveCamera(cam);
     
     // Lastly, set the update function
-    window.setInterval(updateTeam, 500);
+    window.setInterval(updateTeam, 50);
   }
   // Default camera instructions
   camFollow = function(cam, target) {
@@ -212,13 +212,14 @@ $(function() {
       if (i === playerNumber) {
         currentPlayer.posX = zombieArray[i].Pos.X;
         currentPlayer.posZ = zombieArray[i].Pos.Z;
+        currentPlayer.theta = zombieArray[i].Rot.Y;
+        postGamestate(currentPlayer);
       } else {
         zombieArray[i].Pos.X = currentPlayer.posX;
         zombieArray[i].Pos.Z = currentPlayer.posZ;
+        zombieArray[i].Rot.Y = currentPlayer.theta;
       }
     }
-    
-    postGamestate();
   }
   
   // To move any node from position origin to position destination at walkspeed

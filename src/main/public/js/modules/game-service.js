@@ -12,11 +12,11 @@ var gameId = $("#gameId").attr("data"),
     playerNumber = 0,
     playerCount = 0,
 
-    postGamestate = function () {
+    postGamestate = function (playerUpdate) {
       $.ajax({
         type: 'POST',
-        url: '/gamestate/' + gameId,
-        data: JSON.stringify(ktah.gamestate),
+        url: '/gamestate/' + gameId + "/" + userName,
+        data: JSON.stringify(playerUpdate),
         error: function (jqXHR, textStatus, errorThrown) {
           console.log(jqXHR);
           console.log(textStatus);

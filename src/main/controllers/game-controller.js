@@ -46,8 +46,6 @@ module.exports = function(app) {
       var gameId = req.params.gameId,
           gamestate = req.body;
       GameController.games[gameId] = gamestate;
-      console.log(GameController.games);
-      console.log(); // For visuals...
       res.send({"success": true});
     }
   },
@@ -91,6 +89,18 @@ module.exports = function(app) {
   
   // Handler for returning the list of games to the lobby
   app.get('/gamestate', function(req, res) {
-      res.send(gameList);
+    res.send(gameList);
   });
+  
+  // Handler for updating a player's position in the gamestate
+  app.post('/gamestate/:gameId/:userName', function(req, res) {
+    var currentGame = GameController.games[req.params.gameId];
+    for (var i = 0; i < currentGame.players.length; i++) {
+      if (currentGame.players[i].name === req.params.userName) {
+        GameController.games[req.params.gameId].players[i] = req.body;
+      }
+    }
+    res.send({"success": true});
+  });
+  
 }
