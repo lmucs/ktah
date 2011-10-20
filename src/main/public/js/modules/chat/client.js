@@ -303,11 +303,11 @@ function longPoll (data) {
           break;
 
         case "join":
-          userJoin(message.nick, message.timestamp);
+          userJoin(message.nick, message.time);
           break;
 
         case "part":
-          userPart(message.nick, message.timestamp);
+          userPart(message.nick, message.time);
           break;
       }
         //test:
@@ -358,7 +358,7 @@ function send(msg) {
     jQuery.get("/chatsend", {body: msg, room: CONFIG.room, time: time}, function (data) { /*alert('got here');*/ }, "json");
     
     //add the message immediately to one's own console:
-    addMessage(CONFIG.nick, msg, time);
+    //addMessage(CONFIG.nick, msg, time);
     
   }
 }
