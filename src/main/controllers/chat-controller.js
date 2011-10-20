@@ -13,7 +13,7 @@ module.exports = function(app) {
   //time: the unix timestamp of the message
   //type: the type of message, either msg, join, or part
   //body: if type msg, the actual content of the message
-  var messages = [];
+  var messages = {};
     //test:
     messages[0] = [];
     messages[0].push({ nick: 654321, type: "msg", body: "This is the first message", time: 100 });
@@ -26,17 +26,17 @@ module.exports = function(app) {
   //The first dimension is indexed by room number (lobby or game no.)
   //The second dimension is indexed regularly and lists the id's of everyone
   //in that room
-  var occupants = [];
+  var occupants = {};
     //test:
     occupants[0] = [];
   
   //Holds the timeout objects so they can be accessed and cleared as
   //necessary. First dimension is room, and second is objects.
-  var timeouts = [];
+  var timeouts = {};
     //test:
     timeouts[0] = {};
     
-  var ajaxCallbacks = [];
+  var ajaxCallbacks = {};
     //test:
     ajaxCallbacks[0] = {};
   
@@ -48,8 +48,8 @@ module.exports = function(app) {
   {
     messages[roomNumber] = [];
     occupants[roomNumber] = [];
-    timeouts[roomNumber] = [];
-    ajaxCallbacks[roomNumber] = [];
+    timeouts[roomNumber] = {};
+    ajaxCallbacks[roomNumber] = {};
     //TODO:
     //Start time for room, etc.
   }
@@ -84,6 +84,10 @@ module.exports = function(app) {
     //add the new user to the list of occupants:
     occupants[room].push(id);
     console.log("New User Joining chat: " + nick + "(" + id + ")" + " in room " + room + " at timestamp " + time);
+    
+    //Notify other users:
+    send(nick, 'join', null, time, room);
+    
     //Sending the client their name and id for now, until a global solution is available:
     res.send(JSON.stringify({nick: nick, id: id}));
   });
@@ -104,6 +108,9 @@ module.exports = function(app) {
         break;
       }
     }
+    
+    //Notify other users:
+    send(nick, 'part', null, time, room);
   });
   
   app.get('/chatwho', function(req, res) {
@@ -113,7 +120,6 @@ module.exports = function(app) {
   });
   
   app.get('/chatrecv', function(req, res) {
-    //var id = req.query.id;
     var nick = req.session.userInfo.accountName;
     var id   = req.session.userInfo.accountId;
     var room = req.query.room;
@@ -138,48 +144,80 @@ module.exports = function(app) {
     {
       for (var i = 0; i < messages[room].length; i++)
       {
-        if ((messages[room][i].time > since) && (messages[room][i].nick !== nick))
+        //if ((messages[room][i].time > since) && (messages[room][i].nick !== nick))
                                                 //since one's own messages are printed automatically
         {
           messageResponse.push(messages[room][i]);
+            //test:
+            //console.log('building message response for ' + nick);
         }
       }
     }
     
     function sendMessageResponse()
     {
-      res.contentType('application/JSON');
+      //res.contentType('application/JSON');
+        //test:
+        //console.log("sending response for " + nick);
       res.send(JSON.stringify({messages: messageResponse}));
+      
     }
     
-    ajaxCallbacks[room][id] = function() {buildMessageResponse(); sendMessageResponse();};
+    //ajaxCallbacks[room][id] = function() {/*test*//*console.log("sending response for " + nick);*/ buildMessageResponse(); sendMessageResponse();};
+    ajaxCallbacks[room][id] = res;
   });
   
   app.get('/chatsend', function(req, res) {
-    //var id = req.query.id;
     var nick = req.session.userInfo.accountName;
     var id   = req.session.userInfo.accountId;
     var room = req.query.room;
     var body = req.query.body;
     var time = parseInt(req.query.time);
     
-    //Add the new message to message history, and shift off old ones if
-    //above capacity
-    messages[room].push({ nick: nick, type: 'msg', body: body, time: time });
-    console.log(nick + "(" + id + ")" + ' in room ' + room + ': ' + body);
+      //test:
+      //for (i in ajaxCallbacks[room])
+      //  console.log(ajaxCallbacks[room][i]);
+    send(nick, 'msg', body, time, room);
+    
+    //Add the new message to message history
+    //messages[room].push({ nick: nick, type: 'msg', body: body, time: time });
+    //console.log(nick + "(" + id + ")" + ' in room ' + room + ': ' + body);
     //console.log(id + ' in room ' + room + ': ' + body);
-    if (messages[room].length > MESSAGECAP)
-    {
-      messages[room].shift();
-    }
+    //if (messages[room].length > MESSAGECAP)
+    //{
+    //  messages[room].shift();
+    //}
+    
+    //fire all of the ajax callbacks to send the new message to everyone
+    //and clear the message history
+    //for (i in ajaxCallbacks[room])
+    //{
+    //  ajaxCallbacks[room][i]();
+    //}
+    //messages[room] = [];
+  });
+  
+  function send(nick, type, body, time, room)
+  {
+    
+    //messages[room].push({ nick: nick, type: type, body: body, time: time });
+      //test:
+      //console.log('pushing: ' + nick + ' ' + type + ' ' + body + ' ' + time);
     
     //fire all of the ajax callbacks to send the new message to everyone
     //and clear the message history
     for (i in ajaxCallbacks[room])
     {
-      ajaxCallbacks[room][i]();
+        //test:
+        //console.log('ajaxCallbacks[room].length: ' + ajaxCallbacks[room].length);
+        //console.log(nick + ' ' + ajaxCallbacks[room][i]);
+        //for (j in i)
+        //  console.log(nick + ' ' + i[j]);
+        
+      //ajaxCallbacks[room][i]();
+      ajaxCallbacks[room][i].send(JSON.stringify({messages: [{ nick: nick, type: type, body: body, time: time }]}));
     }
-    messages[room] = [];
-  });
+    //messages[room] = [];
+  }
 
 }
