@@ -61,6 +61,14 @@ $(function() {
   engine.OnLoadingComplete = function() {
     scene = engine.getScene();
     if(scene) {
+      // Setup player information
+      for (var i = 0; i < ktah.gamestate.players.length; i++) {
+        if (ktah.gamestate.players[i].name === userName) {
+          playerNumber = i;
+        }
+        playerCount++;
+      }
+      
       // TEMPORARY: Populate the zombieArray, one for each player
       for (var i = 0; i < playerCount; i++) {
         if (i === 0) {
@@ -68,7 +76,7 @@ $(function() {
           zombieArray[0] = scene.getSceneNodeFromName('ghoul');
         } else {
           // All other zombies are cloned and added to scene
-          zombieArray[i] = zombieArray[0].createClone(scene);
+          zombieArray[i] = zombieArray[0].createClone(scene.getRootSceneNode());
         }
       }
       // Grab the zombie that the player is controlling
@@ -80,6 +88,9 @@ $(function() {
     // Finish setting up by adding camera to scene
     scene.getRootSceneNode().addChild(cam);
     scene.setActiveCamera(cam);
+    
+    // Lastly, set the update function
+    window.setInterval(updateTeam, 500);
   }
   // Default camera instructions
   camFollow = function(cam, target) {
@@ -193,7 +204,21 @@ $(function() {
   
   // Updates the positions of other players
   updateTeam = function() {
+    getGamestate();
     
+    // Update player positions based on the gamestate
+    for (var i = 0; i < playerCount; i++) {
+      var currentPlayer = ktah.gamestate.players[i];
+      if (i === playerNumber) {
+        currentPlayer.posX = zombieArray[i].Pos.X;
+        currentPlayer.posZ = zombieArray[i].Pos.Z;
+      } else {
+        zombieArray[i].Pos.X = currentPlayer.posX;
+        zombieArray[i].Pos.Z = currentPlayer.posZ;
+      }
+    }
+    
+    postGamestate();
   }
   
   // To move any node from position origin to position destination at walkspeed
