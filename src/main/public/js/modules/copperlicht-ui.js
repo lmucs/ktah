@@ -7,7 +7,7 @@
 
 $(function() {
 
-  var engine = startCopperLichtFromFile('ktahCanvas', '../../assets/copperlicht/copperlichtdata/zombieTest.ccbjs'),
+  var engine = startCopperLichtFromFile('ktahCanvas', '../../assets/copperlicht/copperlichtdata/zombieTestRedux.ccbjs'),
   zombieSceneNode = null,
   zombieArray = [],
   scene = null,
@@ -78,6 +78,7 @@ $(function() {
           // All other zombies are cloned and added to scene
           zombieArray[i] = zombieArray[0].createClone(scene.getRootSceneNode());
         }
+        zombieArray[i].Pos.X += i * 15;
       }
       // Grab the zombie that the player is controlling
       zombieSceneNode = zombieArray[playerNumber];
@@ -213,6 +214,12 @@ $(function() {
         currentPlayer.posX = zombieArray[i].Pos.X;
         currentPlayer.posZ = zombieArray[i].Pos.Z;
         currentPlayer.theta = zombieArray[i].Rot.Y;
+        if (zombieArray[i].Pos.Y < -300) {
+          alert("You have fallen to a rocky death. Click OK to respawn.");
+          zombieArray[i].Pos.Y = 1.4;
+          zombieArray[i].Pos.X = 64.4;
+          zombieArray[i].Pos.Z = 118.4;
+        }
         postGamestate(currentPlayer);
       } else {
         zombieArray[i].Pos.X = currentPlayer.posX;
@@ -286,18 +293,26 @@ $(function() {
       if(newX != 0.0 || newZ != 0.0) {
         if (goalX == zombieSceneNode.Pos.X && goalZ == zombieSceneNode.Pos.Z) {
           dirAngle = Math.atan(difZ / difX);
-          // Classic X/Z movement system
-          zombieSceneNode.Pos.X += newX;
-          zombieSceneNode.Pos.Z += newZ;
         } else {
           dirAngle = Math.atan((goalZ - originalZ) / (goalX - originalX));
           if (goalX > zombieSceneNode.Pos.X) { dirAngle = Math.PI + dirAngle; }
           zombieSceneNode.Rot.Y = 270 - dirAngle * 180 / Math.PI; // dirAngle must be converted into 360
           // Classic X/Z movement system
-          zombieSceneNode.Pos.X -= walkSpeed * Math.sin(Math.PI/2 + dirAngle);
-          zombieSceneNode.Pos.Z += walkSpeed * Math.cos(Math.PI/2 + dirAngle);
-
+          newX -= walkSpeed * Math.sin(Math.PI/2 + dirAngle);
+          newZ += walkSpeed * Math.cos(Math.PI/2 + dirAngle);
         }
+        
+        zombieSceneNode.Pos.X += newX;
+        zombieSceneNode.Pos.Z += newZ;
+        
+        for (var i = 0; i < playerCount; i++) {
+          if (i !== playerNumber && zombieArray[playerNumber].Pos.getDistanceTo(zombieArray[i].Pos) < 4) {
+            // Classic X/Z movement system
+            zombieSceneNode.Pos.X -= newX;
+            zombieSceneNode.Pos.Z -= newZ;
+          }
+        }
+        
         updatePos(zombieSceneNode, newX, newZ);
         
         // Update the position of the other zombies
