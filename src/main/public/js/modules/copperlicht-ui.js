@@ -55,8 +55,6 @@ $(function() {
   var animator = new CL3D.AnimatorCameraFPS(cam, engine);
   cam.addAnimator(animator);
 
-  // TODO: These function declarations need to be listed with comma separation
-  
   // Called when loading the 3d scene has finished (from the coppercube file)
   engine.OnLoadingComplete = function() {
     scene = engine.getScene();
@@ -78,7 +76,7 @@ $(function() {
           // All other zombies are cloned and added to scene
           zombieArray[i] = zombieArray[0].createClone(scene.getRootSceneNode());
         }
-        zombieArray[i].Pos.X += i * 15;
+        zombieArray[i].Pos.Z += i * 15;
       }
       // Grab the zombie that the player is controlling
       zombieSceneNode = zombieArray[playerNumber];
@@ -93,38 +91,32 @@ $(function() {
     // Lastly, set the update function
     window.setInterval(updateTeam, 50);
   }
+  
   // Default camera instructions
-  camFollow = function(cam, target) {
+  var camFollow = function(cam, target) {
     if (isometricView) {
       isometricCam(cam, target);
     } else {
       shoulderCam(cam, target);
     }
-  }
+  },
+  
   // Over the shoulder camera
   shoulderCam = function(cam, target) {
     cam.Pos.X = target.Pos.X - difX * camDistRatio;
     cam.Pos.Y = target.Pos.Y + 20;
     cam.Pos.Z = target.Pos.Z - difZ * camDistRatio;
     animator.lookAt(new CL3D.Vect3d(zombieSceneNode.Pos.X, zombieSceneNode.Pos.Y + 10, zombieSceneNode.Pos.Z));
-  }
+  },
+  
   // Isometric camera
   isometricCam = function(cam, target) {
     cam.Pos.X = target.Pos.X + (camSetDist + zoomDist);
     cam.Pos.Y = target.Pos.Y + (camSetDist + 2*zoomDist  + 10);
     cam.Pos.Z = target.Pos.Z - (camSetDist + zoomDist);
     animator.lookAt(new CL3D.Vect3d(zombieSceneNode.Pos.X, zombieSceneNode.Pos.Y + 10, zombieSceneNode.Pos.Z));
-  }
-  // Pass keydown to keyStateChange
-  document.onkeydown = function(event) {
-    key = String.fromCharCode(event.keyCode);
-    keyStateChange(key, true);
-  }
-  // Pass keyup to keyStateChange
-  document.onkeyup = function(event) {
-    key = String.fromCharCode(event.keyCode);
-    keyStateChange(key, false);
-  }
+  },
+  
   // A more complicated key change state event. Uppercase and lowercase
   // letters both referenced due to keydown vs keypress differences
   keyStateChange = function(key, bool) {
@@ -160,24 +152,16 @@ $(function() {
       default:
         break;
     }
-  }
-  // Mouse Down register for Mouse Movement
-  engine.handleMouseDown = function (event) { 
-    mouseIsDown = true;
-    mouseClicked = true;
-    mouseClickedTimer = 0;
-  }
-  // Mouse Up register for Mouse Movement
-  engine.handleMouseUp = function (event) {
-    mouseIsDown = false;
-  }
+  },
+  
   whileMouseDown = function() {
-    var changeX = 2*((engine.getMouseDownX() - engWidth/2) / (engWidth/2));
-    var changeY = -2*((engine.getMouseDownY() - engHeight/2) / (engHeight/2));
-    var changeHyp = Math.sqrt(Math.pow(changeX,2) + Math.pow(changeY,2));
-    var theta = Math.atan(changeY / changeX);
-    var rotatedX = changeHyp * Math.sin(theta + Math.PI*5/4);
-    var rotatedY = changeHyp * Math.cos(theta + Math.PI*5/4);
+    var changeX = 2*((engine.getMouseDownX() - engWidth/2) / (engWidth/2)),
+        changeY = -2*((engine.getMouseDownY() - engHeight/2) / (engHeight/2)),
+        changeHyp = Math.sqrt(Math.pow(changeX,2) + Math.pow(changeY,2)),
+        theta = Math.atan(changeY / changeX),
+        rotatedX = changeHyp * Math.sin(theta + Math.PI*5/4),
+        rotatedY = changeHyp * Math.cos(theta + Math.PI*5/4);
+        
     if (changeX > 0) { rotatedX = -1*rotatedX; }
     if (changeX > 0) { rotatedY = -1*rotatedY; }
     goalX = zombieSceneNode.Pos.X + rotatedY * mouseToDist;
@@ -185,23 +169,14 @@ $(function() {
     originalX = zombieSceneNode.Pos.X;
     originalZ = zombieSceneNode.Pos.Z;
     console.log(theta);
-  }
-  // Mouse wheel for zooming
-  // see http://plugins.jquery.com/project/mousewheel for more info
-  // and http://plugins.jquery.com/plugin-tags/mousewheel
-  // using the event helper from http://brandonaaron.net/code/mousewheel/docs
-  $(document).mousewheel(function(event, delta) {
-    if (zoomDist + zoomSpeed * delta <= zoomDistMax && zoomDist + zoomSpeed * delta >= zoomDistMin) {
-      zoomDist += zoomSpeed * delta;
-      camFollow(cam, zombieSceneNode);
-    }
-  });
+  },
+  
   updatePos = function(zombieSceneNode, newX, newZ) {
     changeRate = 20;
     difX = (difX * (changeRate - 1) + newX) / changeRate;
     difZ = (difZ * (changeRate - 1) + newZ) / changeRate;
     camDistRatio = camSetDist / (Math.sqrt(Math.pow(difX, 2) + Math.pow(difZ, 2)));
-  }
+  },
   
   // Updates the positions of other players
   updateTeam = function() {
@@ -209,7 +184,21 @@ $(function() {
     
     // Update player positions based on the gamestate
     for (var i = 0; i < playerCount; i++) {
-      var currentPlayer = ktah.gamestate.players[i];
+      var currentPlayer = ktah.gamestate.players[i],
+          animationSetter = "";
+      
+      // Set zombie animation
+      if (currentPlayer.posX !== zombieArray[i].Pos.X || currentPlayer.posZ !== zombieArray[i].Pos.Z) {
+        animationSetter = "walk";
+      } else {
+        animationSetter = "look";
+      }
+      
+      if (zombieArray[i].currentAnimation !== animationSetter) {
+        zombieArray[i].currentAnimation = animationSetter;
+        zombieArray[i].setAnimation(animationSetter);
+      }
+      
       if (i === playerNumber) {
         currentPlayer.posX = zombieArray[i].Pos.X;
         currentPlayer.posZ = zombieArray[i].Pos.Z;
@@ -227,7 +216,7 @@ $(function() {
         zombieArray[i].Rot.Y = currentPlayer.theta;
       }
     }
-  }
+  },
   
   // To move any node from position origin to position destination at walkspeed
   goFromTo = function(origin, destination) {
@@ -243,7 +232,8 @@ $(function() {
       }
     }
     return newVal;
-  }
+  },
+  
   mainLoop = function() {
     if(zombieSceneNode) {
 
@@ -324,8 +314,42 @@ $(function() {
       
     }
 
-    setTimeout('mainLoop();', 20);
-  }
-  mainLoop()
+    setTimeout(mainLoop, 20);
+  };
+  
+  // Pass keydown to keyStateChange
+  document.onkeydown = function(event) {
+    key = String.fromCharCode(event.keyCode);
+    keyStateChange(key, true);
+  };
+  // Pass keyup to keyStateChange
+  document.onkeyup = function(event) {
+    key = String.fromCharCode(event.keyCode);
+    keyStateChange(key, false);
+  };
+  
+  // Mouse Down register for Mouse Movement
+  engine.handleMouseDown = function (event) { 
+    mouseIsDown = true;
+    mouseClicked = true;
+    mouseClickedTimer = 0;
+  };
+  // Mouse Up register for Mouse Movement
+  engine.handleMouseUp = function (event) {
+    mouseIsDown = false;
+  };
+  
+  // Mouse wheel for zooming
+  // see http://plugins.jquery.com/project/mousewheel for more info
+  // and http://plugins.jquery.com/plugin-tags/mousewheel
+  // using the event helper from http://brandonaaron.net/code/mousewheel/docs
+  $(document).mousewheel(function(event, delta) {
+    if (zoomDist + zoomSpeed * delta <= zoomDistMax && zoomDist + zoomSpeed * delta >= zoomDistMin) {
+      zoomDist += zoomSpeed * delta;
+      camFollow(cam, zombieSceneNode);
+    }
+  });
+  
+  mainLoop();
   
 });
