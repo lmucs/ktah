@@ -97,6 +97,7 @@ $(function () {
           var player = {
             name: userName,
             character: "Choosing class...",
+            health: 100,
             posX: 0,
             posZ: 0,
             theta: 0,
@@ -185,6 +186,7 @@ $(function () {
                           {
                             name: userName,
                             character: "Choosing class...",
+                            health : 100,
                             posX: 0,
                             posZ: 0,
                             theta: 0,

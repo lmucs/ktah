@@ -54,6 +54,13 @@ $(function() {
   var cam = new CL3D.CameraSceneNode();
   var animator = new CL3D.AnimatorCameraFPS(cam, engine);
   cam.addAnimator(animator);
+  
+  // Gameplay mechanics
+  var zombieAttack = false,
+      gameId = $("#gameId").attr("data"),
+      userName = $("#userName").attr("data"),
+      playerNumber = 0,
+      playerCount = 0;
 
   // Called when loading the 3d scene has finished (from the coppercube file)
   engine.OnLoadingComplete = function() {
@@ -69,6 +76,7 @@ $(function() {
       
       // TEMPORARY: Populate the zombieArray, one for each player
       for (var i = 0; i < playerCount; i++) {
+        var currentPlayer = ktah.gamestate.players[i];
         if (i === 0) {
           // "Zombie 0" gets the original ghoul
           zombieArray[0] = scene.getSceneNodeFromName('ghoul');
@@ -77,6 +85,15 @@ $(function() {
           zombieArray[i] = zombieArray[0].createClone(scene.getRootSceneNode());
         }
         zombieArray[i].Pos.Z += i * 15;
+        
+        // Setup health display
+        $("#health-display").append(
+          "<div id='" + currentPlayer.name + "-stats' class='player-stats'><div>" + currentPlayer.name + "</div>"
+          + "<div id='" + currentPlayer.name + "-health-num-box' class='player-health-num-box'>"
+          + "<div id='" + currentPlayer.name + "-health-bar' class='player-health-bar'>&nbsp</div>"
+          + "<span class='player-healthNum'>" + currentPlayer.health + " / 100</span>"
+          + "</div></div>"
+        );
       }
       // Grab the zombie that the player is controlling
       zombieSceneNode = zombieArray[playerNumber];
@@ -178,44 +195,98 @@ $(function() {
     camDistRatio = camSetDist / (Math.sqrt(Math.pow(difX, 2) + Math.pow(difZ, 2)));
   },
   
+  // Helper function for maintaining the value of the gamestate
+  processGamestate = function (data) {
+    ktah.gamestate = data;
+  },
+  
   // Updates the positions of other players
   updateTeam = function() {
-    getGamestate();
-    
-    // Update player positions based on the gamestate
-    for (var i = 0; i < playerCount; i++) {
-      var currentPlayer = ktah.gamestate.players[i],
-          animationSetter = "";
-      
-      // Set zombie animation
-      if (currentPlayer.posX !== zombieArray[i].Pos.X || currentPlayer.posZ !== zombieArray[i].Pos.Z) {
-        animationSetter = "walk";
-      } else {
-        animationSetter = "look";
-      }
-      
-      if (zombieArray[i].currentAnimation !== animationSetter) {
-        zombieArray[i].currentAnimation = animationSetter;
-        zombieArray[i].setAnimation(animationSetter);
-      }
-      
-      if (i === playerNumber) {
-        currentPlayer.posX = zombieArray[i].Pos.X;
-        currentPlayer.posZ = zombieArray[i].Pos.Z;
-        currentPlayer.theta = zombieArray[i].Rot.Y;
-        if (zombieArray[i].Pos.Y < -300) {
-          alert("You have fallen to a rocky death. Click OK to respawn.");
-          zombieArray[i].Pos.Y = 1.4;
-          zombieArray[i].Pos.X = 64.4;
-          zombieArray[i].Pos.Z = 118.4;
+    // First, grab the gamestate
+    $.ajax({
+      type: 'GET',
+      url: '/gamestate/' + gameId,
+      data: {
+        player : userName
+      },
+      success: function (data) {
+        processGamestate(data);
+        
+        // Update player positions based on the gamestate
+        for (var i = 0; i < playerCount; i++) {
+          var currentPlayer = ktah.gamestate.players[i],
+              animationSetter = "";
+              
+          // Update health bars
+          $("#" + currentPlayer.name + "-health-num-box").children(":nth-child(2)")
+            .text(currentPlayer.health + " / 100");
+            
+          $("#" + currentPlayer.name + "-health-bar")
+            .css("width", (currentPlayer.health / 100) * 148 + "px");
+          
+          // Set zombie animation
+          if (currentPlayer.posX !== zombieArray[i].Pos.X || currentPlayer.posZ !== zombieArray[i].Pos.Z) {
+            animationSetter = "walk";
+          } else {
+            animationSetter = "look";
+          }
+          if (zombieArray[i].currentAnimation !== animationSetter) {
+            zombieArray[i].currentAnimation = animationSetter;
+            zombieArray[i].setAnimation(animationSetter);
+          }
+          
+          if (i === playerNumber) {
+            currentPlayer.posX = zombieArray[i].Pos.X;
+            currentPlayer.posZ = zombieArray[i].Pos.Z;
+            currentPlayer.theta = zombieArray[i].Rot.Y;
+            
+            if (zombieArray[i].Pos.Y < -300) {
+              currentPlayer.health = currentPlayer.health - 25;
+              zombieArray[i].Pos.Y = 1.4;
+              zombieArray[i].Pos.X = 64.4;
+              zombieArray[i].Pos.Z = 118.4;
+            }
+            
+            // Temp segment for testing player health
+            if (zombieAttack) {
+              zombieAttack = false;
+              currentPlayer.health = currentPlayer.health - 1;
+            }
+            
+            if (currentPlayer.health <= 0) {
+              alert("You have fallen to the horde. Click OK to respawn.");
+              zombieArray[i].Pos.Y = 1.4;
+              zombieArray[i].Pos.X = 64.4;
+              zombieArray[i].Pos.Z = 118.4;
+              currentPlayer.health = 100;
+            }
+            $.ajax({
+              type: 'POST',
+              url: '/gamestate/' + gameId + "/" + userName,
+              data: JSON.stringify(currentPlayer),
+              error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+              },
+              dataType: 'json',
+              contentType: 'application/json'
+            });
+          } else {
+            zombieArray[i].Pos.X = currentPlayer.posX;
+            zombieArray[i].Pos.Z = currentPlayer.posZ;
+            zombieArray[i].Rot.Y = currentPlayer.theta;
+          }
         }
-        postGamestate(currentPlayer);
-      } else {
-        zombieArray[i].Pos.X = currentPlayer.posX;
-        zombieArray[i].Pos.Z = currentPlayer.posZ;
-        zombieArray[i].Rot.Y = currentPlayer.theta;
-      }
-    }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+      },
+      dataType: 'json',
+      contentType: 'application/json'
+    });
   },
   
   // To move any node from position origin to position destination at walkspeed
@@ -300,6 +371,7 @@ $(function() {
             // Classic X/Z movement system
             zombieSceneNode.Pos.X -= newX;
             zombieSceneNode.Pos.Z -= newZ;
+            zombieAttack = true;
           }
         }
         
@@ -349,7 +421,10 @@ $(function() {
       camFollow(cam, zombieSceneNode);
     }
   });
-  
+
+  // Call primary recurring functions once to get the ball running
+  updateTeam();
   mainLoop();
+  
   
 });

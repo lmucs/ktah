@@ -19,7 +19,6 @@ include.includeInit([
   '/js/lib/jquery.mousewheel.min.js',
   
   /***** MODULES *****/
-  '/js/modules/game-service.js',
   '/js/modules/copperlicht-ui.js',
   
   /***** TYPES *****/

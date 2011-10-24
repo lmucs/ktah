@@ -56,15 +56,16 @@ module.exports = function(app) {
     var i = 0;
     gameList = [];
     for (var game in GameController.games) {
-      for (var j = 0; j < GameController.games[game].players.length; j++) {
+      var gamePlayers = GameController.games[game].players;
+      for (var j = 0; j < gamePlayers.length; j++) {
         // If the difference between the server time and the player's last
         // checkin is greater than 10.5 seconds (a little more than 2 ajax calls)
         // then chuck them, as they've left the game
-        if ((GameController.games[game].players[j].timeOut) 
-         && (Math.abs(GameController.games[game].players[j].timeOut - (new Date).getTime()) > 10500)) {
-          GameController.games[game].players.splice(j, 1);
+        if ((gamePlayers[j].timeOut) 
+         && (Math.abs(gamePlayers[j].timeOut - (new Date).getTime()) > 10500)) {
+          gamePlayers.splice(j, 1);
           // If there are no more players left in the game, delete it
-          if (GameController.games[game].players.length === 0) {
+          if (gamePlayers.length === 0) {
               delete GameController.games[game];
               console.log("[-] Deleted Game: " + game);
               console.log(GameController.games);

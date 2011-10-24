@@ -76,6 +76,36 @@
   margin: 0 auto;
 }
 
+#health-display {
+    width: 940px;
+    height: 40px;
+    margin: 0 auto;
+    padding: 10px;
+    border: 1px solid black;
+}
+
+.player-stats {
+    display: inline-block;
+    width: 150px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.player-health-num-box {
+    border: 1px solid black;
+}
+
+.player-healthNum {
+    margin-left: 10px;
+}
+
+.player-health-bar {
+    background-color: green;
+    position: absolute;
+    z-index: -1;
+    display: inline;
+}
+
 #testbutton {
   display: inline;
   border: 1px solid black;
