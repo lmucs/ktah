@@ -97,8 +97,17 @@ module.exports = function(app) {
   app.post('/gamestate/:gameId/:userName', function(req, res) {
     var currentGame = GameController.games[req.params.gameId];
     for (var i = 0; i < currentGame.players.length; i++) {
-      if (currentGame.players[i].name === req.params.userName) {
+      var currentPlayer = currentGame.players[i];
+      if (currentPlayer.name === req.params.userName) {
         GameController.games[req.params.gameId].players[i] = req.body;
+        if (currentPlayer.attacking !== -1) {
+          currentGame.players[currentPlayer.attacking].health -= 3;
+        }
+      }
+      
+      // TODO: Synchronization issues with player push and server status
+      if (currentPlayer.health <= 0) {
+        GameController.games[req.params.gameId].players[i].health = 100;
       }
     }
     res.send({"success": true});

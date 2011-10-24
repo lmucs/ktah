@@ -21,7 +21,7 @@ $(function() {
   // Camera positioning values
   camSetDist = 10, camDistRatio = 1.0,
 
-  // Last direction travelled
+  // Last direction traveled
   difX = -1.0, difZ = 0.0, dirAngle = 0.0,
 
   // Mouse Controls values
@@ -48,7 +48,7 @@ $(function() {
   mouseClickedTimer = 0,
 
   // Variables for keyboard controls
-  wKey = aKey = sKey = dKey = false, upKey = leftKey = downKey = rightKey = false;
+  wKey = aKey = sKey = dKey = upKey = leftKey = downKey = rightKey = resetKey = jumpKey = false;
 
   // Universal Camera Setup
   var cam = new CL3D.CameraSceneNode();
@@ -56,7 +56,7 @@ $(function() {
   cam.addAnimator(animator);
   
   // Gameplay mechanics
-  var zombieAttack = false,
+  var zombieBeingAttacked = -1,
       gameId = $("#gameId").attr("data"),
       userName = $("#userName").attr("data"),
       playerNumber = 0,
@@ -166,6 +166,14 @@ $(function() {
         // right arrow
         dKey = bool;
         break;
+      case '0':
+        // reset key is zero
+    	resetKey = bool;
+    	break;
+    	case ' ':
+    	  // "Jump forward is space"
+    	jumpKey = bool;
+    	break;
       default:
         break;
     }
@@ -185,7 +193,6 @@ $(function() {
     goalZ = zombieSceneNode.Pos.Z + rotatedX * mouseToDist;
     originalX = zombieSceneNode.Pos.X;
     originalZ = zombieSceneNode.Pos.Z;
-    console.log(theta);
   },
   
   updatePos = function(zombieSceneNode, newX, newZ) {
@@ -238,28 +245,24 @@ $(function() {
           if (i === playerNumber) {
             currentPlayer.posX = zombieArray[i].Pos.X;
             currentPlayer.posZ = zombieArray[i].Pos.Z;
+            currentPlayer.posY = zombieArray[i].Pos.Y;
             currentPlayer.theta = zombieArray[i].Rot.Y;
             
-            if (zombieArray[i].Pos.Y < -300) {
+            if (zombieArray[i].Pos.Y < -300 || resetKey) {
               currentPlayer.health = currentPlayer.health - 25;
-              zombieArray[i].Pos.Y = 1.4;
-              zombieArray[i].Pos.X = 64.4;
-              zombieArray[i].Pos.Z = 118.4;
+              resetZombiePosition(i);
+              resetGoal(i);
+              camFollow(cam, zombieArray[i]);
             }
             
-            // Temp segment for testing player health
-            if (zombieAttack) {
-              zombieAttack = false;
-              currentPlayer.health = currentPlayer.health - 1;
+            if (jumpKey) {
+              resetGoal(i);
+              zombieJump(i);
+              camFollow(cam, zombieArray[i]);
             }
             
-            if (currentPlayer.health <= 0) {
-              alert("You have fallen to the horde. Click OK to respawn.");
-              zombieArray[i].Pos.Y = 1.4;
-              zombieArray[i].Pos.X = 64.4;
-              zombieArray[i].Pos.Z = 118.4;
-              currentPlayer.health = 100;
-            }
+            currentPlayer.attacking = zombieBeingAttacked;
+            
             $.ajax({
               type: 'POST',
               url: '/gamestate/' + gameId + "/" + userName,
@@ -275,6 +278,7 @@ $(function() {
           } else {
             zombieArray[i].Pos.X = currentPlayer.posX;
             zombieArray[i].Pos.Z = currentPlayer.posZ;
+            zombieArray[i].Pos.Y = currentPlayer.posY;
             zombieArray[i].Rot.Y = currentPlayer.theta;
           }
         }
@@ -303,6 +307,22 @@ $(function() {
       }
     }
     return newVal;
+  },
+  
+  resetZombiePosition = function(i){
+      zombieArray[i].Pos.Y = 1.4;
+      zombieArray[i].Pos.X = 64.4;
+      zombieArray[i].Pos.Z = 118.4;
+  },
+  
+  zombieJump = function (i) {
+    zombieArray[i].Pos.X += 10;
+    zombieArray[i].Pos.Z += 10;
+  },
+  
+  resetGoal = function(i) {
+      goalX = zombieArray[i].Pos.X;
+      goalZ = zombieArray[i].Pos.Z;
   },
   
   mainLoop = function() {
@@ -366,12 +386,17 @@ $(function() {
         zombieSceneNode.Pos.X += newX;
         zombieSceneNode.Pos.Z += newZ;
         
+        zombieBeingAttacked = -1;
+        
         for (var i = 0; i < playerCount; i++) {
           if (i !== playerNumber && zombieArray[playerNumber].Pos.getDistanceTo(zombieArray[i].Pos) < 4) {
             // Classic X/Z movement system
             zombieSceneNode.Pos.X -= newX;
             zombieSceneNode.Pos.Z -= newZ;
-            zombieAttack = true;
+            zombieBeingAttacked = i;
+            if (zombieSceneNode.getAnimators()[0] !== "attack") {
+              zombieSceneNode.setAnimation("attack");
+            }
           }
         }
         
@@ -425,6 +450,5 @@ $(function() {
   // Call primary recurring functions once to get the ball running
   updateTeam();
   mainLoop();
-  
   
 });

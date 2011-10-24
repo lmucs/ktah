@@ -98,8 +98,10 @@ $(function () {
             name: userName,
             character: "Choosing class...",
             health: 100,
+            attacking: -1,
             posX: 0,
             posZ: 0,
+            posY: 0,
             theta: 0,
             timeOut: 0,
             readyState: "notReady"
@@ -187,8 +189,10 @@ $(function () {
                             name: userName,
                             character: "Choosing class...",
                             health : 100,
+                            attacking: -1,
                             posX: 0,
                             posZ: 0,
+                            posY: 0,
                             theta: 0,
                             timeOut: 0,
                             readyState: "notReady"
