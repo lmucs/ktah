@@ -21,7 +21,7 @@ $(function() {
   // Camera positioning values
   camSetDist = 10, camDistRatio = 1.0,
 
-  // Last direction travelled
+  // Last direction traveled
   difX = -1.0, difZ = 0.0, dirAngle = 0.0,
 
   // Mouse Controls values
@@ -48,7 +48,7 @@ $(function() {
   mouseClickedTimer = 0,
 
   // Variables for keyboard controls
-  wKey = aKey = sKey = dKey = false, upKey = leftKey = downKey = rightKey = false;
+  wKey = aKey = sKey = dKey = upKey = leftKey = downKey = rightKey = resetKey = false;
 
   // Universal Camera Setup
   var cam = new CL3D.CameraSceneNode();
@@ -149,6 +149,10 @@ $(function() {
         // right arrow
         dKey = bool;
         break;
+      case '0':
+        // reset key is zero
+    	resetKey = bool;
+    	break;
       default:
         break;
     }
@@ -203,11 +207,13 @@ $(function() {
         currentPlayer.posX = zombieArray[i].Pos.X;
         currentPlayer.posZ = zombieArray[i].Pos.Z;
         currentPlayer.theta = zombieArray[i].Rot.Y;
-        if (zombieArray[i].Pos.Y < -300) {
-          alert("You have fallen to a rocky death. Click OK to respawn.");
-          zombieArray[i].Pos.Y = 1.4;
-          zombieArray[i].Pos.X = 64.4;
-          zombieArray[i].Pos.Z = 118.4;
+        if (zombieArray[i].Pos.Y < -300 || resetKey) {
+          if (!resetKey) {
+        	alert("You have fallen to a rocky death. Click OK to respawn.");
+          }
+          resetZombiePosition(i);
+          resetGoal(i);
+          camFollow(cam,zombieArray[i]);
         }
         postGamestate(currentPlayer);
       } else {
@@ -232,6 +238,17 @@ $(function() {
       }
     }
     return newVal;
+  },
+  
+  resetZombiePosition = function(i){
+      zombieArray[i].Pos.Y = 1.4;
+      zombieArray[i].Pos.X = 64.4;
+      zombieArray[i].Pos.Z = 118.4;
+  },
+  
+  resetGoal = function(i) {
+      goalX = zombieArray[i].Pos.X;
+      goalZ = zombieArray[i].Pos.Z;
   },
   
   mainLoop = function() {
