@@ -64,49 +64,53 @@ $(function() {
 
   // Called when loading the 3d scene has finished (from the coppercube file)
   engine.OnLoadingComplete = function() {
-    scene = engine.getScene();
-    if(scene) {
-      // Setup player information
-      for (var i = 0; i < ktah.gamestate.players.length; i++) {
-        if (ktah.gamestate.players[i].name === userName) {
-          playerNumber = i;
+    if(ktah.gamestate.players) {
+      scene = engine.getScene();
+      if(scene) {
+        // Setup player information
+        for (var i = 0; i < ktah.gamestate.players.length; i++) {
+          if (ktah.gamestate.players[i].name === userName) {
+            playerNumber = i;
+          }
+          playerCount++;
         }
-        playerCount++;
-      }
-      
-      // TEMPORARY: Populate the zombieArray, one for each player
-      for (var i = 0; i < playerCount; i++) {
-        var currentPlayer = ktah.gamestate.players[i];
-        if (i === 0) {
-          // "Zombie 0" gets the original ghoul
-          zombieArray[0] = scene.getSceneNodeFromName('ghoul');
-        } else {
-          // All other zombies are cloned and added to scene
-          zombieArray[i] = zombieArray[0].createClone(scene.getRootSceneNode());
-        }
-        zombieArray[i].Pos.Z += i * 15;
         
-        // Setup health display
-        $("#health-display").append(
-          "<div id='" + currentPlayer.name + "-stats' class='player-stats'><div>" + currentPlayer.name + "</div>"
-          + "<div id='" + currentPlayer.name + "-health-num-box' class='player-health-num-box'>"
-          + "<div id='" + currentPlayer.name + "-health-bar' class='player-health-bar'>&nbsp</div>"
-          + "<span class='player-healthNum'>" + currentPlayer.health + " / 100</span>"
-          + "</div></div>"
-        );
+        // TEMPORARY: Populate the zombieArray, one for each player
+        for (var i = 0; i < playerCount; i++) {
+          var currentPlayer = ktah.gamestate.players[i];
+          if (i === 0) {
+            // "Zombie 0" gets the original ghoul
+            zombieArray[0] = scene.getSceneNodeFromName('ghoul');
+          } else {
+            // All other zombies are cloned and added to scene
+            zombieArray[i] = zombieArray[0].createClone(scene.getRootSceneNode());
+          }
+          zombieArray[i].Pos.Z += i * 15;
+          
+          // Setup health display
+          $("#health-display").append(
+            "<div id='" + currentPlayer.name + "-stats' class='player-stats'><div>" + currentPlayer.name + "</div>"
+            + "<div id='" + currentPlayer.name + "-health-num-box' class='player-health-num-box'>"
+            + "<div id='" + currentPlayer.name + "-health-bar' class='player-health-bar'>&nbsp</div>"
+            + "<span class='player-healthNum'>" + currentPlayer.health + " / 100</span>"
+            + "</div></div>"
+          );
+        }
+        // Grab the zombie that the player is controlling
+        zombieSceneNode = zombieArray[playerNumber];
+      } else {
+        return;
       }
-      // Grab the zombie that the player is controlling
-      zombieSceneNode = zombieArray[playerNumber];
+  
+      // Finish setting up by adding camera to scene
+      scene.getRootSceneNode().addChild(cam);
+      scene.setActiveCamera(cam);
+      
+      // Lastly, set the update function
+      window.setInterval(updateTeam, 50);
     } else {
-      return;
-    }
-
-    // Finish setting up by adding camera to scene
-    scene.getRootSceneNode().addChild(cam);
-    scene.setActiveCamera(cam);
-    
-    // Lastly, set the update function
-    window.setInterval(updateTeam, 50);
+      setTimeout(engine.OnLoadingComplete, 250);
+    }    
   }
   
   // Default camera instructions

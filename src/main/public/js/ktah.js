@@ -17,6 +17,8 @@ include.includeInit([
   '/js/lib/copperlicht.js',
   '/js/lib/base2.min.js',
   '/js/lib/jquery.mousewheel.min.js',
+  '/js/lib/underscore.min.js', // backbone dependency
+  '/js/lib/backbone.min.js',
   
   /***** MODULES *****/
   '/js/modules/copperlicht-ui.js',
@@ -29,6 +31,10 @@ include.includeInit([
   '/js/types/characters/chemist.js',
   '/js/types/characters/herder.js',
   '/js/types/characters/tinker.js',
+  
+  // Monster classes
+  '/js/types/monsters/monster.js',
+  '/js/types/monsters/basicZombie.js',
   
   // Resources
   '/js/types/resources/resource.js',
