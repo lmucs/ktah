@@ -101,13 +101,8 @@ module.exports = function(app) {
       if (currentPlayer.name === req.params.userName) {
         GameController.games[req.params.gameId].players[i] = req.body;
         if (currentPlayer.attacking !== -1) {
-          currentGame.players[currentPlayer.attacking].health -= 3;
+          currentGame.players[currentPlayer.attacking].beingAttacked = true;
         }
-      }
-      
-      // TODO: Synchronization issues with player push and server status
-      if (currentPlayer.health <= 0) {
-        GameController.games[req.params.gameId].players[i].health = 100;
       }
     }
     res.send({"success": true});

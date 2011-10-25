@@ -239,7 +239,9 @@ $(function() {
           if (currentPlayer.posX !== zombieArray[i].Pos.X || currentPlayer.posZ !== zombieArray[i].Pos.Z) {
             animationSetter = "walk";
           } else {
-            animationSetter = "look";
+            if (zombieArray[i].getNamedAnimationInfo(0).Name !== "attack") {
+              animationSetter = "look";
+            }
           }
           if (zombieArray[i].currentAnimation !== animationSetter) {
             zombieArray[i].currentAnimation = animationSetter;
@@ -266,6 +268,17 @@ $(function() {
             }
             
             currentPlayer.attacking = zombieBeingAttacked;
+            
+            if (currentPlayer.beingAttacked) {
+              currentPlayer.health -= 2;
+              currentPlayer.beingAttacked = false;
+            }
+            
+            if (currentPlayer.health <= 0) {
+              currentPlayer.health = 100;
+              resetZombiePosition(i);
+              camFollow(cam, zombieArray[i]);
+            }
             
             $.ajax({
               type: 'POST',
@@ -330,7 +343,7 @@ $(function() {
   },
   
   mainLoop = function() {
-    if(zombieSceneNode) {
+    if (zombieSceneNode) {
 
       // Check to make sure mouse is held down, not just clicked
       if (mouseIsDown) {
@@ -374,6 +387,10 @@ $(function() {
       // Try also to 
       newX += goFromTo(zombieSceneNode.Pos.X, goalX);
       newZ += goFromTo(zombieSceneNode.Pos.Z, goalZ);
+      
+      // Reset attack value
+      zombieBeingAttacked = -1;
+      
       // Update position and camera if any changes made
       if(newX != 0.0 || newZ != 0.0) {
         if (goalX == zombieSceneNode.Pos.X && goalZ == zombieSceneNode.Pos.Z) {
@@ -390,15 +407,13 @@ $(function() {
         zombieSceneNode.Pos.X += newX;
         zombieSceneNode.Pos.Z += newZ;
         
-        zombieBeingAttacked = -1;
-        
         for (var i = 0; i < playerCount; i++) {
           if (i !== playerNumber && zombieArray[playerNumber].Pos.getDistanceTo(zombieArray[i].Pos) < 4) {
             // Classic X/Z movement system
             zombieSceneNode.Pos.X -= newX;
             zombieSceneNode.Pos.Z -= newZ;
             zombieBeingAttacked = i;
-            if (zombieSceneNode.getAnimators()[0] !== "attack") {
+            if (zombieSceneNode.getNamedAnimationInfo(0).Name !== "attack") {
               zombieSceneNode.setAnimation("attack");
             }
           }
@@ -406,9 +421,6 @@ $(function() {
         
         updatePos(zombieSceneNode, newX, newZ);
         
-        // Update the position of the other zombies
-
-        // TODO: Should this be in the main loop?
         // Finally, update Camera for new positions
         camFollow(cam, zombieSceneNode);
       }
