@@ -46,7 +46,7 @@ $(function() {
   mouseClickedTimer = 0,
 
   // Variables for keyboard controls
-  wKey = aKey = sKey = dKey = upKey = leftKey = downKey = rightKey = resetKey = jumpKey = false;
+  wKey = aKey = sKey = dKey = upKey = leftKey = downKey = rightKey = resetKey = jumpKey = standKey = false;
 
   // Universal Camera Setup
   var cam = new CL3D.CameraSceneNode();
@@ -206,6 +206,9 @@ $(function() {
     	  // "Jump forward is space"
     	jumpKey = bool;
     	break;
+    	case '': // There is a Left Shift character here, eclipse just can't display it
+          standKey = bool;
+          break;
       default:
         break;
     }
@@ -468,8 +471,10 @@ $(function() {
         // so this calculates the new X and new Z twice, but this one makes it right to the facing angle
         
         if ((!goalX && !goalZ) || (goal && zombieSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, zombieSceneNode.Pos.Y,goal.Z)) > 2*walkSpeed)) {
-          zombieSceneNode.Pos.X += newX;
-          zombieSceneNode.Pos.Z += newZ;
+          if (!standKey) {
+            zombieSceneNode.Pos.X += newX;
+            zombieSceneNode.Pos.Z += newZ;
+          }
         }
         
         
