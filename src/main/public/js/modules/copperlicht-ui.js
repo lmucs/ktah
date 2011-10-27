@@ -25,6 +25,7 @@ $(function() {
   difX = -1.0, difZ = 0.0, dirAngle = 0.0,
 
   // Mouse Controls values
+  goal = null, //new CL3D.Vect3d(),
   goalX = NaN, // where to travel to
   goalZ = NaN, // where to travel to
   originalX = NaN,
@@ -184,6 +185,7 @@ $(function() {
   },
   
   whileMouseDown = function() {
+	  /*
     var changeX = 2*((engine.getMouseDownX() - engWidth/2) / (engWidth/2)),
         changeY = -2*((engine.getMouseDownY() - engHeight/2) / (engHeight/2)),
         changeHyp = Math.sqrt(Math.pow(changeX,2) + Math.pow(changeY,2)),
@@ -195,8 +197,18 @@ $(function() {
     if (changeX > 0) { rotatedY = -1*rotatedY; }
     goalX = zombieSceneNode.Pos.X + rotatedY * mouseToDist;
     goalZ = zombieSceneNode.Pos.Z + rotatedX * mouseToDist;
-    originalX = zombieSceneNode.Pos.X;
-    originalZ = zombieSceneNode.Pos.Z;
+    */
+	var endPoint = engine.get3DPositionFrom2DPosition(engine.getMouseDownX(),engine.getMouseDownY());
+	//alert(goal.X + ", " + goal.Y + ", " + goal.Z);
+	var newGoal = scene.getCollisionGeometry().getCollisionPointWithLine(cam.Pos, endPoint, true, null);
+    
+	if (newGoal) {
+	  goal = newGoal;
+	  goalX = goal.X;
+	  goalZ = goal.Z;
+      originalX = zombieSceneNode.Pos.X;
+      originalZ = zombieSceneNode.Pos.Z;
+	}
   },
   
   updatePos = function(zombieSceneNode, newX, newZ) {
@@ -406,7 +418,7 @@ $(function() {
       if(goalX || goalZ || aKey || wKey || dKey || sKey) {
         if (!goalX && !goalZ) { // if Keyboard Commands, just update dirAngle
           dirAngle = (270 - zombieSceneNode.Rot.Y) / 180 * Math.PI;
-        } else { // if Mouse, update rotation of player character appropriately
+        } else if (goal && zombieSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, zombieSceneNode.Pos.Y,goal.Z)) > 3*walkSpeed) { // if Mouse, update rotation of player character appropriately
           dirAngle = Math.atan((goalZ - originalZ) / (goalX - originalX));
           if (goalX > zombieSceneNode.Pos.X) { dirAngle = Math.PI + dirAngle; }
           zombieSceneNode.Rot.Y = 270 - dirAngle * 180 / Math.PI; // dirAngle must be converted into 360
@@ -417,8 +429,10 @@ $(function() {
         newZ += walkSpeed * Math.cos(Math.PI/2 + dirAngle);
         // so this calculates the new X and new Z twice, but this one makes it right to the facing angle
         
-        zombieSceneNode.Pos.X += newX;
-        zombieSceneNode.Pos.Z += newZ;
+        if ((!goalX && !goalZ) || (goal && zombieSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, zombieSceneNode.Pos.Y,goal.Z)) > 2*walkSpeed)) {
+          zombieSceneNode.Pos.X += newX;
+          zombieSceneNode.Pos.Z += newZ;
+        }
         
         for (var i = 0; i < playerCount; i++) {
           if (i !== playerNumber && zombieArray[playerNumber].Pos.getDistanceTo(zombieArray[i].Pos) < 4) {
