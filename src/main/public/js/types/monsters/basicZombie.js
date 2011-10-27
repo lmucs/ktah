@@ -6,8 +6,12 @@
 
 $(function () {
     ktah.types.BasicZombie = ktah.types.Monster.extend({
-      initialize: function() {
-        alert("you created a zombie!");
+      initialize: function(scene, sceneNode) {
+        var basicZombie = sceneNode.createClone(scene);
+        
+        //TODO: Randomize these but with some limitations?
+        basicZombie.Pos.X = 0;
+        basicZombie.Pos.Z = 0;
       }
     });
 });
