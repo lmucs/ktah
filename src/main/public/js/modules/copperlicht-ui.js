@@ -30,9 +30,6 @@ $(function() {
   goalZ = NaN, // where to travel to
   originalX = NaN,
   originalZ = NaN,
-  engWidth = 640, // width of clickable area
-  engHeight = 480, // height of clickable area
-  mouseToDist = 25, // conversion ratio for mouse units to ingame distance units
   walkSpeed = 1.85, // how fast character moves
 
   // Camera positioning values
@@ -185,22 +182,8 @@ $(function() {
   },
   
   whileMouseDown = function() {
-	  /*
-    var changeX = 2*((engine.getMouseDownX() - engWidth/2) / (engWidth/2)),
-        changeY = -2*((engine.getMouseDownY() - engHeight/2) / (engHeight/2)),
-        changeHyp = Math.sqrt(Math.pow(changeX,2) + Math.pow(changeY,2)),
-        theta = Math.atan(changeY / changeX),
-        rotatedX = changeHyp * Math.sin(theta + Math.PI*5/4),
-        rotatedY = changeHyp * Math.cos(theta + Math.PI*5/4);
-        
-    if (changeX > 0) { rotatedX = -1*rotatedX; }
-    if (changeX > 0) { rotatedY = -1*rotatedY; }
-    goalX = zombieSceneNode.Pos.X + rotatedY * mouseToDist;
-    goalZ = zombieSceneNode.Pos.Z + rotatedX * mouseToDist;
-    */
-	var endPoint = engine.get3DPositionFrom2DPosition(engine.getMouseDownX(),engine.getMouseDownY());
-	//alert(goal.X + ", " + goal.Y + ", " + goal.Z);
-	var newGoal = scene.getCollisionGeometry().getCollisionPointWithLine(cam.Pos, endPoint, true, null);
+	var mousePoint = engine.get3DPositionFrom2DPosition(engine.getMouseDownX(),engine.getMouseDownY());
+	var newGoal = scene.getCollisionGeometry().getCollisionPointWithLine(cam.Pos, mousePoint, true, null);
     
 	if (newGoal) {
 	  goal = newGoal;
@@ -434,11 +417,13 @@ $(function() {
           zombieSceneNode.Pos.Z += newZ;
         }
         
+        
+        // Collision Detection between zombies
         for (var i = 0; i < playerCount; i++) {
           if (i !== playerNumber && zombieArray[playerNumber].Pos.getDistanceTo(zombieArray[i].Pos) < 4) {
             // Classic X/Z movement system
-            zombieSceneNode.Pos.X -= newX;
-            zombieSceneNode.Pos.Z -= newZ;
+            zombieSceneNode.Pos.X += (zombieSceneNode.Pos.X - zombieArray[i].Pos.X)/2;
+            zombieSceneNode.Pos.Z += (zombieSceneNode.Pos.Z - zombieArray[i].Pos.Z)/2;
             zombieBeingAttacked = i;
             if (zombieSceneNode.getNamedAnimationInfo(0).Name !== "attack") {
               zombieSceneNode.setAnimation("attack");
