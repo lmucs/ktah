@@ -7,10 +7,11 @@
 $(function () {
     ktah.types.Monster = Backbone.Model.extend({
       defaults: {
+        type: 'monster',
         id: null,
         health: 100,
-        posx: 0,
-        posy: 0
+        posX: 0,
+        posZ: 0
       }
     });
 });
