@@ -32,7 +32,7 @@ $(function() {
   engWidth = 640, // width of clickable area
   engHeight = 480, // height of clickable area
   mouseToDist = 25, // conversion ratio for mouse units to ingame distance units
-  walkSpeed = 1.0, // how fast character moves
+  walkSpeed = 1.85, // how fast character moves
 
   // Camera positioning values
   camSetDist = 10,
@@ -41,7 +41,7 @@ $(function() {
   zoomDistMin = -3,
   zoomDistMax = 15,
   zoomSpeed = -2,
-  isometricView = true,
+  isometricView = true, // should be true
   cameraStarted = false,
   mouseIsDown = false,
   mouseClicked = false,
@@ -111,7 +111,7 @@ $(function() {
     } else {
       setTimeout(engine.OnLoadingComplete, 250);
     }    
-  }
+  };
   
   // Default camera instructions
   var camFollow = function(cam, target) {
@@ -257,12 +257,12 @@ $(function() {
             if (zombieArray[i].Pos.Y < -300 || resetKey) {
               currentPlayer.health = currentPlayer.health - 25;
               resetZombiePosition(i);
-              resetGoal(i);
+              resetGoal();
               camFollow(cam, zombieArray[i]);
             }
             
             if (jumpKey) {
-              resetGoal(i);
+              resetGoal();
               zombieJump(i);
               camFollow(cam, zombieArray[i]);
             }
@@ -337,9 +337,9 @@ $(function() {
     zombieArray[i].Pos.Z += 10;
   },
   
-  resetGoal = function(i) {
-      goalX = zombieArray[i].Pos.X;
-      goalZ = zombieArray[i].Pos.Z;
+  resetGoal = function() {
+      goalX = null; //zombieArray[i].Pos.X;
+      goalZ = null; //zombieArray[i].Pos.Z;
   },
   
   mainLoop = function() {
@@ -356,9 +356,10 @@ $(function() {
         whileMouseDown();
       }
       // If mouse held and released, stop immediately
-      if (!mouseIsDown && !mouseClicked) {
-        goalX = zombieSceneNode.Pos.X;
-        goalZ = zombieSceneNode.Pos.Z;
+      if ((!mouseIsDown && !mouseClicked) || (aKey || dKey || sKey || wKey)) {
+        resetGoal();
+    	  //goalX = zombieSceneNode.Pos.X;
+        //goalZ = zombieSceneNode.Pos.Z;
       }
 
       if (!cameraStarted) {
@@ -368,41 +369,53 @@ $(function() {
       var newX = 0.0;
       var newZ = 0.0;
 
-      if(wKey) {
-        newX -= 1.0;
-        zombieSceneNode.Rot.Y = 270; //out of 360
+      // Rotate Player based on Keyboard Combinations (8 directions)
+      if (wKey || aKey || sKey || dKey) {
+        var angle = 0;
+        if (wKey && !sKey) {
+          if (aKey && !dKey) {
+            angle = 270-45;
+          } else if (dKey && !aKey) {
+            angle = 270+45;
+          } else {
+            angle = 270;
+          }
+        } else if (sKey && !wKey) {
+          if (aKey && !dKey) {
+            angle = 90+45;
+          } else if (dKey && !aKey) {
+            angle = 90-45;
+          } else {
+            angle = 90;
+          }
+        } else {
+          if (aKey && !dKey) {
+            angle = 180;
+          } else if (dKey) {
+            angle = 0;
+    	  }
+    	}
+      	zombieSceneNode.Rot.Y = angle + 45; // someday later, might also add in (if camera ever moves) this: + cam.Rot.Y;
+      	// except that, apparently, cam.Rot values only return zero with the code we have right now.
       }
-      if(sKey) {
-        newX += 1.0;
-        zombieSceneNode.Rot.Y = 90; //out of 360
-      }
-      if(aKey) {
-        newZ -= 1.0;
-        zombieSceneNode.Rot.Y = 180; //out of 360
-      }
-      if(dKey) {
-        newZ += 1.0;
-        zombieSceneNode.Rot.Y = 0; //out of 360
-      }
-      // Try also to 
-      newX += goFromTo(zombieSceneNode.Pos.X, goalX);
-      newZ += goFromTo(zombieSceneNode.Pos.Z, goalZ);
       
       // Reset attack value
       zombieBeingAttacked = -1;
       
       // Update position and camera if any changes made
-      if(newX != 0.0 || newZ != 0.0) {
-        if (goalX == zombieSceneNode.Pos.X && goalZ == zombieSceneNode.Pos.Z) {
-          dirAngle = Math.atan(difZ / difX);
-        } else {
+      if(goalX || goalZ || aKey || wKey || dKey || sKey) {
+        if (!goalX && !goalZ) { // if Keyboard Commands, just update dirAngle
+          dirAngle = (270 - zombieSceneNode.Rot.Y) / 180 * Math.PI;
+        } else { // if Mouse, update rotation of player character appropriately
           dirAngle = Math.atan((goalZ - originalZ) / (goalX - originalX));
           if (goalX > zombieSceneNode.Pos.X) { dirAngle = Math.PI + dirAngle; }
           zombieSceneNode.Rot.Y = 270 - dirAngle * 180 / Math.PI; // dirAngle must be converted into 360
-          // Classic X/Z movement system
-          newX -= walkSpeed * Math.sin(Math.PI/2 + dirAngle);
-          newZ += walkSpeed * Math.cos(Math.PI/2 + dirAngle);
         }
+
+        newX = newZ = 0; // reset so we can recalculate based on new angle
+        newX -= walkSpeed * Math.sin(Math.PI/2 + dirAngle);
+        newZ += walkSpeed * Math.cos(Math.PI/2 + dirAngle);
+        // so this calculates the new X and new Z twice, but this one makes it right to the facing angle
         
         zombieSceneNode.Pos.X += newX;
         zombieSceneNode.Pos.Z += newZ;
