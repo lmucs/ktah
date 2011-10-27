@@ -101,6 +101,8 @@ module.exports = function(app) {
       if (currentPlayer.name === req.params.userName) {
         GameController.games[req.params.gameId].players[i] = req.body;
         if (currentPlayer.attacking !== -1) {
+          currentGame.players[i].pointsRemaining += 5;
+          currentGame.players[i].pointsEarned += 5;
           currentGame.players[currentPlayer.attacking].beingAttacked = true;
         }
       }

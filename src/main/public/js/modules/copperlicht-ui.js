@@ -58,10 +58,45 @@ $(function() {
       gameId = $("#gameId").attr("data"),
       userName = $("#userName").attr("data"),
       playerNumber = 0,
-      playerCount = 0;
+      playerCount = 0,
+      
+      // Function that clears and then sets up the user interface
+      // called once at beginning and every time a player leaves / joins
+      updateUserInterface = function () {
+        var currentPlayer = "",
+            nametagAccent = "";
+        
+        // Setup round timer and points
+        $("#health-display")
+        .html("")
+        .append(
+          "<div id='round-info'><span id='round-time'>Time: <span id='time-remaining' class='round-info-space'>0:00</span></span>"
+          + "<span id='points'>Points: <span id='points-remaining' class='currentPlayerNametag'>"
+          + ktah.gamestate.players[playerNumber].pointsRemaining + "</span></span></div>"
+        );
+        
+        for (var i = 0; i < playerCount; i++) {
+          currentPlayer = ktah.gamestate.players[i];
+          nametagAccent = "";
+          
+          // Accent the nametag of the local player
+          if (i === playerNumber) {
+            nametagAccent = "class='currentPlayerNametag'";
+          }
+          
+          // Setup health display
+          $("#health-display").append(
+            "<div id='" + currentPlayer.name + "-stats' class='player-stats'><div " + nametagAccent + ">" + currentPlayer.name + "</div>"
+            + "<div id='" + currentPlayer.name + "-health-num-box' class='player-health-num-box'>"
+            + "<div id='" + currentPlayer.name + "-health-bar' class='player-health-bar'>&nbsp</div>"
+            + "<span class='player-healthNum'>" + currentPlayer.health + " / 100</span>"
+            + "</div></div>"
+          );
+        }
+      };
 
   // Called when loading the 3d scene has finished (from the coppercube file)
-  engine.OnLoadingComplete = function() {
+  engine.OnLoadingComplete = function () {
     if(ktah.gamestate.players) {
       scene = engine.getScene();
       if(scene) {
@@ -75,7 +110,9 @@ $(function() {
         
         // TEMPORARY: Populate the zombieArray, one for each player
         for (var i = 0; i < playerCount; i++) {
-          var currentPlayer = ktah.gamestate.players[i];
+          var currentPlayer = ktah.gamestate.players[i],
+              nametagAccent = "";
+          
           if (i === 0) {
             // "Zombie 0" gets the original ghoul
             zombieArray[0] = scene.getSceneNodeFromName('ghoul');
@@ -84,18 +121,11 @@ $(function() {
             zombieArray[i] = zombieArray[0].createClone(scene.getRootSceneNode());
           }
           zombieArray[i].Pos.Z += i * 15;
-          
-          // Setup health display
-          $("#health-display").append(
-            "<div id='" + currentPlayer.name + "-stats' class='player-stats'><div>" + currentPlayer.name + "</div>"
-            + "<div id='" + currentPlayer.name + "-health-num-box' class='player-health-num-box'>"
-            + "<div id='" + currentPlayer.name + "-health-bar' class='player-health-bar'>&nbsp</div>"
-            + "<span class='player-healthNum'>" + currentPlayer.health + " / 100</span>"
-            + "</div></div>"
-          );
         }
         // Grab the zombie that the player is controlling
         zombieSceneNode = zombieArray[playerNumber];
+        
+        updateUserInterface();
       } else {
         return;
       }
@@ -206,6 +236,21 @@ $(function() {
     ktah.gamestate = data;
   },
   
+  // Helper function for animation display
+  animateCharacter = function (characterIndex, animation) {
+    var currentChar = zombieArray[characterIndex];
+    if (currentChar.currentAnimation !== animation) {
+      currentChar.setLoopMode(animation !== "attack");
+      if (currentChar.currentAnimation !== "attack") {
+        currentChar.currentAnimation = animation;
+        currentChar.setAnimation(animation);
+      }
+    }
+    if (animation === "attack") {
+      setTimeout(function () {currentChar.currentAnimation = "walk";}, 600);
+    }
+  },
+  
   // Updates the positions of other players
   updateTeam = function() {
     // First, grab the gamestate
@@ -218,10 +263,12 @@ $(function() {
       success: function (data) {
         processGamestate(data);
         
+        // Update points
+        $("#points-remaining").text(ktah.gamestate.players[playerNumber].pointsRemaining);
+        
         // Update player positions based on the gamestate
         for (var i = 0; i < playerCount; i++) {
-          var currentPlayer = ktah.gamestate.players[i],
-              animationSetter = "";
+          var currentPlayer = ktah.gamestate.players[i];
               
           // Update health bars
           $("#" + currentPlayer.name + "-health-num-box").children(":nth-child(2)")
@@ -232,15 +279,14 @@ $(function() {
           
           // Set zombie animation
           if (currentPlayer.posX !== zombieArray[i].Pos.X || currentPlayer.posZ !== zombieArray[i].Pos.Z) {
-            animationSetter = "walk";
+            animateCharacter(i, "walk");
           } else {
-            if (zombieArray[i].getNamedAnimationInfo(0).Name !== "attack") {
-              animationSetter = "look";
-            }
+            animateCharacter(i, "look");
           }
-          if (zombieArray[i].currentAnimation !== animationSetter) {
-            zombieArray[i].currentAnimation = animationSetter;
-            zombieArray[i].setAnimation(animationSetter);
+          
+          // Set attack animation
+          if (currentPlayer.attacking !== -1) {
+            animateCharacter(i, "attack");
           }
           
           if (i === playerNumber) {
@@ -251,6 +297,7 @@ $(function() {
             
             if (zombieArray[i].Pos.Y < -300 || resetKey) {
               currentPlayer.health = currentPlayer.health - 25;
+              addPoints(-10);
               resetZombiePosition(i);
               resetGoal();
               camFollow(cam, zombieArray[i]);
@@ -265,7 +312,7 @@ $(function() {
             currentPlayer.attacking = zombieBeingAttacked;
             
             if (currentPlayer.beingAttacked) {
-              currentPlayer.health -= 2;
+              currentPlayer.health -= 5;
               currentPlayer.beingAttacked = false;
             }
             
@@ -337,6 +384,13 @@ $(function() {
       goalZ = null; //zombieArray[i].Pos.Z;
   },
   
+  // Helper function for adding points
+  addPoints = function (points) {
+    var currentPlayer = ktah.gamestate.players[playerNumber];
+    currentPlayer.pointsRemaining += points;
+    currentPlayer.pointsEarned += points;
+  },
+  
   mainLoop = function() {
     if (zombieSceneNode) {
 
@@ -401,7 +455,8 @@ $(function() {
       if(goalX || goalZ || aKey || wKey || dKey || sKey) {
         if (!goalX && !goalZ) { // if Keyboard Commands, just update dirAngle
           dirAngle = (270 - zombieSceneNode.Rot.Y) / 180 * Math.PI;
-        } else if (goal && zombieSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, zombieSceneNode.Pos.Y,goal.Z)) > 3*walkSpeed) { // if Mouse, update rotation of player character appropriately
+          // if Mouse, update rotation of player character appropriately
+        } else if (goal && zombieSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, zombieSceneNode.Pos.Y,goal.Z)) > 3*walkSpeed) {
           dirAngle = Math.atan((goalZ - originalZ) / (goalX - originalX));
           if (goalX > zombieSceneNode.Pos.X) { dirAngle = Math.PI + dirAngle; }
           zombieSceneNode.Rot.Y = 270 - dirAngle * 180 / Math.PI; // dirAngle must be converted into 360
@@ -425,9 +480,6 @@ $(function() {
             zombieSceneNode.Pos.X += (zombieSceneNode.Pos.X - zombieArray[i].Pos.X)/2;
             zombieSceneNode.Pos.Z += (zombieSceneNode.Pos.Z - zombieArray[i].Pos.Z)/2;
             zombieBeingAttacked = i;
-            if (zombieSceneNode.getNamedAnimationInfo(0).Name !== "attack") {
-              zombieSceneNode.setAnimation("attack");
-            }
           }
         }
         
