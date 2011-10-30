@@ -266,6 +266,8 @@ var first_poll = true;
 // is being made from the response handler, and not at some point during the
 // function's execution.
 function longPoll (data) {
+    //test:
+    //alert("Beginning request cycle!");
   if (transmission_errors > 2) {
     showConnect();
     return;
@@ -319,7 +321,7 @@ function longPoll (data) {
     //only after the first request for messages do we want to show who is here
     if (first_poll) {
       first_poll = false;
-      who();
+      //who(); //TODO: take care of this 
     }
   }
 
@@ -328,9 +330,9 @@ function longPoll (data) {
     //alert("id: " + CONFIG.id + " room: " + CONFIG.room);
   $.ajax({ cache: false
          , type: "GET"
-         , url: "/chatrecv"
+         , url: "/chatrecv/" + CONFIG.room
          , dataType: "json"
-         , data: { since: CONFIG.last_message_time, id: CONFIG.id, room: CONFIG.room }
+         , data: { since: CONFIG.last_message_time}
          , error: function () {
              addMessage("", "long poll error. trying again...", new Date(), "error");
              transmission_errors += 1;
@@ -339,23 +341,26 @@ function longPoll (data) {
            }
          , success: function (data) {
              transmission_errors = 0;
-             //if everything went well, begin another request immediately
-             //the server will take a long time to respond
-             //how long? well, it will wait until there is another message
-             //and then it will return it to us and close the connection.
-             //since the connection is closed when we get data, we longPoll again
-             longPoll(data);
+             //if everything went well, begin another request in .2 sec
+             setTimeout(function() {
+               longPoll(data);
+             }, 200);
            }
          });
 }
 
 //submit a new message to the server
 function send(msg) {
+    //test:
+    //alert("got here");
   if (CONFIG.debug === false) {
     var time = new Date().getTime()
     
-    // XXX should be POST
-    jQuery.get("/chatsend", {body: msg, room: CONFIG.room, time: time}, function (data) { /*alert('got here');*/ }, "json");
+      //test:
+      //alert("got here");
+      //alert(msg);
+    // XXX should be POST, but I need to check what is used serverside instead of req.query.body
+    jQuery.post("/chatsend/" + CONFIG.room, {body: msg, room: CONFIG.room, time: time}, function (data) { /*alert('got here');*/ }, "json");
     
     //add the message immediately to one's own console:
     //addMessage(CONFIG.nick, msg, time);
@@ -405,18 +410,12 @@ var rss;
 
 //handle the server's response to our nickname and join request
 function onConnect (data) {
-  //TODO: get sessions going
-  /*
-  if (session.error) {
-    alert("error connecting: " + session.error);
-    showConnect();
-    return;
-  }
-  */
+    //test:
+    //alert("Connected!");
   
   //Set local references for nick and id:
   CONFIG.nick = data.nick;
-  CONFIG.id   = data.id;
+  //CONFIG.id   = data.id;
   //TODO: Figure out starttime and rss later:
   //starttime   = new Date(session.starttime);
   //rss         = session.rss;
@@ -442,7 +441,8 @@ function onConnect (data) {
 //add a list of present chat members to the stream
 function outputUsers (nicks) {
   
-  var nick_string = nicks.length > 0 ? nicks.join(", ") : "(none)";
+  //var nick_string = nicks.length > 0 ? nicks.join(", ") : "(none)";
+  var nick_string = ""; //for right now
   addMessage("users:", nick_string, new Date(), "notice");
   
   
@@ -479,29 +479,21 @@ $(document).ready(function() {
   //CONFIG.id = 123456 //dummy variable. Should come from the user's session
   //CONFIG.room = 0; //dummy variable. Should come from game number or number
                    //assigned to lobby
-  CONFIG.room = parseInt($("#roomNumber").html());
+  CONFIG.room = $("#roomNumber").html();
     //test:
     //alert("room number: " + CONFIG.room);
 
   $.ajax({ cache: false
          , type: "POST"
          , dataType: "json"
-         , url: "/chatjoin"
-         , data: { id: CONFIG.id, room: CONFIG.room }
+         , url: "/chatjoin/" + CONFIG.room
+         //, data: { id: CONFIG.id, room: CONFIG.room }
          , error: function () {
              alert("error connecting to server");
              showConnect();
            }
          , success: onConnect
          });
-  
-
-  
-
-  // update the daemon uptime every 10 seconds
-  setInterval(function () {
-    //updateUptime(); //TODO: Handle uptime
-  }, 10*1000);
 
   if (CONFIG.debug) {
     $("#loading").hide();
@@ -520,12 +512,12 @@ $(document).ready(function() {
   
   //showConnect(); //From original.
   //In k'tah chat, just show chat right away:
-  showChat(CONFIG.id); //or maybe just take nick
+  showChat(CONFIG.nick);
   
 });
 
 //if we can, notify the server that we're going away.
 $(window).unload(function () {
   //XXX: Should be POST
-  jQuery.post("/chatpart", {room: CONFIG.room}, function (data) { }, "json");
+  jQuery.post("/chatpart/" + CONFIG.room, {room: CONFIG.room}, function (data) { }, "json");
 });
