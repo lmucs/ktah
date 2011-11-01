@@ -11,7 +11,7 @@ module.exports = function(app) {
     inbox[room] = {};
   }
     //test
-    createRoom('100');
+    //createRoom('100');
   
   //Handle requests from users:
   app.get('/chat/:room', function(req, res)
@@ -24,11 +24,11 @@ module.exports = function(app) {
     //Check to see whether this user is currently logged into the chat
     //If yes, send pending messages to the user
     //If not, tell user they need to [re]join
-    if (typeof inbox[room] === undefined)
+    if (typeof inbox[room] === 'undefined')
     {
       res.send( JSON.stringify({success: false}) );
     }
-    else if (typeof inbox[room][nick] === undefined)
+    else if (typeof inbox[room][nick] === 'undefined')
     {
       res.send( JSON.stringify({success: false}) );
     }
@@ -53,7 +53,7 @@ module.exports = function(app) {
     {
       case 'join':
         //create the room if it doesn't exist yet:
-        if (typeof inbox[room] === undefined)
+        if (typeof inbox[room] === 'undefined')
         {
           createRoom(room);
         }
