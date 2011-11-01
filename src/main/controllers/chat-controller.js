@@ -11,27 +11,32 @@ module.exports = function(app) {
     inbox[room] = {};
   }
     //test
-    createRoom(100);
+    createRoom('100');
   
   //Handle requests from users:
   app.get('/chat/:room', function(req, res)
   {
     var room = req.params.room;
-    var since = req.query.since;
+    var time = new Date().getTime();
     var messageResponse = [];
     var nick = req.session.userInfo.accountName;
     
     //Check to see whether this user is currently logged into the chat
     //If yes, send pending messages to the user
     //If not, tell user they need to [re]join
-    if (typeof inbox[room][nick] !== undefined)
+    if (typeof inbox[room] === undefined)
     {
-      res.send( JSON.stringify({messages: inbox[room][nick], success: true}) );
-      inbox[room][nick] = [];
+      res.send( JSON.stringify({success: false}) );
+    }
+    else if (typeof inbox[room][nick] === undefined)
+    {
+      res.send( JSON.stringify({success: false}) );
     }
     else
     {
-      res.send( JSON.stringify({success: false}) );
+      res.send( JSON.stringify({messages: inbox[room][nick].messages, success: true}) );
+      inbox[room][nick].messages = [];
+      inbox[room][nick].lastPing = time;
     }
   });
   
@@ -47,10 +52,18 @@ module.exports = function(app) {
     switch (type)
     {
       case 'join':
+        //create the room if it doesn't exist yet:
+        if (typeof inbox[room] === undefined)
+        {
+          createRoom(room);
+        }
+        
         //place in each inbox:
         addMessage(nick, 'join', null, time, room);
         //create inbox for this user:
-        inbox[room][nick] = [];
+        inbox[room][nick] = {};
+        inbox[room][nick].messages = [];
+        inbox[room][nick].lastPing = time;
         //give this user their nick:
         res.send( JSON.stringify({nick: nick}) );
         break;
@@ -59,20 +72,50 @@ module.exports = function(app) {
         res.send({"success": true});
         break;
       case 'part':
-        delete inbox[room][nick];
-        addMessage(nick, 'part', null, time, room);
+        //delete inbox[room][nick];
+        //addMessage(nick, 'part', null, time, room);
+        deleteUser(nick, room);
         res.send({"success": true});
         break;
     }
   });
   
+  //Distribute a message to the appropriate users
   function addMessage(nick, type, body, time, room)
   {
     for (user in inbox[room])
     {
-      inbox[room][user].push({ nick: nick, type: type, body: body, time: time });
+      inbox[room][user].messages.push({ nick: nick, type: type, body: body, time: time });
     }
   }
   
+  //Delete user with the given nick in the given room and notify
+  //the other users in that room
+  function deleteUser(nick, room)
+  {
+    var time = new Date().getTime();
+    
+    delete inbox[room][nick];
+    addMessage(nick, 'part', null, time, room);
+  }
+  
+  //Kick users that haven't made a request in the last 30s:
+  setInterval(function()
+  {
+    var time = new Date().getTime();
+    for (var room in inbox)
+    {
+      for (var nick in inbox[room])
+      {
+          //test:
+          //console.log(nick);
+        
+        if (time - inbox[room][nick].lastPing > 30*1000)
+        {
+          deleteUser(nick, room);
+        }
+      }
+    } 
+  }, 5*1000);
 }
 
