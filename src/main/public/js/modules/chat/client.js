@@ -130,7 +130,30 @@ function userJoin(nick, timestamp) {
   updateUsersLink();
 }
 
-//handles someone leaving
+//Sends a request to the server to join the given chat room
+//If successful, runs onConnect and returns true
+//If unsuccessful, alerts user and returns false
+function thisJoin()
+{
+  $.ajax({ cache: false
+         , type: "POST"
+         , dataType: "json"
+         , url: "/chat/" + CONFIG.room
+         , data: { type: 'join' }
+         , error: function () {
+             alert("error connecting to server");
+             //showConnect();
+             return false;
+           }
+         , success: function()
+           {
+             onConnect();
+             return true
+           }
+         });
+}
+
+//handles someone else leaving
 function userPart(nick, timestamp) {
   //put it in the stream
   addMessage(nick, "left", timestamp, "part");
@@ -242,21 +265,6 @@ function addMessage (from, text, time, _class) {
   scrollDown();
 }
 
-function updateRSS () {
-  var bytes = parseInt(rss);
-  if (bytes) {
-    var megabytes = bytes / (1024*1024);
-    megabytes = Math.round(megabytes*10)/10;
-    $("#rss").text(megabytes.toString());
-  }
-}
-
-function updateUptime () {
-  if (starttime) {
-    $("#uptime").text(starttime.toRelativeTime());
-  }
-}
-
 var transmission_errors = 0;
 var first_poll = true;
 
@@ -266,8 +274,6 @@ var first_poll = true;
 // is being made from the response handler, and not at some point during the
 // function's execution.
 function longPoll (data) {
-    //test:
-    //alert("Beginning request cycle!");
   if (transmission_errors > 2) {
     showConnect();
     return;
@@ -281,17 +287,10 @@ function longPoll (data) {
   //process any updates we may have
   //data will be null on the first call of longPoll
   if (data && data.messages) {
-      //test:
-      //alert('data.messages.length: ' + data.messages.length);
     for (var i = 0; i < data.messages.length; i++) {
       var message = data.messages[i];
-        //test:
-        //alert(message.body);
 
       //track oldest message so we only request newer messages from server
-        //test:
-        //alert('message.time: ' + message.time);
-        //alert('CONFIG.last_message_time: ' + CONFIG.last_message_time);
       if (message.time > CONFIG.last_message_time)
         CONFIG.last_message_time = message.time;
 
@@ -312,8 +311,6 @@ function longPoll (data) {
           userPart(message.nick, message.time);
           break;
       }
-        //test:
-        //alert('I got here');
     }
     //update the document title to include unread message count if blurred
     updateTitle();
@@ -326,11 +323,9 @@ function longPoll (data) {
   }
 
   //make another request
-    //test:
-    //alert("id: " + CONFIG.id + " room: " + CONFIG.room);
   $.ajax({ cache: false
          , type: "GET"
-         , url: "/chatrecv/" + CONFIG.room
+         , url: "/chat/" + CONFIG.room
          , dataType: "json"
          , data: { since: CONFIG.last_message_time}
          , error: function () {
@@ -341,6 +336,12 @@ function longPoll (data) {
            }
          , success: function (data) {
              transmission_errors = 0;
+             
+             //If this user is not logged in with the room, log them in
+             if (!data.success)
+             {
+               thisJoin();
+             }
              //if everything went well, begin another request in .2 sec
              setTimeout(function() {
                longPoll(data);
@@ -351,19 +352,10 @@ function longPoll (data) {
 
 //submit a new message to the server
 function send(msg) {
-    //test:
-    //alert("got here");
   if (CONFIG.debug === false) {
     var time = new Date().getTime()
     
-      //test:
-      //alert("got here");
-      //alert(msg);
-    // XXX should be POST, but I need to check what is used serverside instead of req.query.body
-    jQuery.post("/chatsend/" + CONFIG.room, {body: msg, room: CONFIG.room, time: time}, function (data) { /*alert('got here');*/ }, "json");
-    
-    //add the message immediately to one's own console:
-    //addMessage(CONFIG.nick, msg, time);
+    jQuery.post("/chat/" + CONFIG.room, {body: msg, room: CONFIG.room, time: time, type: 'msg'}, function (data) { /*alert('got here');*/ }, "json");
     
   }
 }
@@ -410,17 +402,9 @@ var rss;
 
 //handle the server's response to our nickname and join request
 function onConnect (data) {
-    //test:
-    //alert("Connected!");
   
   //Set local references for nick and id:
   CONFIG.nick = data.nick;
-  //CONFIG.id   = data.id;
-  //TODO: Figure out starttime and rss later:
-  //starttime   = new Date(session.starttime);
-  //rss         = session.rss;
-  //updateRSS();
-  //updateUptime();
 
   //update the UI to show the chat
   showChat(CONFIG.nick);
@@ -474,26 +458,23 @@ $(document).ready(function() {
   
   //New stuff written for K'tah to implement auto-joining:
   showLoad();
-  //var nick = 'Don'; //This is just a dummy value right now. Is supposed to come
-                    //from session.
-  //CONFIG.id = 123456 //dummy variable. Should come from the user's session
-  //CONFIG.room = 0; //dummy variable. Should come from game number or number
-                   //assigned to lobby
-  CONFIG.room = $("#roomNumber").html();
-    //test:
-    //alert("room number: " + CONFIG.room);
 
-  $.ajax({ cache: false
+  CONFIG.room = $("#roomNumber").html();
+
+  /*$.ajax({ cache: false
          , type: "POST"
          , dataType: "json"
-         , url: "/chatjoin/" + CONFIG.room
-         //, data: { id: CONFIG.id, room: CONFIG.room }
+         , url: "/chat/" + CONFIG.room
+         , data: { type: 'join' }
          , error: function () {
              alert("error connecting to server");
              showConnect();
            }
          , success: onConnect
-         });
+         });*/
+
+  //Send a join request to the server         
+  thisJoin();
 
   if (CONFIG.debug) {
     $("#loading").hide();
@@ -518,6 +499,5 @@ $(document).ready(function() {
 
 //if we can, notify the server that we're going away.
 $(window).unload(function () {
-  //XXX: Should be POST
-  jQuery.post("/chatpart/" + CONFIG.room, {room: CONFIG.room}, function (data) { }, "json");
+  jQuery.post("/chat/" + CONFIG.room, {room: CONFIG.room, type: 'part'}, function (data) { }, "json");
 });

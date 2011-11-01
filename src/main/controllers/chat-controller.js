@@ -13,68 +13,57 @@ module.exports = function(app) {
     //test
     createRoom(100);
   
-  //Handle an incoming message:
-  //TODO: roll this into POST /chat
-  app.post('/chatsend/:room', function(req, res)
-  {
-    var outgoing = req.body;
-    var time = new Date().getTime();
-    var room = req.params.room;
-    var nick = req.session.userInfo.accountName;
-    var body = req.body.body;
-    
-      //test:
-      console.log("adding message from " + nick + ": " + body);
-    addMessage(nick, 'msg', body, time, room);
-      console.log("message successfully added!");
-    //res.send(200);
-    res.send({"success": true});
-  });
-  
   //Handle requests from users:
-  //TODO: roll this into GET /chat
-  app.get('/chatrecv/:room', function(req, res)
+  app.get('/chat/:room', function(req, res)
   {
     var room = req.params.room;
     var since = req.query.since;
     var messageResponse = [];
     var nick = req.session.userInfo.accountName;
     
-    res.send( JSON.stringify({messages: inbox[room][nick]}) );
-    inbox[room][nick] = [];
-    
+    //Check to see whether this user is currently logged into the chat
+    //If yes, send pending messages to the user
+    //If not, tell user they need to [re]join
+    if (typeof inbox[room][nick] !== undefined)
+    {
+      res.send( JSON.stringify({messages: inbox[room][nick], success: true}) );
+      inbox[room][nick] = [];
+    }
+    else
+    {
+      res.send( JSON.stringify({success: false}) );
+    }
   });
   
-  //Handle a new person joining
-  //TODO: roll this into POST /chat
-  app.post('/chatjoin/:room', function(req, res)
+  //handle messages, joining, and parting:
+  app.post('/chat/:room', function(req, res)
   {
     var nick = req.session.userInfo.accountName;
     var time = new Date().getTime();
     var room = req.params.room;
+    var type = req.body.type;
+    var body = req.body.body;
     
-    //place in each inbox:
-    addMessage(nick, 'join', null, time, room);
-    
-    inbox[room][nick] = [];
-    
-    //res.send(200);
-    res.send( JSON.stringify({nick: nick}) );
-  });
-  
-  //TODO: roll this into POST /chat
-  app.post('/chatpart/:room', function(req, res)
-  {
-    var nick = req.session.userInfo.accountName;
-    var time = new Date().getTime();
-    var room = req.params.room;
-    
-    delete inbox[room][nick];
-    
-    addMessage(nick, 'part', null, time, room);
-    
-    //res.send(200);
-    res.send({"success": true});
+    switch (type)
+    {
+      case 'join':
+        //place in each inbox:
+        addMessage(nick, 'join', null, time, room);
+        //create inbox for this user:
+        inbox[room][nick] = [];
+        //give this user their nick:
+        res.send( JSON.stringify({nick: nick}) );
+        break;
+      case 'msg':
+        addMessage(nick, 'msg', body, time, room);
+        res.send({"success": true});
+        break;
+      case 'part':
+        delete inbox[room][nick];
+        addMessage(nick, 'part', null, time, room);
+        res.send({"success": true});
+        break;
+    }
   });
   
   function addMessage(nick, type, body, time, room)

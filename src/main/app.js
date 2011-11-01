@@ -103,7 +103,7 @@ app.get('/lobby', function (req, res) {
 });
 
 // A chat tester
-app.get('/chat/:room', function (req, res) {
+app.get('/chattest/:room', function (req, res) {
     res.render('chat', {
         layout: true,
         gameId: req.params.room
