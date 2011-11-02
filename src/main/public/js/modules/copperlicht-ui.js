@@ -8,8 +8,8 @@
 $(function() {
 
   var engine = startCopperLichtFromFile('ktahCanvas', '../../assets/copperlicht/copperlichtdata/zombieTestRedux.ccbjs'),
-  zombieSceneNode = null,
-  zombieArray = [],
+  playerSceneNode = null,
+  characterArray = [],
   scene = null,
   key = null;
   
@@ -93,39 +93,53 @@ $(function() {
             + "</div></div>"
           );
         }
+      },
+      
+      // Updates the character array and the player's position within it
+      // Set initialization to true for first time setup and population of characters
+      updateCharacterArray = function (setupCounter, initialization) {
+        var updatedCharacters = [];
+        playerCount = 0;
+        
+        // Setup player information
+        for (var i = 0; i < setupCounter; i++) {
+          if (ktah.gamestate.players[i].name === userName) {
+            playerNumber = i;
+            // TODO: This needs to be fixed such that the character array is
+            // updated to remove a player that has left
+            updatedCharacters[i] = characterArray[i];
+          }
+          playerCount++;
+          
+          if (initialization) {
+            if (i === 0) {
+              // "Character 0" gets the original node
+              characterArray[0] = scene.getSceneNodeFromName('ghoul');
+            } else {
+              // All other characters are cloned and added to scene
+              characterArray[i] = characterArray[0].createClone(scene.getRootSceneNode());
+            }
+            characterArray[i].Pos.Z += i * 15;
+          }
+        }
+        
+        // If this was a mid-game update, set the players back up
+        if (!initialization) {
+          characterArray = updatedCharacters;
+        }
+        
+        // Grab the character that the player is controlling
+        playerSceneNode = characterArray[playerNumber];
+        updateUserInterface();
       };
 
   // Called when loading the 3d scene has finished (from the coppercube file)
   engine.OnLoadingComplete = function () {
-    if(ktah.gamestate.players) {
+    if (ktah.gamestate.players) {
       scene = engine.getScene();
-      if(scene) {
-        // Setup player information
-        for (var i = 0; i < ktah.gamestate.players.length; i++) {
-          if (ktah.gamestate.players[i].name === userName) {
-            playerNumber = i;
-          }
-          playerCount++;
-        }
-        
-        // TEMPORARY: Populate the zombieArray, one for each player
-        for (var i = 0; i < playerCount; i++) {
-          var currentPlayer = ktah.gamestate.players[i],
-              nametagAccent = "";
-          
-          if (i === 0) {
-            // "Zombie 0" gets the original ghoul
-            zombieArray[0] = scene.getSceneNodeFromName('ghoul');
-          } else {
-            // All other zombies are cloned and added to scene
-            zombieArray[i] = zombieArray[0].createClone(scene.getRootSceneNode());
-          }
-          zombieArray[i].Pos.Z += i * 15;
-        }
-        // Grab the zombie that the player is controlling
-        zombieSceneNode = zombieArray[playerNumber];
-        
-        updateUserInterface();
+      if (scene) {
+        // Add the players to the character array
+        updateCharacterArray(ktah.gamestate.players.length, true);
       } else {
         return;
       }
@@ -155,7 +169,7 @@ $(function() {
     cam.Pos.X = target.Pos.X - difX * camDistRatio;
     cam.Pos.Y = target.Pos.Y + 20;
     cam.Pos.Z = target.Pos.Z - difZ * camDistRatio;
-    animator.lookAt(new CL3D.Vect3d(zombieSceneNode.Pos.X, zombieSceneNode.Pos.Y + 10, zombieSceneNode.Pos.Z));
+    animator.lookAt(new CL3D.Vect3d(playerSceneNode.Pos.X, playerSceneNode.Pos.Y + 10, playerSceneNode.Pos.Z));
   },
   
   // Isometric camera
@@ -163,7 +177,7 @@ $(function() {
     cam.Pos.X = target.Pos.X + (camSetDist + zoomDist);
     cam.Pos.Y = target.Pos.Y + (camSetDist + 2*zoomDist  + 10);
     cam.Pos.Z = target.Pos.Z - (camSetDist + zoomDist);
-    animator.lookAt(new CL3D.Vect3d(zombieSceneNode.Pos.X, zombieSceneNode.Pos.Y + 10, zombieSceneNode.Pos.Z));
+    animator.lookAt(new CL3D.Vect3d(playerSceneNode.Pos.X, playerSceneNode.Pos.Y + 10, playerSceneNode.Pos.Z));
   },
   
   // A more complicated key change state event. Uppercase and lowercase
@@ -222,12 +236,12 @@ $(function() {
 	  goal = newGoal;
 	  goalX = goal.X;
 	  goalZ = goal.Z;
-      originalX = zombieSceneNode.Pos.X;
-      originalZ = zombieSceneNode.Pos.Z;
+      originalX = playerSceneNode.Pos.X;
+      originalZ = playerSceneNode.Pos.Z;
 	}
   },
   
-  updatePos = function(zombieSceneNode, newX, newZ) {
+  updatePos = function(playerSceneNode, newX, newZ) {
     changeRate = 20;
     difX = (difX * (changeRate - 1) + newX) / changeRate;
     difZ = (difZ * (changeRate - 1) + newZ) / changeRate;
@@ -241,7 +255,7 @@ $(function() {
   
   // Helper function for animation display
   animateCharacter = function (characterIndex, animation) {
-    var currentChar = zombieArray[characterIndex];
+    var currentChar = characterArray[characterIndex];
     if (currentChar.currentAnimation !== animation) {
       currentChar.setLoopMode(animation !== "attack");
       if (currentChar.currentAnimation !== "attack") {
@@ -255,7 +269,7 @@ $(function() {
   },
   
   // Updates the positions of other players
-  updateTeam = function() {
+  updateTeam = function () {
     // First, grab the gamestate
     $.ajax({
       type: 'GET',
@@ -281,7 +295,7 @@ $(function() {
             .css("width", (currentPlayer.health / 100) * 148 + "px");
           
           // Set zombie animation
-          if (currentPlayer.posX !== zombieArray[i].Pos.X || currentPlayer.posZ !== zombieArray[i].Pos.Z) {
+          if (currentPlayer.posX !== characterArray[i].Pos.X || currentPlayer.posZ !== characterArray[i].Pos.Z) {
             animateCharacter(i, "walk");
           } else {
             animateCharacter(i, "look");
@@ -293,23 +307,23 @@ $(function() {
           }
           
           if (i === playerNumber) {
-            currentPlayer.posX = zombieArray[i].Pos.X;
-            currentPlayer.posZ = zombieArray[i].Pos.Z;
-            currentPlayer.posY = zombieArray[i].Pos.Y;
-            currentPlayer.theta = zombieArray[i].Rot.Y;
+            currentPlayer.posX = characterArray[i].Pos.X;
+            currentPlayer.posZ = characterArray[i].Pos.Z;
+            currentPlayer.posY = characterArray[i].Pos.Y;
+            currentPlayer.theta = characterArray[i].Rot.Y;
             
-            if (zombieArray[i].Pos.Y < -300 || resetKey) {
+            if (characterArray[i].Pos.Y < -300 || resetKey) {
               currentPlayer.health = currentPlayer.health - 25;
               addPoints(-10);
               resetZombiePosition(i);
               resetGoal();
-              camFollow(cam, zombieArray[i]);
+              camFollow(cam, characterArray[i]);
             }
             
             if (jumpKey) {
               resetGoal();
               zombieJump(i);
-              camFollow(cam, zombieArray[i]);
+              camFollow(cam, characterArray[i]);
             }
             
             currentPlayer.attacking = zombieBeingAttacked;
@@ -322,7 +336,7 @@ $(function() {
             if (currentPlayer.health <= 0) {
               currentPlayer.health = 100;
               resetZombiePosition(i);
-              camFollow(cam, zombieArray[i]);
+              camFollow(cam, characterArray[i]);
             }
             
             $.ajax({
@@ -338,10 +352,10 @@ $(function() {
               contentType: 'application/json'
             });
           } else {
-            zombieArray[i].Pos.X = currentPlayer.posX;
-            zombieArray[i].Pos.Z = currentPlayer.posZ;
-            zombieArray[i].Pos.Y = currentPlayer.posY;
-            zombieArray[i].Rot.Y = currentPlayer.theta;
+            characterArray[i].Pos.X = currentPlayer.posX;
+            characterArray[i].Pos.Z = currentPlayer.posZ;
+            characterArray[i].Pos.Y = currentPlayer.posY;
+            characterArray[i].Rot.Y = currentPlayer.theta;
           }
         }
       },
@@ -353,6 +367,14 @@ $(function() {
       dataType: 'json',
       contentType: 'application/json'
     });
+  },
+  
+  // Function that periodically checks for players coming or going
+  updatePlayers = function () {
+    // Update the players if any have come or gone
+    if (ktah.gamestate.players.length !== playerCount) {
+      updateCharacterArray(ktah.gamestate.players.length, false);
+    }
   },
   
   // To move any node from position origin to position destination at walkspeed
@@ -372,19 +394,19 @@ $(function() {
   },
   
   resetZombiePosition = function(i){
-      zombieArray[i].Pos.Y = 1.4;
-      zombieArray[i].Pos.X = 64.4;
-      zombieArray[i].Pos.Z = 118.4;
+      characterArray[i].Pos.Y = 1.4;
+      characterArray[i].Pos.X = 64.4;
+      characterArray[i].Pos.Z = 118.4;
   },
   
   zombieJump = function (i) {
-    zombieArray[i].Pos.X += 10;
-    zombieArray[i].Pos.Z += 10;
+    characterArray[i].Pos.X += 10;
+    characterArray[i].Pos.Z += 10;
   },
   
   resetGoal = function() {
-      goalX = null; //zombieArray[i].Pos.X;
-      goalZ = null; //zombieArray[i].Pos.Z;
+      goalX = null; //characterArray[i].Pos.X;
+      goalZ = null; //characterArray[i].Pos.Z;
   },
   
   // Helper function for adding points
@@ -395,7 +417,7 @@ $(function() {
   },
   
   mainLoop = function() {
-    if (zombieSceneNode) {
+    if (playerSceneNode) {
 
       // Check to make sure mouse is held down, not just clicked
       if (mouseIsDown) {
@@ -410,12 +432,12 @@ $(function() {
       // If mouse held and released, stop immediately
       if ((!mouseIsDown && !mouseClicked) || (aKey || dKey || sKey || wKey)) {
         resetGoal();
-    	  //goalX = zombieSceneNode.Pos.X;
-        //goalZ = zombieSceneNode.Pos.Z;
+    	  //goalX = playerSceneNode.Pos.X;
+        //goalZ = playerSceneNode.Pos.Z;
       }
 
       if (!cameraStarted) {
-        camFollow(cam, zombieSceneNode);
+        camFollow(cam, playerSceneNode);
         cameraStarted = true;
       }
       var newX = 0.0;
@@ -447,7 +469,7 @@ $(function() {
             angle = 0;
     	  }
     	}
-      	zombieSceneNode.Rot.Y = angle + 45; // someday later, might also add in (if camera ever moves) this: + cam.Rot.Y;
+      	playerSceneNode.Rot.Y = angle + 45; // someday later, might also add in (if camera ever moves) this: + cam.Rot.Y;
       	// except that, apparently, cam.Rot values only return zero with the code we have right now.
       }
       
@@ -457,12 +479,12 @@ $(function() {
       // Update position and camera if any changes made
       if(goalX || goalZ || aKey || wKey || dKey || sKey) {
         if (!goalX && !goalZ) { // if Keyboard Commands, just update dirAngle
-          dirAngle = (270 - zombieSceneNode.Rot.Y) / 180 * Math.PI;
+          dirAngle = (270 - playerSceneNode.Rot.Y) / 180 * Math.PI;
           // if Mouse, update rotation of player character appropriately
-        } else if (goal && zombieSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, zombieSceneNode.Pos.Y,goal.Z)) > 3*walkSpeed) {
+        } else if (goal && playerSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, playerSceneNode.Pos.Y,goal.Z)) > 3*walkSpeed) {
           dirAngle = Math.atan((goalZ - originalZ) / (goalX - originalX));
-          if (goalX > zombieSceneNode.Pos.X) { dirAngle = Math.PI + dirAngle; }
-          zombieSceneNode.Rot.Y = 270 - dirAngle * 180 / Math.PI; // dirAngle must be converted into 360
+          if (goalX > playerSceneNode.Pos.X) { dirAngle = Math.PI + dirAngle; }
+          playerSceneNode.Rot.Y = 270 - dirAngle * 180 / Math.PI; // dirAngle must be converted into 360
         }
 
         newX = newZ = 0; // reset so we can recalculate based on new angle
@@ -470,28 +492,28 @@ $(function() {
         newZ += walkSpeed * Math.cos(Math.PI/2 + dirAngle);
         // so this calculates the new X and new Z twice, but this one makes it right to the facing angle
         
-        if ((!goalX && !goalZ) || (goal && zombieSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, zombieSceneNode.Pos.Y,goal.Z)) > 2*walkSpeed)) {
+        if ((!goalX && !goalZ) || (goal && playerSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, playerSceneNode.Pos.Y,goal.Z)) > 2*walkSpeed)) {
           if (!standKey) {
-            zombieSceneNode.Pos.X += newX;
-            zombieSceneNode.Pos.Z += newZ;
+            playerSceneNode.Pos.X += newX;
+            playerSceneNode.Pos.Z += newZ;
           }
         }
         
         
         // Collision Detection between zombies
         for (var i = 0; i < playerCount; i++) {
-          if (i !== playerNumber && zombieArray[playerNumber].Pos.getDistanceTo(zombieArray[i].Pos) < 4) {
+          if (i !== playerNumber && characterArray[playerNumber].Pos.getDistanceTo(characterArray[i].Pos) < 4) {
             // Classic X/Z movement system
-            zombieSceneNode.Pos.X += (zombieSceneNode.Pos.X - zombieArray[i].Pos.X)/2;
-            zombieSceneNode.Pos.Z += (zombieSceneNode.Pos.Z - zombieArray[i].Pos.Z)/2;
+            playerSceneNode.Pos.X += (playerSceneNode.Pos.X - characterArray[i].Pos.X)/2;
+            playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - characterArray[i].Pos.Z)/2;
             zombieBeingAttacked = i;
           }
         }
         
-        updatePos(zombieSceneNode, newX, newZ);
+        updatePos(playerSceneNode, newX, newZ);
         
         // Finally, update Camera for new positions
-        camFollow(cam, zombieSceneNode);
+        camFollow(cam, playerSceneNode);
       }
       
     }
@@ -528,12 +550,13 @@ $(function() {
   $(document).mousewheel(function(event, delta) {
     if (zoomDist + zoomSpeed * delta <= zoomDistMax && zoomDist + zoomSpeed * delta >= zoomDistMin) {
       zoomDist += zoomSpeed * delta;
-      camFollow(cam, zombieSceneNode);
+      camFollow(cam, playerSceneNode);
     }
   });
 
   // Call primary recurring functions once to get the ball running
   updateTeam();
   mainLoop();
+  setInterval(updatePlayers, 5000);
   
 });
