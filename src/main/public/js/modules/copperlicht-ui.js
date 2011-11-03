@@ -6,7 +6,7 @@
  */
 
 $(function() {
-
+  
   var engine = startCopperLichtFromFile('ktahCanvas', '../../assets/copperlicht/copperlichtdata/zombieTestRedux.ccbjs'),
   playerSceneNode = null,
   characterArray = [],
@@ -19,6 +19,9 @@ $(function() {
   var catchupRate = 1.0, lastTime = timeDiff = 0.0, currentTime,
   timeLoopLength = 1000, // do not set below 1000 or it starts to lag
   movementCounterbalance = 15.0, timeLoopCurrent = 0,
+  startingY = 1.4,
+  startingX = 64.4,
+  startingZ = 118.4,
 
   // Camera positioning values
   camSetDist = 10, camDistRatio = 1.0,
@@ -97,37 +100,80 @@ $(function() {
         }
       },
       
+      // Helper function to set up an entering player clone (after the first)
+      addNewPlayer = function (gamestateNumber, midGame) {
+        var addNumber = characterArray.length;
+        characterArray[addNumber] = characterArray[0].createClone(scene.getRootSceneNode());
+        if (midGame) {
+          characterArray[addNumber].playerName = ktah.gamestate.players[gamestateNumber].name;
+          characterArray[addNumber].playing = true;
+          resetZombiePosition(addNumber);
+        }
+      },
+      
       // Updates the character array and the player's position within it
       // Set initialization to true for first time setup and population of characters
-      updateCharacterArray = function (setupCounter, initialization) {
+      updateCharacterArray = function (currentNumber, initialization) {
         var updatedCharacters = [];
-        playerCount = 0;
-        
+        playerCount = ktah.gamestate.players.length;
         // Setup player information
-        for (var i = 0; i < setupCounter; i++) {
-          if (ktah.gamestate.players[i].name === userName) {
-            playerNumber = i;
-            // TODO: This needs to be fixed such that the character array is
-            // updated to remove a player that has left
-            updatedCharacters[i] = characterArray[i];
-          }
-          playerCount++;
-          
+        for (var i = 0; i < playerCount; i++) {
+          // If it's the first setup, populate the array
           if (initialization) {
+            if (ktah.gamestate.players[i].name === userName) {
+              playerNumber = i;
+            }
+            
             if (i === 0) {
               // "Character 0" gets the original node
               characterArray[0] = scene.getSceneNodeFromName('ghoul');
             } else {
               // All other characters are cloned and added to scene
-              characterArray[i] = characterArray[0].createClone(scene.getRootSceneNode());
+              addNewPlayer(i, false);
             }
+            characterArray[i].playerName = ktah.gamestate.players[i].name;
+            characterArray[i].playing = true;
             characterArray[i].Pos.Z += i * 15;
+          // Otherwise, it's an update: one of two scenarios
+          // Scenario One: a player has left
+          } else if (playerCount <= currentNumber) {
+            // Reset all the "playing" tags of the scene nodes so that the ones that
+            // no longer are active can be culled by process of elimination
+            for (var k = 0; k < characterArray.length; k++) {
+              characterArray[k].playing = false;
+            }
+            
+            for (var j = 0; j < characterArray.length; j++) {
+              // This lamely removes the player that left by adding the active ones
+              // to a new, updated character array
+              if (ktah.gamestate.players[i].name === characterArray[j].playerName) {
+                updatedCharacters.push(characterArray[j]);
+                updatedCharacters[updatedCharacters.length - 1].playerName = characterArray[j].playerName;
+                updatedCharacters[updatedCharacters.length - 1].playing = characterArray[j].playing = true;
+              }
+            }
+          // Scenario Two: a player has joined
+          } else {
+            addNewPlayer(currentNumber - 1, true);
           }
         }
         
         // If this was a mid-game update, set the players back up
-        if (!initialization) {
+        if (!initialization && (playerCount <= currentNumber)) {
+          // Nuke the "zombie" scene node (pun intended, just nuke the node the player left)
+          for (var k = 0; k < characterArray.length; k++) {
+            if (!characterArray[k].playing) {
+              scene.getRootSceneNode().removeChild(characterArray[k]);
+            }
+          }
+          // Now, set the characterArray to its updated form
           characterArray = updatedCharacters;
+          // Now we have to reset the player numbers in the new array
+          for (var i = 0; i < characterArray.length; i++) {
+            if (updatedCharacters[i].playerName === userName) {
+              playerNumber = i;
+            }
+          }
         }
         
         // Grab the character that the player is controlling
@@ -137,6 +183,8 @@ $(function() {
 
   // Called when loading the 3d scene has finished (from the coppercube file)
   engine.OnLoadingComplete = function () {
+    var synchronizedUpdate = seedGamestate();
+    
     if (ktah.gamestate.players) {
       scene = engine.getScene();
       if (scene) {
@@ -150,8 +198,8 @@ $(function() {
       scene.getRootSceneNode().addChild(cam);
       scene.setActiveCamera(cam);
       
-      // Lastly, set the update function
-      window.setInterval(updateTeam, 50);
+      // Begin the server pinging
+      setInterval(updateTeam, 50);
     } else {
       setTimeout(engine.OnLoadingComplete, 250);
     }    
@@ -231,16 +279,16 @@ $(function() {
   },
   
   whileMouseDown = function() {
-	var mousePoint = engine.get3DPositionFrom2DPosition(engine.getMouseDownX(),engine.getMouseDownY());
-	var newGoal = scene.getCollisionGeometry().getCollisionPointWithLine(cam.Pos, mousePoint, true, null);
-    
-	if (newGoal) {
-	  goal = newGoal;
-	  goalX = goal.X;
-	  goalZ = goal.Z;
-      originalX = playerSceneNode.Pos.X;
-      originalZ = playerSceneNode.Pos.Z;
-	}
+  	var mousePoint = engine.get3DPositionFrom2DPosition(engine.getMouseDownX(),engine.getMouseDownY());
+  	var newGoal = scene.getCollisionGeometry().getCollisionPointWithLine(cam.Pos, mousePoint, true, null);
+      
+  	if (newGoal) {
+  	  goal = newGoal;
+  	  goalX = goal.X;
+  	  goalZ = goal.Z;
+        originalX = playerSceneNode.Pos.X;
+        originalZ = playerSceneNode.Pos.Z;
+  	}
   },
   
   updatePos = function(playerSceneNode, newX, newZ) {
@@ -248,11 +296,6 @@ $(function() {
     difX = (difX * (changeRate - 1) + newX) / changeRate;
     difZ = (difZ * (changeRate - 1) + newZ) / changeRate;
     camDistRatio = camSetDist / (Math.sqrt(Math.pow(difX, 2) + Math.pow(difZ, 2)));
-  },
-  
-  // Helper function for maintaining the value of the gamestate
-  processGamestate = function (data) {
-    ktah.gamestate = data;
   },
   
   // Helper function for animation display
@@ -270,6 +313,32 @@ $(function() {
     }
   },
   
+  // Helper function to store the asynchronous gamestate data
+  updateGamestate = function (data) {
+    ktah.gamestate = data;
+  },
+  
+  // Used once at the beginning to get the ball rolling, seeding the gamestate
+  seedGamestate = function () {
+    $.ajax({
+      type: 'GET',
+      url: '/gamestate/' + gameId,
+      data: {
+        player : userName
+      },
+      success: function (data) {
+        updateGamestate(data);
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+      },
+      dataType: 'json',
+      contentType: 'application/json'
+    });
+  },
+  
   // Updates the positions of other players
   updateTeam = function () {
     // First, grab the gamestate
@@ -280,7 +349,7 @@ $(function() {
         player : userName
       },
       success: function (data) {
-        processGamestate(data);
+        updatePlayers(data); 
         
         // Update points
         $("#points-remaining").text(ktah.gamestate.players[playerNumber].pointsRemaining);
@@ -331,7 +400,7 @@ $(function() {
             currentPlayer.attacking = zombieBeingAttacked;
             
             if (currentPlayer.beingAttacked) {
-              currentPlayer.health -= 5;// * catchupRate;
+              currentPlayer.health -= 5;
               currentPlayer.beingAttacked = false;
             }
             
@@ -372,10 +441,11 @@ $(function() {
   },
   
   // Function that periodically checks for players coming or going
-  updatePlayers = function () {
+  updatePlayers = function (data) {
+    updateGamestate(data);
     // Update the players if any have come or gone
-    if (ktah.gamestate.players.length !== playerCount) {
-      updateCharacterArray(ktah.gamestate.players.length, false);
+    if (playerCount !== data.players.length) {
+      updateCharacterArray(playerCount, false);
     }
   },
   
@@ -396,9 +466,9 @@ $(function() {
   },
   
   resetZombiePosition = function(i){
-      characterArray[i].Pos.Y = 1.4;
-      characterArray[i].Pos.X = 64.4;
-      characterArray[i].Pos.Z = 118.4;
+      characterArray[i].Pos.Y = startingY;
+      characterArray[i].Pos.X = startingX;
+      characterArray[i].Pos.Z = startingZ;
   },
   
   zombieJump = function (i) {
@@ -525,7 +595,6 @@ $(function() {
           }
         }
         
-        
         // Collision Detection between zombies
         for (var i = 0; i < playerCount; i++) {
           if (i !== playerNumber && characterArray[playerNumber].Pos.getDistanceTo(characterArray[i].Pos) < 4) {
@@ -580,15 +649,11 @@ $(function() {
     }
   });
 
-
   // Now initialize the time variables
   currentTime = (new Date()).getTime();
   lastTime = currentTime;
 
-  // Call primary recurring functions once to get the ball running
-  updateTeam();
   //timeLoop();
   mainLoop();
-  setInterval(updatePlayers, 5000);
   
 });
