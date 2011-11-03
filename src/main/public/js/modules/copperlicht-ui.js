@@ -15,8 +15,10 @@ $(function() {
   
   engine.addScene(scene);
 
-  // Rate of movement per second
-  var moveRate = 1.0, lastTime = 0.0, timeDiff = 0.0,
+  // Rate of how much to play catchup so stats applied equally
+  var catchupRate = 1.0, lastTime = timeDiff = 0.0, currentTime,
+  timeLoopLength = 1000, // do not set below 1000 or it starts to lag
+  movementCounterbalance = 15.0, timeLoopCurrent = 0,
 
   // Camera positioning values
   camSetDist = 10, camDistRatio = 1.0,
@@ -30,7 +32,7 @@ $(function() {
   goalZ = NaN, // where to travel to
   originalX = NaN,
   originalZ = NaN,
-  walkSpeed = 1.85, // how fast character moves
+  walkDist = 1.85, // how fast character moves
 
   // Camera positioning values
   camSetDist = 10,
@@ -329,7 +331,7 @@ $(function() {
             currentPlayer.attacking = zombieBeingAttacked;
             
             if (currentPlayer.beingAttacked) {
-              currentPlayer.health -= 5;
+              currentPlayer.health -= 5 * catchupRate;
               currentPlayer.beingAttacked = false;
             }
             
@@ -377,15 +379,15 @@ $(function() {
     }
   },
   
-  // To move any node from position origin to position destination at walkspeed
+  // To move any node from position origin to position destination at walkDist
   goFromTo = function(origin, destination) {
     var newVal = 0;
     // Handle goalX if it has a new number
     if (destination != origin) {
       if (destination > origin + 1) {
-        newVal += walkSpeed;
+        newVal += walkDist * catchupRate;
       } else if (destination < origin - 1) { 
-        newVal -= walkSpeed;
+        newVal -= walkDist * catchupRate;
       } else {
         destination = origin;
       }
@@ -416,9 +418,33 @@ $(function() {
     currentPlayer.pointsEarned += points;
   },
   
+  // Update catchupRate based on time passed
+  updateCatchupRate = function(newTime) {
+	  if (newTime != lastTime) {
+		  timeDiff = newTime - lastTime;
+		  lastTime = newTime;
+		  catchupRate = timeDiff/timeLoopLength*movementCounterbalance;
+	  }
+  },
+
+  // Don't need to check time every loop, can check occasionally
+  timeLoop = function() {
+    currentTime = (new Date()).getTime();
+    //setTimeout(mainLoop, timeLoopLength);
+  },
+  
   mainLoop = function() {
     if (playerSceneNode) {
 
+      // First, ensure movement is in proportion to time passed
+      if (timeLoopCurrent < timeLoopLength) {
+        timeLoopCurrent++;
+      } else {
+        timeLoop();
+        timeLoopCurrent=0;
+      }
+      updateCatchupRate(currentTime);
+      
       // Check to make sure mouse is held down, not just clicked
       if (mouseIsDown) {
         if (mouseClicked) {
@@ -481,18 +507,18 @@ $(function() {
         if (!goalX && !goalZ) { // if Keyboard Commands, just update dirAngle
           dirAngle = (270 - playerSceneNode.Rot.Y) / 180 * Math.PI;
           // if Mouse, update rotation of player character appropriately
-        } else if (goal && playerSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, playerSceneNode.Pos.Y,goal.Z)) > 3*walkSpeed) {
+        } else if (goal && playerSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, playerSceneNode.Pos.Y,goal.Z)) > 3*walkDist) {
           dirAngle = Math.atan((goalZ - originalZ) / (goalX - originalX));
           if (goalX > playerSceneNode.Pos.X) { dirAngle = Math.PI + dirAngle; }
           playerSceneNode.Rot.Y = 270 - dirAngle * 180 / Math.PI; // dirAngle must be converted into 360
         }
 
         newX = newZ = 0; // reset so we can recalculate based on new angle
-        newX -= walkSpeed * Math.sin(Math.PI/2 + dirAngle);
-        newZ += walkSpeed * Math.cos(Math.PI/2 + dirAngle);
+        newX -= walkDist * catchupRate * Math.sin(Math.PI/2 + dirAngle);
+        newZ += walkDist * catchupRate * Math.cos(Math.PI/2 + dirAngle);
         // so this calculates the new X and new Z twice, but this one makes it right to the facing angle
         
-        if ((!goalX && !goalZ) || (goal && playerSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, playerSceneNode.Pos.Y,goal.Z)) > 2*walkSpeed)) {
+        if ((!goalX && !goalZ) || (goal && playerSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, playerSceneNode.Pos.Y,goal.Z)) > 2*walkDist)) {
           if (!standKey) {
             playerSceneNode.Pos.X += newX;
             playerSceneNode.Pos.Z += newZ;
@@ -554,8 +580,14 @@ $(function() {
     }
   });
 
+
+  // Now initialize the time variables
+  currentTime = (new Date()).getTime();
+  lastTime = currentTime;
+
   // Call primary recurring functions once to get the ball running
   updateTeam();
+  //timeLoop();
   mainLoop();
   setInterval(updatePlayers, 5000);
   
