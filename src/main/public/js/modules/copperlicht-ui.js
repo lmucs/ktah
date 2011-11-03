@@ -331,7 +331,7 @@ $(function() {
             currentPlayer.attacking = zombieBeingAttacked;
             
             if (currentPlayer.beingAttacked) {
-              currentPlayer.health -= 5 * catchupRate;
+              currentPlayer.health -= 5;// * catchupRate;
               currentPlayer.beingAttacked = false;
             }
             
@@ -385,9 +385,9 @@ $(function() {
     // Handle goalX if it has a new number
     if (destination != origin) {
       if (destination > origin + 1) {
-        newVal += walkDist * catchupRate;
+        newVal += walkDist;// * catchupRate;
       } else if (destination < origin - 1) { 
-        newVal -= walkDist * catchupRate;
+        newVal -= walkDist;// * catchupRate;
       } else {
         destination = origin;
       }
@@ -514,8 +514,8 @@ $(function() {
         }
 
         newX = newZ = 0; // reset so we can recalculate based on new angle
-        newX -= walkDist * catchupRate * Math.sin(Math.PI/2 + dirAngle);
-        newZ += walkDist * catchupRate * Math.cos(Math.PI/2 + dirAngle);
+        newX -= walkDist * Math.sin(Math.PI/2 + dirAngle);// * catchupRate;
+        newZ += walkDist * Math.cos(Math.PI/2 + dirAngle);// * catchupRate;
         // so this calculates the new X and new Z twice, but this one makes it right to the facing angle
         
         if ((!goalX && !goalZ) || (goal && playerSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, playerSceneNode.Pos.Y,goal.Z)) > 2*walkDist)) {
