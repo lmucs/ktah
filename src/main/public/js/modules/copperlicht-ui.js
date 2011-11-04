@@ -100,17 +100,6 @@ $(function() {
         }
       },
       
-      // Helper function to set up an entering player clone (after the first)
-      addNewPlayer = function (gamestateNumber, midGame) {
-        var addNumber = characterArray.length;
-        characterArray[addNumber] = characterArray[0].createClone(scene.getRootSceneNode());
-        if (midGame) {
-          characterArray[addNumber].playerName = ktah.gamestate.players[gamestateNumber].name;
-          characterArray[addNumber].playing = true;
-          resetZombiePosition(addNumber);
-        }
-      },
-      
       // Updates the character array and the player's position within it
       // Set initialization to true for first time setup and population of characters
       updateCharacterArray = function (currentNumber, initialization) {
@@ -129,14 +118,13 @@ $(function() {
               characterArray[0] = scene.getSceneNodeFromName('ghoul');
             } else {
               // All other characters are cloned and added to scene
-              addNewPlayer(i, false);
+              characterArray[i] = characterArray[0].createClone(scene.getRootSceneNode());
             }
             characterArray[i].playerName = ktah.gamestate.players[i].name;
             characterArray[i].playing = true;
             characterArray[i].Pos.Z += i * 15;
-          // Otherwise, it's an update: one of two scenarios
-          // Scenario One: a player has left
-          } else if (playerCount <= currentNumber) {
+          // Otherwise, it's an update
+          } else {
             // Reset all the "playing" tags of the scene nodes so that the ones that
             // no longer are active can be culled by process of elimination
             for (var k = 0; k < characterArray.length; k++) {
@@ -152,14 +140,11 @@ $(function() {
                 updatedCharacters[updatedCharacters.length - 1].playing = characterArray[j].playing = true;
               }
             }
-          // Scenario Two: a player has joined
-          } else {
-            addNewPlayer(currentNumber - 1, true);
           }
         }
         
         // If this was a mid-game update, set the players back up
-        if (!initialization && (playerCount <= currentNumber)) {
+        if (!initialization) {
           // Nuke the "zombie" scene node (pun intended, just nuke the node the player left)
           for (var k = 0; k < characterArray.length; k++) {
             if (!characterArray[k].playing) {
@@ -327,6 +312,10 @@ $(function() {
         player : userName
       },
       success: function (data) {
+        if (!data) {
+          alert("You tried to access this game illegally. This incident has been reported.");
+          window.location = "../../lobby";
+        }
         updateGamestate(data);
       },
       error: function (jqXHR, textStatus, errorThrown) {
@@ -655,5 +644,23 @@ $(function() {
 
   //timeLoop();
   mainLoop();
+  
+  // If a player leaves the room, remove them from the gamestate
+  window.onunload = function () {
+    $.ajax({
+      type: 'GET',
+      url: '/gamestate/' + gameId + "/" + userName,
+      data: {
+        player : userName
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+      },
+        dataType: 'json',
+        contentType: 'application/json'
+    });
+  };
   
 });

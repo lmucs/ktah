@@ -45,33 +45,33 @@ $(function () {
                 url: '/gamestate',
                 success: function (data) {
                     var allGames = data,
-                        gameList = $("#game-list");
+                        gameList = $("#game-list"),
+                        listCount = 0;
                     
                     // Clear the list currently shown
                     gameList.html("");
-                    
-                    // If there are no games... sad time!
-                    if (allGames.length === 0) {
-                        gameList.append(
-                            '<p class="lobby-noGames">Sad time! No games available...</p>'
-                        );
-                    } else {
-                        // List a new element for each player in the room
-                        for (var i = 0; i < allGames.length; i++) {
-                            // Add the HTML to the list area
-                            if (allGames[i] !== null) { 
-                                gameList.append(
-                                    '<div class="lobby-game"><div class="lobby-playerCount">'
-                                    + allGames[i].playerCount + ' / 4</div><div class="lobby-gameName"><strong>Game: </strong><span class="game">'
-                                    + allGames[i].name + '</span></div><div class="lobby-classPreview">Class preview will go here...'
-                                    + '</div></div>'
-                                );
-                            }
+                    // List a new element for each player in the room
+                    for (var i = 0; i < allGames.length; i++) {
+                        // Add the HTML to the list area
+                        if (allGames[i] !== null && !allGames[i].begun) {
+                            gameList.append(
+                                '<div class="lobby-game"><div class="lobby-playerCount">'
+                                + allGames[i].playerCount + ' / 4</div><div class="lobby-gameName"><strong>Game: </strong><span class="game">'
+                                + allGames[i].name + '</span></div><div class="lobby-classPreview">Class preview will go here...'
+                                + '</div></div>'
+                            );
+                            listCount++;
                         }
-                        
-                        // Lastly, buttonize the games that were populated
-                        buttonizeGameList();
                     }
+                    
+                    if (listCount === 0) {
+                      gameList.append(
+                        '<p class="lobby-noGames">Sad time! No games available...</p>'
+                      );
+                    }
+                    
+                    // Lastly, buttonize the games that were populated
+                    buttonizeGameList();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                   console.log(jqXHR);
@@ -123,7 +123,12 @@ $(function () {
                 if (gamestate.players.length >= 4) {
                     alert("Cannot join; game is full!");
                     return;
-                }  
+                }
+                
+                if (gamestate.environment.readyState) {
+                  alert("Cannot join game in progress!");
+                  return;
+                }
                 
                 // Check that player is not there presently
                 if (!checkForPlayer(player, gamestate)) {
@@ -163,9 +168,7 @@ $(function () {
         
         // Function to create a game
         createGame = function () {
-          var gameId = prompt("What would you like to call your game?", ""),
-              // TODO: are we using the gameExists variable?
-              gameExists = false;
+          var gameId = prompt("What would you like to call your game?", "");
           
           // User may have aborted game creation...
           if (gameId === null) {
@@ -180,51 +183,51 @@ $(function () {
             success: function (data) {
                 // If the game already exists, don't create it
                 if (!data) {
-                      //TODO: create gamestate here
-                      var gamestate = JSON.stringify({
-                        environment: {
-                          game: gameId,
-                          readyState : false
-                        },
-                        players: [
-                          // automatically add in the game creators player object
-                          {
-                            name: userName,
-                            character: "Choosing class...",
-                            health : 100,
-                            pointsRemaining: 0,
-                            pointsEarned: 0,
-                            attacking: -1,
-                            beingAttacked: false,
-                            posX: 0,
-                            posZ: 0,
-                            posY: 0,
-                            theta: 0,
-                            timeOut: 0,
-                            readyState: "notReady"
-                          }
-                        ]
-                      });
-                        
-                      // post the gamestate to the server
-                      $.ajax({
-                        type: 'POST',
-                        url: '/gamestate/' + gameId,
-                        data: gamestate,
-                        error: function (jqXHR, textStatus, errorThrown) {
-                          console.log(jqXHR);
-                          console.log(textStatus);
-                          console.log(errorThrown);
-                        },
-                        dataType: 'json',
-                        contentType: 'application/json'
-                      });
-                      // redirect to the correct url
-                      window.location = '/room/' + gameId;
-                    } else {
-                      alert("Game name already exists!");
-                      return;
-                    }
+                    //TODO: create gamestate here
+                    var gamestate = JSON.stringify({
+                      environment: {
+                        game: gameId,
+                        readyState : false
+                      },
+                      players: [
+                        // automatically add in the game creators player object
+                        {
+                          name: userName,
+                          character: "Choosing class...",
+                          health : 100,
+                          pointsRemaining: 0,
+                          pointsEarned: 0,
+                          attacking: -1,
+                          beingAttacked: false,
+                          posX: 0,
+                          posZ: 0,
+                          posY: 0,
+                          theta: 0,
+                          timeOut: 0,
+                          readyState: "notReady"
+                        }
+                      ]
+                    });
+                      
+                    // post the gamestate to the server
+                    $.ajax({
+                      type: 'POST',
+                      url: '/gamestate/' + gameId,
+                      data: gamestate,
+                      error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                      },
+                      dataType: 'json',
+                      contentType: 'application/json'
+                    });
+                    // redirect to the correct url
+                    window.location = '/room/' + gameId;
+                  } else {
+                    alert("Game name already exists!");
+                    return;
+                  }
                 },
             error: function (jqXHR, textStatus, errorThrown) {
               console.log(jqXHR);

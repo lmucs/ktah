@@ -18,28 +18,28 @@ module.exports = function(app) {
           readyCount = 0;
           
       if (gamestate) {
-          // With each GET make sure the player has checked in their time
-          if (req.query) {
-              for (var i = 0; i < gamestate.players.length; i++) {
-                  if (gamestate.players[i].name === req.query.player) {
-                      gamestate.players[i].timeOut = (new Date).getTime();
-                      gamestate.players[i].readyState = req.query.ready;
-                  }
-                  if (gamestate.players[i].readyState === "ready") {
-                      readyCount = readyCount + 1;
-                  }
-              }
+        // With each GET make sure the player has checked in their time
+        if (req.query) {
+          for (var i = 0; i < gamestate.players.length; i++) {
+            if (gamestate.players[i].name === req.query.player) {
+              gamestate.players[i].timeOut = (new Date).getTime();
+              gamestate.players[i].readyState = req.query.ready;
+            }
+            if (gamestate.players[i].readyState === "ready") {
+              readyCount = readyCount + 1;
+            }
           }
-          
-          if (readyCount === gamestate.players.length) {
-              gamestate.environment.readyState = true;
-          }
-          
-          res.contentType('application/json');
-          res.send(JSON.stringify(gamestate));
+        }
+        
+        if (readyCount === gamestate.players.length) {
+          gamestate.environment.readyState = true;
+        }
+        
+        res.contentType('application/json');
+        res.send(JSON.stringify(gamestate));
           
       } else {
-          res.send(false);
+        res.send(false);
       }
     },
     post: function (req, res) {
@@ -61,23 +61,26 @@ module.exports = function(app) {
         // If the difference between the server time and the player's last
         // checkin is greater than 10.5 seconds (a little more than 2 ajax calls)
         // then chuck them, as they've left the game
-        if ((gamePlayers[j].timeOut) 
+        if ((gamePlayers[j].timeOut)
          && (Math.abs(gamePlayers[j].timeOut - (new Date).getTime()) > 10500)) {
           gamePlayers.splice(j, 1);
-          // If there are no more players left in the game, delete it
-          if (gamePlayers.length === 0) {
-              delete GameController.games[game];
-              console.log("[-] Deleted Game: " + game);
-              console.log(GameController.games);
-              console.log(); // For visuals...
-              break;
-          }
         }
       }
-      if (typeof(GameController.games[game]) !== "undefined") {
-        gameList[i] = {name: game, playerCount : GameController.games[game].players.length};
+      // If there are no more players left in the game, delete it
+      if (gamePlayers.length === 0) {
+        delete GameController.games[game];
+        console.log("[-] Deleted Game: " + game);
+        console.log(GameController.games);
+        console.log(); // For visuals...
+        break;
       }
-      
+      if (typeof(GameController.games[game]) !== "undefined") {
+        gameList[i] = {
+          name: game, 
+          playerCount : GameController.games[game].players.length, 
+          begun : GameController.games[game].environment.readyState
+        };
+      }
       i++;
     }
   };
@@ -108,6 +111,21 @@ module.exports = function(app) {
       }
     }
     res.send({"success": true});
+  });
+  
+  // Handler to remove a player from a game or game room
+  app.get('/gamestate/:gameId/:userName', function(req, res) {
+    var gamePlayers;
+    if (typeof(GameController.games[req.params.gameId]) !== "undefined") {
+      gamePlayers = GameController.games[req.params.gameId].players;
+    }
+    if (gamePlayers && req.query) {
+      for (var i = 0; i < gamePlayers.length; i++) {
+        if (req.query.player === gamePlayers[i].name) {
+          gamePlayers.splice(i, 1);
+        }
+      }
+    }
   });
   
 }
