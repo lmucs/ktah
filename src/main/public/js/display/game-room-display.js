@@ -21,8 +21,11 @@ $(function () {
               ready : readyState
             },
             success: function (data) {
-              // TODO: Is this the right way to redirect with all ready?
               console.log(data);
+              if (!data) {
+                alert("Game-room closed. Redirecting to Lobby.");
+                window.location = '../../lobby';
+              }
               if (data.environment.readyState) {
                 window.location = '/game/' + gameId;
               } else {

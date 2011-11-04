@@ -126,6 +126,8 @@ module.exports = function(app) {
         }
       }
     }
+    trimDisconnects();
+    res.redirect('/lobby');
   });
   
 }

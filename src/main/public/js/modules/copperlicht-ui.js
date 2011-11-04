@@ -64,6 +64,7 @@ $(function() {
       userName = $("#userName").attr("data"),
       playerNumber = 0,
       playerCount = 0,
+      leftGame = false,
       
       // Function that clears and then sets up the user interface
       // called once at beginning and every time a player leaves / joins
@@ -178,13 +179,21 @@ $(function() {
       } else {
         return;
       }
-  
+      
       // Finish setting up by adding camera to scene
       scene.getRootSceneNode().addChild(cam);
       scene.setActiveCamera(cam);
       
       // Begin the server pinging
       setInterval(updateTeam, 50);
+      // Kick any PHONIES from the game
+      for (var i = 0; i < playerCount; i++) {
+        if (userName === characterArray[i].playerName) {
+          return;
+        }
+      }
+      // If we get here, we're a PHONY!
+      bootMiscreants("You tried to access this game illegally. This incident has been reported.");
     } else {
       setTimeout(engine.OnLoadingComplete, 250);
     }    
@@ -303,6 +312,15 @@ $(function() {
     ktah.gamestate = data;
   },
   
+  // Helper function to rid the game of any miscreants
+  bootMiscreants = function (message) {
+    if (!leftGame) {
+      leftGame = true;
+      alert(message);
+      window.location = "../../lobby";
+    }
+  },
+  
   // Used once at the beginning to get the ball rolling, seeding the gamestate
   seedGamestate = function () {
     $.ajax({
@@ -313,8 +331,7 @@ $(function() {
       },
       success: function (data) {
         if (!data) {
-          alert("You tried to access this game illegally. This incident has been reported.");
-          window.location = "../../lobby";
+          bootMiscreants("You tried to access this game illegally. This incident has been reported.");
         }
         updateGamestate(data);
       },
@@ -338,7 +355,7 @@ $(function() {
         player : userName
       },
       success: function (data) {
-        updatePlayers(data); 
+        updatePlayers(data);
         
         // Update points
         $("#points-remaining").text(ktah.gamestate.players[playerNumber].pointsRemaining);
@@ -646,9 +663,10 @@ $(function() {
   mainLoop();
   
   // If a player leaves the room, remove them from the gamestate
-  window.onunload = function () {
+  $(window).unload(function () {
     $.ajax({
       type: 'GET',
+      async: false,
       url: '/gamestate/' + gameId + "/" + userName,
       data: {
         player : userName
@@ -661,6 +679,9 @@ $(function() {
         dataType: 'json',
         contentType: 'application/json'
     });
-  };
+    if (!leftGame) {
+      bootMiscreants("You have left the game! Returning to lobby...");
+    }
+  });
   
 });
