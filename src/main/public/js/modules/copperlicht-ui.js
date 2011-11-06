@@ -16,9 +16,10 @@ $(function() {
   engine.addScene(scene);
 
   // Rate of how much to play catchup so stats applied equally
-  var catchupRate = 1.0, lastTime = timeDiff = 0.0, currentTime,
-  timeLoopLength = 1000, // do not set below 1000 or it starts to lag
-  movementCounterbalance = 15.0, timeLoopCurrent = 0,
+  var catchupRate = 1.0, catchupRateEnabled = true, lastTime = timeDiff = 0.0, currentTime,
+  timeDiffs = [], timeDiffsCurrent = 0, timeDiffsTotal = 10, timeDiffsStartingUp = true, avgTimeDiff = 0,
+  timeLoopLength = 1, // how many loops before updating the timestamp again/checking in on lag
+  catchupCounterbalance = 50.0, timeLoopCurrent = 0,
   startingY = 1.4,
   startingX = 64.4,
   startingZ = 118.4,
@@ -461,9 +462,9 @@ $(function() {
     // Handle goalX if it has a new number
     if (destination != origin) {
       if (destination > origin + 1) {
-        newVal += walkDist;// * catchupRate;
+        newVal += walkDist * catchupRate;
       } else if (destination < origin - 1) { 
-        newVal -= walkDist;// * catchupRate;
+        newVal -= walkDist * catchupRate;
       } else {
         destination = origin;
       }
@@ -496,17 +497,46 @@ $(function() {
   
   // Update catchupRate based on time passed
   updateCatchupRate = function(newTime) {
-	  if (newTime != lastTime) {
-		  timeDiff = newTime - lastTime;
-		  lastTime = newTime;
-		  catchupRate = timeDiff/timeLoopLength*movementCounterbalance;
-	  }
+    if (catchupRateEnabled) {
+	    if (newTime != lastTime) { // only update with a new timestamp
+	      timeDiff = newTime - lastTime;
+	      lastTime = newTime;
+		 
+	      // Add new diff to timeDiffs array
+	      timeDiffs[timeDiffsCurrent] = timeDiff;
+	      if (timeDiffsCurrent < timeDiffsTotal-1) { timeDiffsCurrent++; }
+	      else { timeDiffsCurrent = 0; timeDiffsStartingUp = false; }
+        
+        // Then add all timeDiffs together to get the average
+	      avgTimeDiff = 0.0;
+	      if (timeDiffsStartingUp) { // while filling the list the first time
+	        for (var i=0; i<timeDiffsCurrent; i++){
+	          avgTimeDiff += timeDiffs[i];
+	        }
+	      } else { // if the list is full
+	        for (x in timeDiffs) { avgTimeDiff += timeDiffs[x]; }
+	      }
+	      // Find the average
+	      avgTimeDiff /= timeDiffsTotal;
+	      // And apply it (in proportion to how often timeStamp was updated, and then counterbalanced
+	      // to try and make the base catchupRate equal to one
+	      catchupRate = avgTimeDiff/((timeLoopLength+1)*catchupCounterbalance);
+	    }
+	    
+	    // If you want to see how various computers compare, just uncomment this line
+	    // and watch the console log. It should reflect how much catchup is needed
+	    // for the characters to appear as synced up  
+      //console.log("catchupRate: " + catchupRate);
+
+    } else {
+      catchupRate = 1;
+    }
   },
 
   // Don't need to check time every loop, can check occasionally
   timeLoop = function() {
     currentTime = (new Date()).getTime();
-    //setTimeout(mainLoop, timeLoopLength);
+	//setTimeout(mainLoop, timeLoopLength);
   },
   
   mainLoop = function() {
@@ -519,7 +549,7 @@ $(function() {
         timeLoop();
         timeLoopCurrent=0;
       }
-      updateCatchupRate(currentTime);
+      updateCatchupRate(currentTime);//currentTime);
       
       // Check to make sure mouse is held down, not just clicked
       if (mouseIsDown) {
@@ -590,8 +620,8 @@ $(function() {
         }
 
         newX = newZ = 0; // reset so we can recalculate based on new angle
-        newX -= walkDist * Math.sin(Math.PI/2 + dirAngle);// * catchupRate;
-        newZ += walkDist * Math.cos(Math.PI/2 + dirAngle);// * catchupRate;
+        newX -= walkDist * Math.sin(Math.PI/2 + dirAngle) * catchupRate;
+        newZ += walkDist * Math.cos(Math.PI/2 + dirAngle) * catchupRate;
         // so this calculates the new X and new Z twice, but this one makes it right to the facing angle
         
         if ((!goalX && !goalZ) || (goal && playerSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, playerSceneNode.Pos.Y,goal.Z)) > 2*walkDist)) {
