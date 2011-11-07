@@ -44,6 +44,7 @@ module.exports = function(app) {
   app.post('/chat/:room', function(req, res)
   {
     var nick = req.session.userInfo.accountName;
+    var otherNicks = [];
     var time = new Date().getTime();
     var room = req.params.room;
     var type = req.body.type;
@@ -60,17 +61,27 @@ module.exports = function(app) {
         
         //place in each inbox:
         addMessage(nick, 'join', null, time, room);
+        
+        //build list of other nicks:
+        for (var user in inbox[room])
+        {
+          otherNicks.push(user);
+        }
+        
         //create inbox for this user:
         inbox[room][nick] = {};
         inbox[room][nick].messages = [];
         inbox[room][nick].lastPing = time;
-        //give this user their nick:
-        res.send( JSON.stringify({nick: nick}) );
+        
+        //give this user their nick and list of other nicks:
+        res.send( JSON.stringify({nick: nick, otherNicks: otherNicks}) );
         break;
+        
       case 'msg':
         addMessage(nick, 'msg', body, time, room);
         res.send({"success": true});
         break;
+        
       case 'part':
         //delete inbox[room][nick];
         //addMessage(nick, 'part', null, time, room);

@@ -2,13 +2,12 @@ var CONFIG = { debug: false
              , nick: "#"   // get from user session cookie 
              , id: null    // likewise
              , room: null  // should correspond to game (or lobby) number
-             , last_message_time: 1
              , focus: true //event listeners bound in onConnect
              , unread: 0 //updated in the message-processing loop
              };
              
 
-
+//An array of the nicks of the other members of this chat room:
 var nicks = [];
 
 //  CUT  ///////////////////////////////////////////////////////////////////
@@ -109,12 +108,18 @@ Date.fromString = function(str) {
 //  CUT  ///////////////////////////////////////////////////////////////////
 
 
-
-//updates the users link to reflect the number of active users
-function updateUsersLink ( ) {
-  var t = nicks.length.toString() + " user";
-  if (nicks.length != 1) t += "s";
-  $("#usersLink").text(t);
+//Prints the list of other room members to the box
+function printNicks()
+{
+  //Empty out the list first:
+  $('#nicks').html('');
+  
+  //Add the current list of chatters:
+  for (var i = 0; i < nicks.length; i++)
+  {
+    //$('#nicks').add('<li class="nick">' + nicks[i] + '</li>');
+    $('#nicks').html($('#nicks').html() + '<li class="nick">' + nicks[i] + '</li>');
+  }
 }
 
 //handles another person joining chat
@@ -126,8 +131,8 @@ function userJoin(nick, timestamp) {
     if (nicks[i] == nick) return;
   //otherwise, add the user to the list
   nicks.push(nick);
-  //update the UI
-  updateUsersLink();
+  //update the list of other chatters
+  printNicks();
 }
 
 //Sends a request to the server to join the given chat room
@@ -142,11 +147,13 @@ function thisJoin()
          , data: { type: 'join' }
          , error: function () {
              alert("error connecting to server");
-             //showConnect();
              return false;
            }
-         , success: function()
+         , success: function(data)
            {
+             //Set list of other chatters:
+             nicks = data.otherNicks;
+             printNicks();
              onConnect();
              return true
            }
@@ -164,8 +171,8 @@ function userPart(nick, timestamp) {
       break;
     }
   }
-  //update the UI
-  updateUsersLink();
+  //update the list of other chatters
+  printNicks();
 }
 
 // utility functions
@@ -290,10 +297,6 @@ function longPoll (data) {
     for (var i = 0; i < data.messages.length; i++) {
       var message = data.messages[i];
 
-      //track oldest message so we only request newer messages from server
-      if (message.time > CONFIG.last_message_time)
-        CONFIG.last_message_time = message.time;
-
       //dispatch new messages to their appropriate handlers
       switch (message.type) {
         case "msg":
@@ -318,7 +321,6 @@ function longPoll (data) {
     //only after the first request for messages do we want to show who is here
     if (first_poll) {
       first_poll = false;
-      //who(); //TODO: take care of this 
     }
   }
 
@@ -327,7 +329,7 @@ function longPoll (data) {
          , type: "GET"
          , url: "/chat/" + CONFIG.room
          , dataType: "json"
-         , data: { since: CONFIG.last_message_time}
+         , data: { }
          , error: function () {
              addMessage("", "long poll error. trying again...", new Date(), "error");
              transmission_errors += 1;
@@ -355,7 +357,7 @@ function send(msg) {
   if (CONFIG.debug === false) {
     var time = new Date().getTime()
     
-    jQuery.post("/chat/" + CONFIG.room, {body: msg, room: CONFIG.room, time: time, type: 'msg'}, function (data) { /*alert('got here');*/ }, "json");
+    jQuery.post("/chat/" + CONFIG.room, {body: msg, room: CONFIG.room, time: time, type: 'msg'}, function (data) { }, "json");
     
   }
 }
@@ -395,11 +397,6 @@ function updateTitle(){
   }
 }
 
-// daemon start time
-var starttime;
-// daemon memory usage
-var rss;
-
 //handle the server's response to our nickname and join request
 function onConnect (data) {
   
@@ -422,28 +419,6 @@ function onConnect (data) {
   });
 }
 
-//add a list of present chat members to the stream
-function outputUsers (nicks) {
-  
-  //var nick_string = nicks.length > 0 ? nicks.join(", ") : "(none)";
-  var nick_string = ""; //for right now
-  addMessage("users:", nick_string, new Date(), "notice");
-  
-  
-  //TODO: Make it change the div in the chat console with the list of
-  //everyone in the room
-  return true;
-}
-
-//get a list of the users presently in the room, and add it to the stream
-function who () {
-  jQuery.get("/chatwho", {}, function (data, status) {
-    if (status != "success") return;
-    nicks = data.nicks;
-    outputUsers(nicks);
-  }, "json");
-}
-
 $(document).ready(function() {
 
   //submit new messages when the user hits enter if the message isnt blank
@@ -453,25 +428,11 @@ $(document).ready(function() {
     if (!util.isBlank(msg)) send(msg);
     $("#entry").attr("value", ""); // clear the entry field.
   });
-
-  $("#usersLink").click(outputUsers);
   
   //New stuff written for K'tah to implement auto-joining:
   showLoad();
 
   CONFIG.room = $("#roomNumber").html();
-
-  /*$.ajax({ cache: false
-         , type: "POST"
-         , dataType: "json"
-         , url: "/chat/" + CONFIG.room
-         , data: { type: 'join' }
-         , error: function () {
-             alert("error connecting to server");
-             showConnect();
-           }
-         , success: onConnect
-         });*/
 
   //Send a join request to the server         
   thisJoin();
@@ -491,7 +452,6 @@ $(document).ready(function() {
   //we just don't show the chat stream to the user until we create a session
   longPoll();
   
-  //showConnect(); //From original.
   //In k'tah chat, just show chat right away:
   showChat(CONFIG.nick);
   
