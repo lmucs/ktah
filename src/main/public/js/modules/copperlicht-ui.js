@@ -23,6 +23,10 @@ $(function() {
   startingY = 0.0,
   startingX = 0.0,
   startingZ = 0.0,
+  
+  // Player collision animator used to incorporate Copperlicht collision detection
+  playerCollisionAnimator, // initialized once scene loaded
+  playerCollisionRadius = 6, playerSlidingSpeed = 10,
 
   // Camera positioning values
   camSetDist = 10, camDistRatio = 1.0,
@@ -177,6 +181,16 @@ $(function() {
       if (scene) {
         // Add the players to the character array
         updateCharacterArray(ktah.gamestate.players.length, true);
+        // Collision for player set when scene loaded
+        playerCollisionAnimator = new CL3D.AnimatorCollisionResponse(
+          new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
+          new CL3D.Vect3d(0,0,0), // no gravity!
+          new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
+          scene.getCollisionGeometry(),
+          playerSlidingSpeed
+        );
+        playerSceneNode.addAnimator(playerCollisionAnimator);
+        //playerSceneNode.Pos.Y += 10;
       } else {
         return;
       }
@@ -655,10 +669,14 @@ $(function() {
         
         // Finally, update Camera for new positions
         camFollow(cam, playerSceneNode);
+        
+        // DELETEME logging to figure out bug with collision detection
+        console.log("Player y is " + playerSceneNode.Pos.Y);
       }
       
     }
 
+    
     setTimeout(mainLoop, 20);
   };
   
