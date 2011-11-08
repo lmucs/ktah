@@ -190,7 +190,6 @@ $(function() {
           playerSlidingSpeed
         );
         playerSceneNode.addAnimator(playerCollisionAnimator);
-        //playerSceneNode.Pos.Y += 10;
       } else {
         return;
       }
@@ -662,13 +661,9 @@ $(function() {
         
         // Finally, update Camera for new positions
         camFollow(cam, playerSceneNode);
-        
-        // DELETEME logging to figure out bug with collision detection
-        console.log("Player y is " + playerSceneNode.Pos.Y);
       }
       
     }
-
     
     setTimeout(mainLoop, 20);
   };
