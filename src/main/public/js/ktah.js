@@ -20,9 +20,6 @@ include.includeInit([
   '/js/lib/underscore.min.js', // backbone dependency
   '/js/lib/backbone.min.js',
   
-  /***** MODULES *****/
-  '/js/modules/copperlicht-ui.js',
-  
   /***** TYPES *****/
   // Character classes
   '/js/types/characters/character.js',
@@ -44,5 +41,8 @@ include.includeInit([
   '/js/types/resources/sand.js',
   '/js/types/resources/water.js',
   '/js/types/resources/wood.js',
-  '/js/types/resources/zombie-flesh.js'
+  '/js/types/resources/zombie-flesh.js',
+  
+  /***** MODULES *****/
+  '/js/modules/copperlicht-ui.js'
 ]);

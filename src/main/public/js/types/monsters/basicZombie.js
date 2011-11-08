@@ -6,34 +6,36 @@
 
 $(function () {
     ktah.types.BasicZombie = ktah.types.Monster.extend({
-      initialize: function() {
-        var basicZombie = this.sceneNode.createClone(this.scene.getRootSceneNode());
+      initialize: function(attributes, options) {
+        var basicZombie = options.sceneNode.createClone(options.scene.getRootSceneNode());
         
         this.type = 'basicZombie';
+        this.health = 100;
         
-        //TODO: Randomize these but with some limitations?
-        basicZombie.Pos.Y = 1.4;
-        basicZombie.Pos.X = this.posX = 0;
-        basicZombie.Pos.Z = this.posZ = 0;
+        basicZombie.Pos.Y = 1.3;
+        basicZombie.Pos.X = this.posX = attributes.posX;
+        basicZombie.Pos.Z = this.posZ = attributes.posX;
         
-        // $.ajax({
-          // type: 'POST',
-          // url: '/gamestate/' + gameId + '/monsters',
-          // data: {
-            // type : this.type,
-            // id: null,
-            // health: this.health,
-            // posX: this.posX,
-            // posZ: this.posZ
-          // },
-          // error: function (jqXHR, textStatus, errorThrown) {
-            // console.log(jqXHR);
-            // console.log(textStatus);
-            // console.log(errorThrown);
-          // },
-          // dataType: 'json',
-          // contentType: 'application/json'
-        // });
+        //TODO: Should this be done somewhere else?
+        
+        $.ajax({
+          type: 'POST',
+          url: '/monsters/' + options.gameId,
+          data: JSON.stringify({
+            type: this.type,
+            id: null,
+            health: this.health,
+            posX: this.posX,
+            posZ: this.posZ
+          }),
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+          },
+          dataType: 'json',
+          contentType: 'application/json'
+        });
       }
     });
 });

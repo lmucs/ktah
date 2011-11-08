@@ -188,6 +188,13 @@ $(function() {
       // Remove the loading screen
       $("#loadingScreen").fadeOut(3000);
       
+      // ***** testing to make monsters! **********
+      var protoGhoul = scene.getSceneNodeFromName('ghoul');
+      
+      var testMonster = new ktah.types.BasicZombie({posX: 20, posZ: 20},{gameId: gameId, scene: scene, sceneNode: protoGhoul}),
+          testMonster1 = new ktah.types.BasicZombie({posX: 50, posZ: 50},{gameId: gameId, scene: scene, sceneNode: protoGhoul}),
+          testMonster2 = new ktah.types.BasicZombie({posX: 30, posZ: 30},{gameId: gameId, scene: scene, sceneNode: protoGhoul});
+      
       // Begin the server pinging
       setInterval(updateTeam, 50);
       // Kick any PHONIES from the game

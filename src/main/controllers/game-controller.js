@@ -139,4 +139,20 @@ module.exports = function(app) {
     var currentGame = GameController.games[req.params.gameId];
   });
   
+  // Post handler to add new monsters to the game
+  app.post('/monsters/:gameId', function(req, res) {
+    
+    var gameId = req.params.gameId,
+        monster = req.body,
+        gamestate = GameController.games[gameId];
+        
+      if (!gamestate.monsters || typeof(gamestate.monsters) === "undefined") {
+        gamestate.monsters = [];
+      }
+      
+      monster.id = gamestate.monsters.length;
+      gamestate.monsters.push(monster)
+      res.send({"success": true});
+  });
+  
 }
