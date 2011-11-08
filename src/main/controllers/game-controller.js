@@ -134,4 +134,9 @@ module.exports = function(app) {
     res.redirect('/lobby');
   });
   
+  // Handler to retrieve the score screen
+  app.get('/score/:gameId/:userName', function(req, res) {
+    var currentGame = GameController.games[req.params.gameId];
+  });
+  
 }
