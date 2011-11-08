@@ -201,12 +201,10 @@ $(function() {
       // Remove the loading screen
       $("#loadingScreen").fadeOut(3000);
       
-      // ***** testing to make monsters! **********
+      // ***** testing to make monsters! *****
       var protoGhoul = scene.getSceneNodeFromName('ghoul');
       
-      var testMonster = new ktah.types.BasicZombie({posX: 20, posZ: 20},{gameId: gameId, scene: scene, sceneNode: protoGhoul}),
-          testMonster1 = new ktah.types.BasicZombie({posX: 50, posZ: 50},{gameId: gameId, scene: scene, sceneNode: protoGhoul}),
-          testMonster2 = new ktah.types.BasicZombie({posX: 30, posZ: 30},{gameId: gameId, scene: scene, sceneNode: protoGhoul});
+      var monsterArray = generateMonsters(protoGhoul, 500);
       
       // Begin the server pinging
       setInterval(updateTeam, 50);
@@ -367,6 +365,15 @@ $(function() {
       dataType: 'json',
       contentType: 'application/json'
     });
+  },
+  
+  // Generate a certain amount of zombies.
+  generateMonsters = function(sceneNode, amount) {
+	var monsterArray = [];
+	for(var i = 0; i < amount; i++) {
+		monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500},{gameId: gameId, scene: scene, sceneNode: sceneNode});
+	}
+	return monsterArray;
   },
   
   // Updates the positions of other players
