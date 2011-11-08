@@ -20,9 +20,9 @@ $(function() {
   timeDiffs = [], timeDiffsCurrent = 0, timeDiffsTotal = 10, timeDiffsStartingUp = true, avgTimeDiff = 0,
   timeLoopLength = 1, // how many loops before updating the timestamp again/checking in on lag
   catchupCounterbalance = 50.0, timeLoopCurrent = 0,
-  startingY = 1.4,
-  startingX = 64.4,
-  startingZ = 118.4,
+  startingY = 0.0,
+  startingX = 0.0,
+  startingZ = 0.0,
 
   // Camera positioning values
   camSetDist = 10, camDistRatio = 1.0,
@@ -117,7 +117,7 @@ $(function() {
             
             if (i === 0) {
               // "Character 0" gets the original node
-              characterArray[0] = scene.getSceneNodeFromName('ghoul');
+              characterArray[0] = scene.getSceneNodeFromName('soldier');
             } else {
               // All other characters are cloned and added to scene
               characterArray[i] = characterArray[0].createClone(scene.getRootSceneNode());
@@ -297,14 +297,14 @@ $(function() {
   animateCharacter = function (characterIndex, animation) {
     var currentChar = characterArray[characterIndex];
     if (currentChar.currentAnimation !== animation) {
-      currentChar.setLoopMode(animation !== "attack");
-      if (currentChar.currentAnimation !== "attack") {
+      currentChar.setLoopMode(animation !== "aim");
+      if (currentChar.currentAnimation !== "aim") {
         currentChar.currentAnimation = animation;
         currentChar.setAnimation(animation);
       }
     }
-    if (animation === "attack") {
-      setTimeout(function () {currentChar.currentAnimation = "walk";}, 600);
+    if (animation === "aim") {
+      setTimeout(function () {currentChar.currentAnimation = "run";}, 600);
     }
   },
   
@@ -374,14 +374,14 @@ $(function() {
           
           // Set zombie animation
           if (currentPlayer.posX !== characterArray[i].Pos.X || currentPlayer.posZ !== characterArray[i].Pos.Z) {
-            animateCharacter(i, "walk");
+            animateCharacter(i, "run");
           } else {
-            animateCharacter(i, "look");
+            animateCharacter(i, "stand");
           }
           
           // Set attack animation
           if (currentPlayer.attacking !== -1) {
-            animateCharacter(i, "attack");
+            animateCharacter(i, "aim");
           }
           
           if (i === playerNumber) {
