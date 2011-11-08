@@ -99,6 +99,10 @@ module.exports = function(app) {
   // Handler for updating a player's position in the gamestate
   app.post('/gamestate/:gameId/:userName', function(req, res) {
     var currentGame = GameController.games[req.params.gameId];
+    // If the game doesn't exist, ABORT!
+    if (!currentGame) {
+      return;
+    }
     for (var i = 0; i < currentGame.players.length; i++) {
       var currentPlayer = currentGame.players[i];
       if (currentPlayer.name === req.params.userName) {

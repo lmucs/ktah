@@ -69,6 +69,18 @@
   margin-bottom: 10px;
   cursor: default;
 }
+
+.loadingScreen {
+  font-size: 30px;
+  background-color: white;
+  position: fixed;
+  z-index: 5000;
+  padding-top: 50px;
+  text-align: center;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
   
 #ktahCanvas {
   border: 1px solid black;

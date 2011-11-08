@@ -185,6 +185,9 @@ $(function() {
       scene.getRootSceneNode().addChild(cam);
       scene.setActiveCamera(cam);
       
+      // Remove the loading screen
+      $("#loadingScreen").fadeOut(3000);
+      
       // Begin the server pinging
       setInterval(updateTeam, 50);
       // Kick any PHONIES from the game
