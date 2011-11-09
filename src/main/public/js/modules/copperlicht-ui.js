@@ -56,7 +56,7 @@ $(function() {
   mouseClickedTimer = 0,
 
   // Variables for keyboard controls
-  wKey = aKey = sKey = dKey = upKey = leftKey = downKey = rightKey = resetKey = jumpKey = standKey = false;
+  wKey = aKey = sKey = dKey = upKey = leftKey = downKey = rightKey = resetKey = standKey = false;
 
   // Universal Camera Setup
   var cam = new CL3D.CameraSceneNode();
@@ -70,6 +70,7 @@ $(function() {
       playerNumber = 0,
       playerCount = 0,
       leftGame = false,
+      gameOver = false,
       
       // Function that clears and then sets up the user interface
       // called once at beginning and every time a player leaves / joins
@@ -204,10 +205,11 @@ $(function() {
       // ***** testing to make monsters! *****
       var protoGhoul = scene.getSceneNodeFromName('ghoul');
       
-      var monsterArray = generateMonsters(protoGhoul, 500);
+      var monsterArray = generateMonsters(protoGhoul, 10);
       
-      // Begin the server pinging
+      // Begin the server pinging and end-condition checking
       setInterval(updateTeam, 50);
+      setInterval(gameEndCheck, 5000);
       // Kick any PHONIES from the game
       for (var i = 0; i < playerCount; i++) {
         if (userName === characterArray[i].playerName) {
@@ -281,10 +283,6 @@ $(function() {
       case '0':
         // reset key is zero
     	resetKey = bool;
-    	break;
-    	case ' ':
-    	  // "Jump forward is space"
-    	jumpKey = bool;
     	break;
     	case '': // There is a Left Shift character here, eclipse just can't display it
           standKey = bool;
@@ -369,11 +367,11 @@ $(function() {
   
   // Generate a certain amount of zombies.
   generateMonsters = function(sceneNode, amount) {
-	var monsterArray = [];
-	for(var i = 0; i < amount; i++) {
-		monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500},{gameId: gameId, scene: scene, sceneNode: sceneNode});
-	}
-	return monsterArray;
+  	var monsterArray = [];
+  	for(var i = 0; i < amount; i++) {
+  		monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500},{gameId: gameId, scene: scene, sceneNode: sceneNode});
+  	}
+  	return monsterArray;
   },
   
   // Updates the positions of other players
@@ -428,23 +426,16 @@ $(function() {
               camFollow(cam, characterArray[i]);
             }
             
-            if (jumpKey) {
-              resetGoal();
-              zombieJump(i);
-              camFollow(cam, characterArray[i]);
-            }
-            
             currentPlayer.attacking = zombieBeingAttacked;
             
             if (currentPlayer.beingAttacked) {
-              currentPlayer.health -= 5;
+              currentPlayer.health -= 30;
               currentPlayer.beingAttacked = false;
             }
             
             if (currentPlayer.health <= 0) {
-              currentPlayer.health = 100;
-              resetZombiePosition(i);
-              camFollow(cam, characterArray[i]);
+              currentPlayer.health = 0;
+              currentPlayer.status = "dead";
             }
             
             $.ajax({
@@ -477,6 +468,31 @@ $(function() {
     });
   },
   
+  // Function to check if everyone's DEAD... periodically
+  gameEndCheck = function () {
+    for (var i = 0; i < ktah.gamestate.players.length; i++) {
+      var currentPlayer = ktah.gamestate.players[i];
+      if (currentPlayer && currentPlayer.status === "alive") {
+        // If any player is alive, keep the game going
+        return;
+      }
+    }
+    // Otherwise, everyone's dead! End the game...
+    gameOver = true;
+    $.ajax({
+      type: 'POST',
+      url: '/score/' + gameId,
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+      },
+      dataType: 'json',
+      contentType: 'application/json'
+    });
+    window.location = "../../score/" + gameId;
+  },
+  
   // Function that periodically checks for players coming or going
   updatePlayers = function (data) {
     updateGamestate(data);
@@ -506,11 +522,6 @@ $(function() {
       characterArray[i].Pos.Y = startingY;
       characterArray[i].Pos.X = startingX;
       characterArray[i].Pos.Z = startingZ;
-  },
-  
-  zombieJump = function (i) {
-    characterArray[i].Pos.X += 10;
-    characterArray[i].Pos.Z += 10;
   },
   
   resetGoal = function() {
@@ -724,22 +735,23 @@ $(function() {
   
   // If a player leaves the room, remove them from the gamestate
   $(window).unload(function () {
-    $.ajax({
-      type: 'GET',
-      async: false,
-      url: '/gamestate/' + gameId + "/" + userName,
-      data: {
-        player : userName
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown);
-      },
-        dataType: 'json',
-        contentType: 'application/json'
-    });
-    if (!leftGame) {
+    if (!gameOver) {
+      $.ajax({
+        type: 'GET',
+        async: false,
+        url: '/gamestate/' + gameId + "/" + userName,
+        data: {
+          player : userName
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR);
+          console.log(textStatus);
+          console.log(errorThrown);
+        },
+          dataType: 'json',
+          contentType: 'application/json'
+      });
+      
       bootMiscreants("You have left the game! Returning to lobby...");
     }
   });

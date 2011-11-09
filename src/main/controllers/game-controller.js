@@ -134,9 +134,34 @@ module.exports = function(app) {
     res.redirect('/lobby');
   });
   
-  // Handler to retrieve the score screen
-  app.get('/score/:gameId/:userName', function(req, res) {
+  // Handler to redirect to the score screen and manage final points
+  app.post('/score/:gameId', function(req, res) {
     var currentGame = GameController.games[req.params.gameId];
+    if (currentGame) {
+      for (var i = 0; i < currentGame.players.length; i++) {
+        if (currentGame.players[i].name === req.session.userInfo.accountName) {
+          // TODO: Perform account point adding here
+        }
+      }
+      req.session.gameScore = currentGame.players;
+      res.send({"success": true});
+    }
+  });
+  
+  // Handler to access the score screen
+  app.get('/score/:gameId', function(req, res) {
+    // Make sure the person has a score to display, otherwise route to lobby
+    if (req.session.gameScore) {
+      res.render('score', {
+        layout: true,
+        score: req.session.gameScore,
+        userName: req.session.userInfo.accountName,
+        gameId: req.params.gameId
+      });
+      req.session.gameScore = undefined;
+    } else {
+      res.redirect('/lobby');
+    }
   });
   
   // Post handler to add new monsters to the game

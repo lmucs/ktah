@@ -107,6 +107,7 @@ $(function () {
             posY: 0,
             theta: 0,
             timeOut: 0,
+            status: "alive",
             readyState: "notReady"
           };      
           
@@ -204,6 +205,7 @@ $(function () {
                           posY: 0,
                           theta: 0,
                           timeOut: 0,
+                          status: "alive",
                           readyState: "notReady"
                         }
                       ]

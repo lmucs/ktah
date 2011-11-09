@@ -11,71 +11,71 @@ var express = require('express'),
     mysql = require('mysql'),
 
     client = mysql.createClient({
-        ACCOUNTS_TABLE : "ktah_accounts",
-        host : "mysql.cs.lmu.edu",
-        database : "aforney2"
+      ACCOUNTS_TABLE : "ktah_accounts",
+      host : "mysql.cs.lmu.edu",
+      database : "aforney2"
     });
 
 /*
  *
- *  *** APPLICATION CONFIGURATION ****
+ *  **** APPLICATION CONFIGURATION ****
  *
  */
 
 app.configure(function () {
-    app.set('views', __dirname + '/views');
-    app.set('view engine', 'jade');
-    app.set("view options", {
-        layout: false
-    });
-    app.register('.html', {
-        compile: function (str, options) {
-            return function (locals) {
-                return str;
-            };
-        }
-    });
-    app.use(express.bodyParser());
-    app.use(express.methodOverride());
-    app.use(express.cookieParser());
-    app.use(express.session({
-        secret: 'your secret here'
-    }));
-    // TODO I don't know much about sessions and what this secret is, but we need to pick one!
-    app.use(app.router);
-    app.use(express.static(__dirname + '/public'));
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+  app.set("view options", {
+    layout: false
+  });
+  app.register('.html', {
+    compile: function (str, options) {
+      return function (locals) {
+        return str;
+      };
+    }
+  });
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(express.cookieParser());
+  app.use(express.session({
+    secret: 'your secret here'
+  }));
+  // TODO I don't know much about sessions and what this secret is, but we need to pick one!
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
 });
 
 app.configure('development', function () {
-    app.use(express.errorHandler({
-        dumpExceptions: true,
-        showStack: true
-    }));
+  app.use(express.errorHandler({
+    dumpExceptions: true,
+    showStack: true
+  }));
 });
 
 app.configure('production', function () {
-    app.use(express.errorHandler());
+  app.use(express.errorHandler());
 });
 
 /*
  *
- *  *** DATABASE CONFIGURATION ****
+ *  **** DATABASE CONFIGURATION ****
  *
  */
 
 // Check that the proper credentials have been set, otherwise, do not mess with database stuff
 if (process.env.KTAH_DB_USER && process.env.KTAH_DB_PASS) {
-    client.user = process.env.KTAH_DB_USER;
-    client.password = process.env.KTAH_DB_PASS;
-    require('./public/js/modules/db-config.js')(client);
+  client.user = process.env.KTAH_DB_USER;
+  client.password = process.env.KTAH_DB_PASS;
+  require('./public/js/modules/db-config.js')(client);
 } else {
-    console.error("Database user and/or password not found in environment.");
-    console.error("No database will be available to this process.");
+  console.error("Database user and/or password not found in environment.");
+  console.error("No database will be available to this process.");
 }
 
 /*
  *
- *  *** CONTROLLERS ****
+ *  **** CONTROLLERS ****
  *
  */
 
@@ -86,40 +86,40 @@ require('./controllers/room-controller.js')(app);
 
 /*
  *
- *  *** ROUTE DEFINITIONS ****
+ *  **** ROUTE DEFINITIONS ****
  *
  */
 
 // The lobby
 app.get('/lobby', function (req, res) {
-    if (req.session.is_logged_in) {
-        res.render('lobby', {
-            layout: true,
-            userName: req.session.userInfo.accountName
-        });
-    } else {
-        res.redirect('/');
-    }
+  if (req.session.is_logged_in) {
+    res.render('lobby', {
+      layout: true,
+      userName: req.session.userInfo.accountName
+    });
+  } else {
+    res.redirect('/');
+  }
 });
 
 // A chat tester
 app.get('/chattest/:room', function (req, res) {
-    res.render('chat', {
-        layout: true,
-        gameId: req.params.room
-    });
+  res.render('chat', {
+    layout: true,
+    gameId: req.params.room
+  });
 });
 
 // Play the game with the given id
 app.get('/game/:gameId', function (req, res) {
-    if (req.session.is_logged_in) {
-        res.render('game', {
-            gameId: req.params.gameId,
-            userName: req.session.userInfo.accountName
-        });
-    } else {
-        res.redirect('/');
-    }
+  if (req.session.is_logged_in) {
+    res.render('game', {
+      gameId: req.params.gameId,
+      userName: req.session.userInfo.accountName
+    });
+  } else {
+    res.redirect('/');
+  }
 });
 
 // Temporary playground for new ideas in zombie play.
@@ -129,7 +129,7 @@ app.get('/zombietest', function (req, res) {
 
 /*
  *
- *  *** START THE SERVER ****
+ *  **** START THE SERVER ****
  *
  */
 
