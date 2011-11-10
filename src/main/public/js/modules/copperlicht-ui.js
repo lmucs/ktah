@@ -681,9 +681,7 @@ $(function() {
           dirAngle = Math.atan((goalZ - originalZ) / (goalX - originalX));
           if (goalX > playerSceneNode.Pos.X) { dirAngle = Math.PI + dirAngle; }
 
-          console.log("dirAngle: " + (Math.floor(100*((dirAngle + 3*Math.PI) % (2 * Math.PI)))));
-          console.log("lastDirA: " + (Math.floor(100*((lastDirAngle + 2*Math.PI) % (2 * Math.PI)))));
-          // Seeking a goal, but flipping positions? Undo Goal and flip yourself back
+          // Seeking a goal, but flipping positions? (based on rounded nums) Undo Goal and flip yourself back
           if (Math.floor(100*((dirAngle + 3*Math.PI) % (2 * Math.PI))) === Math.floor(100*((lastDirAngle + 2*Math.PI) % (2 * Math.PI)))) {
             resetGoal();
             dirAngle = Math.PI + dirAngle;
