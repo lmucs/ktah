@@ -40,6 +40,9 @@ $(function () {
                   
                   if (gamestate.players[i].readyState === "ready") {
                     playerStatus += " room-player-ready";
+                    if (!readyState) {
+                      $("#readyButton").fadeTo(250, 0.25).fadeTo(250, 1);
+                    }
                   }
                   
                   // Accent the current player in the lobby
@@ -49,7 +52,7 @@ $(function () {
                   
                   // Add the HTML to the list area
                   playerList.append('<div class="' + playerStatus + '"><strong ' + playerAccent + '>'
-                  + currentPlayer.name + ':</strong> ' + currentPlayer.character + '</div>');
+                  + currentPlayer.name + '</strong><span class="class-selection">' + currentPlayer.character + '</span></div>');
                 }
               }
             },

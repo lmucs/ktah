@@ -344,7 +344,10 @@ $(function() {
       }
     }
     if (animation === "aim") {
-      setTimeout(function () {currentChar.currentAnimation = "run";}, 600);
+      setTimeout(function () {
+        currentChar.currentAnimation = "run";
+        animateCharacter(characterIndex, "run");
+      }, 600);
     }
   },
   
@@ -433,6 +436,11 @@ $(function() {
             animateCharacter(i, "aim");
           }
           
+          // Set death animation
+          if (currentPlayer.status === "dead") {
+            characterArray[i].Rot.X = -80;
+          }
+          
           if (i === playerNumber) {
             currentPlayer.posX = characterArray[i].Pos.X;
             currentPlayer.posZ = characterArray[i].Pos.Z;
@@ -494,24 +502,26 @@ $(function() {
     for (var i = 0; i < ktah.gamestate.players.length; i++) {
       var currentPlayer = ktah.gamestate.players[i];
       if (currentPlayer && currentPlayer.status === "alive") {
-        // If any player is alive, keep the game going
         return;
       }
     }
     // Otherwise, everyone's dead! End the game...
     gameOver = true;
-    $.ajax({
-      type: 'POST',
-      url: '/score/' + gameId,
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown);
-      },
-      dataType: 'json',
-      contentType: 'application/json'
-    });
-    window.location = "../../score/" + gameId;
+    $("#notifications").fadeIn(2000);
+    setTimeout(function () {
+      $.ajax({
+        type: 'POST',
+        url: '/score/' + gameId,
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR);
+          console.log(textStatus);
+          console.log(errorThrown);
+        },
+        dataType: 'json',
+        contentType: 'application/json'
+      });
+      window.location = "../../score/" + gameId;
+    }, 6000);
   },
   
   // Function that periodically checks for players coming or going
@@ -711,13 +721,12 @@ $(function() {
           }
         }
         
-        // Collision Detection between zombies
+        // Collision Detection between players
         for (var i = 0; i < playerCount; i++) {
           if (i !== playerNumber && characterArray[playerNumber].Pos.getDistanceTo(characterArray[i].Pos) < 4) {
             // Classic X/Z movement system
             playerSceneNode.Pos.X += (playerSceneNode.Pos.X - characterArray[i].Pos.X)/2;
             playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - characterArray[i].Pos.Z)/2;
-            zombieBeingAttacked = i;
           }
         }
         
@@ -727,15 +736,6 @@ $(function() {
         camFollow(cam, playerSceneNode);
       }
       
-    } else if (playerSceneNode && (ktah.gamestate.players[playerNumber].health < 1)) {
-    	// Play procedural death animation if no health left!
-    	if (!deathSpot) {
-    		resetGoal();
-    		deathSpot = new CL3D.Vect3d(playerSceneNode.Pos.X,0,playerSceneNode.Pos.Z);
-      }
-    	playerSceneNode.Pos.Y = playerSceneNode.Pos.Y - sinkingValue;
-    	playerSceneNode.Pos.X = deathSpot.X + Math.random()*randomJumpingValue*2 - randomJumpingValue;
-    	playerSceneNode.Pos.Z = deathSpot.Z + Math.random()*randomJumpingValue*2 - randomJumpingValue;
     }
     
     setTimeout(mainLoop, 20);

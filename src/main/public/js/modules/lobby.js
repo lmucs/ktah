@@ -56,9 +56,9 @@ $(function () {
                         if (allGames[i] !== null && !allGames[i].begun) {
                             gameList.append(
                                 '<div class="lobby-game"><div class="lobby-playerCount">'
-                                + allGames[i].playerCount + ' / 4</div><div class="lobby-gameName"><strong>Game: </strong><span class="game">'
-                                + allGames[i].name + '</span></div><div class="lobby-classPreview">Class preview will go here...'
-                                + '</div></div>'
+                                + allGames[i].playerCount + ' / 4</div><div class="lobby-gameName"><strong>Game: </strong>'
+                                + '<span class="game">' + allGames[i].name + '</span></div><div class="lobby-classPreview">Class preview will go here...</div>'
+                                + '</div>'
                             );
                             listCount++;
                         }
@@ -173,7 +173,9 @@ $(function () {
           
           // User may have aborted game creation...
           if (gameId === null) {
-            alert("You didn't enter a game name!");
+            return;
+          } else if (gameId.length > 20) {
+            alert("Game name too long! (Less than 20 characters please)");
             return;
           }
           
@@ -184,7 +186,6 @@ $(function () {
             success: function (data) {
                 // If the game already exists, don't create it
                 if (!data) {
-                    //TODO: create gamestate here
                     var gamestate = JSON.stringify({
                       environment: {
                         game: gameId,

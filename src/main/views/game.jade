@@ -8,10 +8,12 @@ html
     script(type='text/javascript', src='../js/ktah.js')    
   body
     div.loadingScreen(id="loadingScreen") Entering K'tah...
-    h1 K'TAH!
-    p(id="gameId", data="#{gameId}") You are in a game with id: #{gameId}
+    input(type='hidden', id='gameId', data="#{gameId}")
     input(type="hidden", id="userName", data="#{userName}")
-    div(id="health-display")
+    div(id="game-display", class="top-display") Game: #{gameId}
+      div(id="notifications") Game Over
+    hr
+    div(id="health-display", class="top-display")
     canvas(id='ktahCanvas', width='960', height='480')
       p OH NOES YOU IDIOT GET A REAL BROWSER
   p.loginFrame.registerFrame
