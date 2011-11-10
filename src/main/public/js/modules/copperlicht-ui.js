@@ -15,8 +15,11 @@ $(function() {
   
   engine.addScene(scene);
 
+  // Setup dynamic lighting
+  var lightNode, tryToUseLighting = false, // not working right now, may work if ccbjs is changed
+  
   // Rate of how much to play catchup so stats applied equally
-  var catchupRate = 1.0, catchupRateEnabled = true, lastTime = timeDiff = 0.0, currentTime,
+  catchupRate = 1.0, catchupRateEnabled = true, lastTime = timeDiff = 0.0, currentTime,
   timeDiffs = [], timeDiffsCurrent = 0, timeDiffsTotal = 10, timeDiffsStartingUp = true, avgTimeDiff = 0,
   timeLoopLength = 1, // how many loops before updating the timestamp again/checking in on lag
   catchupCounterbalance = 50.0, timeLoopCurrent = 0,
@@ -191,6 +194,17 @@ $(function() {
           playerSlidingSpeed
         );
         playerSceneNode.addAnimator(playerCollisionAnimator);
+        if (tryToUseLighting) {
+          // And add a light to the player
+          lightNode = new CL3D.LightSceneNode(0);
+          lightNode.LightData.Color = new CL3D.ColorF(1,1,0,1);
+          playerSceneNode.addChild(lightNode);
+          // alternative may be scene.getRootSceneNode().addChild(lightNode);
+          for (var i=0; i<scene.getRootSceneNode().getMaterialCount(); i++) {
+            scene.getRootSceneNode().getMaterial(i).Lighting = true;
+            console.log("lighting for " + i + " is " + scene.getRootSceneNode().getMaterial(i).Lighting);
+          }
+        }
       } else {
         return;
       }
@@ -659,8 +673,10 @@ $(function() {
           dirAngle = Math.atan((goalZ - originalZ) / (goalX - originalX));
           if (goalX > playerSceneNode.Pos.X) { dirAngle = Math.PI + dirAngle; }
 
+          console.log("dirAngle: " + (Math.floor(100*((dirAngle + 3*Math.PI) % (2 * Math.PI)))));
+          console.log("lastDirA: " + (Math.floor(100*((lastDirAngle + 2*Math.PI) % (2 * Math.PI)))));
           // Seeking a goal, but flipping positions? Undo Goal and flip yourself back
-          if ((dirAngle + 3*Math.PI) % (2 * Math.PI) === (lastDirAngle + 2*Math.PI) % (2 * Math.PI)) {
+          if (Math.floor(100*((dirAngle + 3*Math.PI) % (2 * Math.PI))) === Math.floor(100*((lastDirAngle + 2*Math.PI) % (2 * Math.PI)))) {
             resetGoal();
             dirAngle = Math.PI + dirAngle;
           }
