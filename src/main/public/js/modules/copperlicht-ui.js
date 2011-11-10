@@ -10,6 +10,7 @@ $(function() {
   var engine = startCopperLichtFromFile('ktahCanvas', '../../assets/copperlicht/copperlichtdata/zombieTestRedux.ccbjs'),
   playerSceneNode = null,
   characterArray = [],
+  monsterArray = [],
   scene = null,
   key = null;
   
@@ -219,7 +220,7 @@ $(function() {
       // ***** testing to make monsters! *****
       var protoGhoul = scene.getSceneNodeFromName('ghoul');
       
-      var monsterArray = generateMonsters(protoGhoul, 10);
+      monsterArray = generateMonsters(protoGhoul, 20);
       
       // Begin the server pinging and end-condition checking
       setInterval(updateTeam, 50);
@@ -596,6 +597,13 @@ $(function() {
   
   mainLoop = function() {
     if (playerSceneNode) {
+      
+      // Update the monsters targets, then move the monsters.
+      if (playerNumber === 0) {
+        for (var i = 0; i < monsterArray.length; i++) {
+          monsterArray[i].updateTarget(ktah.gamestate.players);
+        }
+      }
 
       // First, ensure movement is in proportion to time passed
       if (timeLoopCurrent < timeLoopLength) {
