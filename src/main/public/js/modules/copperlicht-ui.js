@@ -651,13 +651,23 @@ $(function() {
       
       // Update position and camera if any changes made
       if(goalX || goalZ || aKey || wKey || dKey || sKey) {
+      	var lastDirAngle = dirAngle;
         if (!goalX && !goalZ) { // if Keyboard Commands, just update dirAngle
           dirAngle = (270 - playerSceneNode.Rot.Y) / 180 * Math.PI;
           // if Mouse, update rotation of player character appropriately
         } else if (goal && playerSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, playerSceneNode.Pos.Y,goal.Z)) > 3*walkDist) {
           dirAngle = Math.atan((goalZ - originalZ) / (goalX - originalX));
           if (goalX > playerSceneNode.Pos.X) { dirAngle = Math.PI + dirAngle; }
+
+          // Seeking a goal, but flipping positions? Undo Goal and flip yourself back
+          if ((dirAngle + 3*Math.PI) % (2 * Math.PI) === (lastDirAngle + 2*Math.PI) % (2 * Math.PI)) {
+            resetGoal();
+            dirAngle = Math.PI + dirAngle;
+          }
+          
+          // Otherwise, go for it!
           playerSceneNode.Rot.Y = 270 - dirAngle * 180 / Math.PI; // dirAngle must be converted into 360
+          
         }
 
         newX = newZ = 0; // reset so we can recalculate based on new angle
