@@ -32,6 +32,12 @@ $(function() {
   playerCollisionAnimator, // initialized once scene loaded
   playerCollisionRadius = 6, playerSlidingSpeed = 10,
 
+  // Death procedural animation values
+  sinkingValue = 2,
+  randomJumpingValue = 3,
+  // These will be set at the point of death, then you jump around in relation to these
+  deathSpot = null,
+  
   // Camera positioning values
   camSetDist = 10, camDistRatio = 1.0,
 
@@ -596,7 +602,8 @@ $(function() {
   },
   
   mainLoop = function() {
-    if (playerSceneNode) {
+  	// Only check angle and movement if player exists and player is not dead
+    if (playerSceneNode && (ktah.gamestate.players[playerNumber].health >= 1)) {
       
       // Update the monsters targets, then move the monsters.
       if (playerNumber === 0) {
@@ -671,8 +678,8 @@ $(function() {
       // Reset attack value
       zombieBeingAttacked = -1;
       
-      // Update position and camera if any changes made
-      if(goalX || goalZ || aKey || wKey || dKey || sKey) {
+      // Update position and camera if any control changes made
+      if (goalX || goalZ || aKey || wKey || dKey || sKey) {
       	var lastDirAngle = dirAngle;
         if (!goalX && !goalZ) { // if Keyboard Commands, just update dirAngle
           dirAngle = (270 - playerSceneNode.Rot.Y) / 180 * Math.PI;
@@ -720,6 +727,15 @@ $(function() {
         camFollow(cam, playerSceneNode);
       }
       
+    } else if (playerSceneNode && (ktah.gamestate.players[playerNumber].health < 1)) {
+    	// Play procedural death animation if no health left!
+    	if (!deathSpot) {
+    		resetGoal();
+    		deathSpot = new CL3D.Vect3d(playerSceneNode.Pos.X,0,playerSceneNode.Pos.Z);
+      }
+    	playerSceneNode.Pos.Y = playerSceneNode.Pos.Y - sinkingValue;
+    	playerSceneNode.Pos.X = deathSpot.X + Math.random()*randomJumpingValue*2 - randomJumpingValue;
+    	playerSceneNode.Pos.Z = deathSpot.Z + Math.random()*randomJumpingValue*2 - randomJumpingValue;
     }
     
     setTimeout(mainLoop, 20);
