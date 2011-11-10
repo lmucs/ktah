@@ -96,7 +96,7 @@ $(function () {
           // create the player to be added to the game state.
           var player = {
             name: userName,
-            character: "Choosing class...",
+            character: null,
             health: 100,
             pointsRemaining: 0,
             pointsEarned: 0,
@@ -195,7 +195,7 @@ $(function () {
                         // automatically add in the game creators player object
                         {
                           name: userName,
-                          character: "Choosing class...",
+                          character: null,
                           health : 100,
                           pointsRemaining: 0,
                           pointsEarned: 0,

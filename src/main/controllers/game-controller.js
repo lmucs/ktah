@@ -21,6 +21,9 @@ module.exports = function(app) {
         // With each GET make sure the player has checked in their time
         if (req.query) {
           for (var i = 0; i < gamestate.players.length; i++) {
+            if (req.query.character) {
+              gamestate.players[i].character = req.query.character;
+            }
             if (gamestate.players[i].name === req.query.player) {
               gamestate.players[i].timeOut = (new Date).getTime();
               gamestate.players[i].readyState = req.query.ready;

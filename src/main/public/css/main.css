@@ -231,12 +231,27 @@
     float: right;
 }
 
+.class-icon {
+    height: 50px;
+    width: 50px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.class-selected {
+    background: -moz-linear-gradient(top, #ffffff 0%, #fff651 100%); /* FF3.6+ */
+    background: -webkit-linear-gradient(top, #ffffff 0%,#fff651 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #ffffff 0%,#fff651 100%); /* Opera 11.10+ */
+}
+
 .room-player-list {
     margin: 5px 10px 5px 10px;
+    font-size: 20px;
     background-color: #0C0874;
     color: white;
     border: 1px solid black;
     padding: 5px;
+    height: 50px;
 }
 
 .room-player-ready {
