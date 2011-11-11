@@ -149,6 +149,14 @@
     display: inline;
 }
 
+.player-class {
+    height: 35px;
+    width: 35px;
+    float: right;
+    margin-top: 15px;
+    margin-right: -10px;
+}
+
 #round-info {
     border: 2px ridge black;
     float: right;

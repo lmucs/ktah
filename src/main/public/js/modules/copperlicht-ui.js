@@ -99,16 +99,21 @@ $(function() {
         
         for (var i = 0; i < playerCount; i++) {
           currentPlayer = ktah.gamestate.players[i];
-          nametagAccent = "";
+          nametagAccent = "",
+          classIcon = "";
           
           // Accent the nametag of the local player
           if (i === playerNumber) {
             nametagAccent = "class='currentPlayerNametag'";
           }
           
+          // Provide a small class-icon next to a player's name
+          classIcon = '<img class="player-class" src="../assets/icons/' + currentPlayer.character + 'Icon.png"></img>'
+          
           // Setup health display
           $("#health-display").append(
-            "<div id='" + currentPlayer.name + "-stats' class='player-stats'><div " + nametagAccent + ">" + currentPlayer.name + "</div>"
+            "<div id='" + currentPlayer.name + "-stats' class='player-stats'><div " + nametagAccent + ">" 
+            + classIcon + " " + currentPlayer.name + "</div>"
             + "<div id='" + currentPlayer.name + "-health-num-box' class='player-health-num-box'>"
             + "<div id='" + currentPlayer.name + "-health-bar' class='player-health-bar'>&nbsp</div>"
             + "<span class='player-healthNum'>" + currentPlayer.health + " / 100</span>"
