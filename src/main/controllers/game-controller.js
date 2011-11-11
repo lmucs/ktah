@@ -59,7 +59,8 @@ module.exports = function(app) {
     var i = 0;
     gameList = [];
     for (var game in GameController.games) {
-      var gamePlayers = GameController.games[game].players;
+      var gamePlayers = GameController.games[game].players,
+          playerClasses = [];
       for (var j = 0; j < gamePlayers.length; j++) {
         // If the difference between the server time and the player's last
         // checkin is greater than 10.5 seconds (a little more than 2 ajax calls)
@@ -67,6 +68,9 @@ module.exports = function(app) {
         if ((gamePlayers[j].timeOut)
          && (Math.abs(gamePlayers[j].timeOut - (new Date).getTime()) > 10500)) {
           gamePlayers.splice(j, 1);
+        }
+        if (gamePlayers[j]) {
+          playerClasses.push(gamePlayers[j].character);
         }
       }
       // If there are no more players left in the game, delete it
@@ -79,8 +83,9 @@ module.exports = function(app) {
       }
       if (typeof(GameController.games[game]) !== "undefined") {
         gameList[i] = {
-          name: game, 
-          playerCount : GameController.games[game].players.length, 
+          name: game,
+          playerCount : GameController.games[game].players.length,
+          playerClasses : playerClasses,
           begun : GameController.games[game].environment.readyState
         };
       }

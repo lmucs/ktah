@@ -11,76 +11,83 @@ $(function () {
     
         // Helper function to determine if player is present in lobby
         checkForPlayer = function (player, gamestate) {
-            for (var i = 0; i < gamestate.players.length; i++) {
-                if (player.name === gamestate.players[i].name) {
-                    return true;
-                }
+          for (var i = 0; i < gamestate.players.length; i++) {
+            if (player.name === gamestate.players[i].name) {
+              return true;
             }
-            return false;
+          }
+          return false;
         },
         
         // Helper method to bind join methods to the lobby list
         buttonizeGameList = function () {
-            $(".lobby-game").each(function (index) {
-                // Set up hover effect for mouse overs
-                $(this).hover(
-                function () {
-                    $(this).addClass('lobby-game-mouseOver');
-                },
-                function () {
-                    $(this).removeClass('lobby-game-mouseOver');
-                })
-                
-                // Bind the ajax call to the click
-                .click(function () {
-                    joinGame($(this).children(":nth-child(2)").children(":last-child").html());
-                });
+          $(".lobby-game").each(function (index) {
+            // Set up hover effect for mouse overs
+            $(this).hover(
+            function () {
+              $(this).addClass('lobby-game-mouseOver');
+            },
+            function () {
+              $(this).removeClass('lobby-game-mouseOver');
+            })
+            
+            // Bind the ajax call to the click
+            .click(function () {
+              joinGame($(this).children(":nth-child(2)").children(":last-child").html());
             });
+          });
         },
         
         // Recurring function to update game list
         updateGames = function () {
-            $.ajax({
-                type: 'GET',
-                url: '/gamestate',
-                success: function (data) {
-                    var allGames = data,
-                        gameList = $("#game-list"),
-                        listCount = 0;
-                    
-                    // Clear the list currently shown
-                    gameList.html("");
-                    // List a new element for each player in the room
-                    for (var i = 0; i < allGames.length; i++) {
-                        // Add the HTML to the list area
-                        if (allGames[i] !== null && !allGames[i].begun) {
-                            gameList.append(
-                                '<div class="lobby-game"><div class="lobby-playerCount">'
-                                + allGames[i].playerCount + ' / 4</div><div class="lobby-gameName"><strong>Game: </strong>'
-                                + '<span class="game">' + allGames[i].name + '</span></div><div class="lobby-classPreview">Class preview will go here...</div>'
-                                + '</div>'
-                            );
-                            listCount++;
-                        }
-                    }
-                    
-                    if (listCount === 0) {
-                      gameList.append(
-                        '<p class="lobby-noGames">Sad time! No games available...</p>'
-                      );
-                    }
-                    
-                    // Lastly, buttonize the games that were populated
-                    buttonizeGameList();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                  console.log(jqXHR);
-                  console.log(textStatus);
-                  console.log(errorThrown);
-                },
-                dataType: 'json',
-                contentType: 'application/json'
-            });
+          $.ajax({
+            type: 'GET',
+            url: '/gamestate',
+            success: function (data) {
+              var allGames = data,
+                  gameList = $("#game-list"),
+                  listCount = 0;
+              
+              // Clear the list currently shown
+              gameList.html("");
+              // List a new element for each player in the room
+              for (var i = 0; i < allGames.length; i++) {
+                var classIcons = "";
+                for (var j = 0; j < allGames[i].playerClasses.length; j++) {
+                  if (allGames[i].playerClasses[j] !== null) {
+                    classIcons += '<img class="lobby-class-thumbnail" src="../assets/icons/' + allGames[i].playerClasses[j] + 'Icon.png"></img>'
+                  }
+                }
+                console.log(classIcons);
+                // Add the HTML to the list area
+                if (allGames[i] !== null && !allGames[i].begun) {
+                  gameList.append(
+                    '<div class="lobby-game"><div class="lobby-playerCount">'
+                    + allGames[i].playerCount + ' / 4</div><div class="lobby-gameName"><strong>Game: </strong>'
+                    + '<span class="game">' + allGames[i].name + '</span></div><div class="lobby-classPreview">' + classIcons + '</div>'
+                    + '</div>'
+                  );
+                  listCount++;
+                }
+              }
+              
+              if (listCount === 0) {
+                gameList.append(
+                  '<p class="lobby-noGames">Sad time! No games available...</p>'
+                );
+              }
+              
+              // Lastly, buttonize the games that were populated
+              buttonizeGameList();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.log(jqXHR);
+              console.log(textStatus);
+              console.log(errorThrown);
+            },
+            dataType: 'json',
+            contentType: 'application/json'
+          });
         },
         
         // Function to join a game
