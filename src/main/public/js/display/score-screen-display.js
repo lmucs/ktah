@@ -25,6 +25,8 @@ $(function () {
     
     // Add the HTML to the list area
     scoreList.append('<div class="' + playerStatus + '"><strong ' + playerAccent + '>'
-    + currentPlayer.name + ':</strong> ' + currentPlayer.pointsEarned + '</div>');
+    + currentPlayer.name + ':</strong> ' + currentPlayer.pointsEarned 
+    + '<span class="class-selection"><img class="class-icon class-selected" src="../assets/icons/'
+    + currentPlayer.character + 'Icon.png"></img></span></div>');
   }
 });

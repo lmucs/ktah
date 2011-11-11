@@ -2,6 +2,24 @@
   #button-upper-right
     input(type='submit', id='readyButton', name='enter', value='Ready!')
   h1.topLeftMargin Game Lobby: #{gameId}
+  div.class-option-holder
+    span Choose a class:
+    #class-options
+      div.class-thumbnail
+        img(id="architect", class="class-icon", src="../assets/icons/architectIcon.png")
+        div Architect
+      div.class-thumbnail
+        img(id="herder", class="class-icon", src="../assets/icons/herderIcon.png")
+        div Herder
+      div.class-thumbnail  
+        img(id="pioneer", class="class-icon", src="../assets/icons/pioneerIcon.png")
+        div Pioneer
+      div.class-thumbnail  
+        img(id="scientist", class="class-icon", src="../assets/icons/scientistIcon.png")
+        div Scientist
+      div.class-thumbnail  
+        img(id="tinkerer", class="class-icon", src="../assets/icons/tinkererIcon.png")
+        div Tinkerer
   #room-options
     p Loading players...
   #game-room-chat

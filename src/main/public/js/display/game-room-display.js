@@ -64,29 +64,15 @@ $(function () {
                   
                     // Add the HTML to the list area
                     playerList.append('<div id="' + currentPlayer.name + '-listing" class="' + playerStatus + '"><strong ' + playerAccent + '>'
-                    + currentPlayer.name + '</strong><span class="class-selection">'
-                    + '<img id="architect" class="class-icon" src="../assets/icons/ArchitectIcon.png">'
-                    + '<img id="herder" class="class-icon" src="../assets/icons/HerderIcon.png">'
-                    + '<img id="pioneer" class="class-icon" src="../assets/icons/PioneerIcon.png">'
-                    + '<img id="scientist" class="class-icon" src="../assets/icons/ScientistIcon.png">'
-                    + '<img id="tinkerer" class="class-icon" src="../assets/icons/TinkererIcon.png">'
-                    + '</span></div>');
-                    
-                    // Set the handlers for the class selection
-                    $("#" + userName + "-listing > .class-selection").children().each(function () {
-                      $(this).unbind("click").click(function () {
-                        currentPlayer.character = characterChoice = $(this).attr("id");
-                        classSelected = true;
-                      });
-                    });
+                    + currentPlayer.name + '</strong><span class="class-selection"></span></div>');
                   }
                   
                   // Then, update the necessary list components
                   $("#" + currentPlayer.name + "-listing").toggleClass("room-player-ready", currentPlayer.readyState === "ready");
                   
                   if (currentPlayer.character !== null) {
-                    $(".class-icon").each(function () {$(this).removeClass("class-selected")})
-                    $("#" + userName + "-listing > .class-selection > " + currentPlayer.character).addClass("class-selected");
+                    $("#" + currentPlayer.name + "-listing > .class-selection")
+                      .html("<img class='class-icon class-selected' src='../assets/icons/" + currentPlayer.character + "Icon.png'></img>");
                   }
                 }
                 oldNumber = newNumber;
@@ -107,6 +93,16 @@ $(function () {
     
     // Update the room every 2 seconds to reflect players leaving / staying
     window.setInterval(getGamestate, 2000);
+    
+    // Set the handlers for the class selection
+    $("#class-options").children().each(function () {
+      $(this).click(function () {
+        characterChoice = $(this).children(":nth-child(1)").attr("id");
+        $(this).siblings().each(function () {$(this).removeClass("class-selected")});
+        $(this).addClass("class-selected");
+        classSelected = true;
+      });
+    });
     
     // Set the ready state button
     $("#readyButton").click(function () {
