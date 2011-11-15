@@ -20,7 +20,7 @@ $(function () {
 
       $.ajax({
         type: 'POST',
-        url: '/monsters/' + options.gameId,
+        url: '/monster/' + options.gameId,
         data: JSON.stringify({
           type: this.type,
           id: null,
