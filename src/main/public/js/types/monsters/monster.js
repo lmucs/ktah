@@ -18,7 +18,7 @@ $(function () {
     
     updateTarget: function (players) {
       var closestDistance = null;
-      for(var i = 0; i < players.length; i++) {
+      for (var i = 0; i < players.length; i++) {
         if (closestDistance === null || closestDistance > this.sceneNode.Pos.getDistanceTo(new CL3D.Vect3d(players[i].posX, 1.3, players[i].posZ))) {
           closestDistance = this.sceneNode.Pos.getDistanceTo(new CL3D.Vect3d(players[i].posX, 1.3, players[i].posZ));
           this.target = i;
