@@ -11,11 +11,19 @@
 }
 
 #chat {
-  border: 2px solid blue;
-  margin-bottom: 10px;
+  margin: 0px 10px 5px 10px;
   padding: 5px;
-  width: 540px;
-  height: 200px;
+  border: 2px solid black;
+  height: 100px;
+  overflow: auto;
+}
+
+.chat-label {
+  margin-right: 10px;
+}
+
+#toolbar {
+  margin: 0px 10px 5px 10px;
 }
 
 #lobby-players {
@@ -232,12 +240,6 @@
 #room-options {
     margin: 10px 10px 0px 10px;
     background-color: #D8D8D8;
-}
-
-#game-room-chat {
-    margin: 0px 10px 5px 10px;
-    padding: 5px;
-    border: 2px solid black;
 }
 
 .class-selection {

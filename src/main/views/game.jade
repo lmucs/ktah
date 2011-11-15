@@ -5,16 +5,15 @@ html
     link(rel='stylesheet', type='text/css', href='/css/main.css')
     script(type='text/javascript', src='../js/lib/jquery-1.6.4.min.js')
     script(type='text/javascript', src='../js/util/include.js')
-    script(type='text/javascript', src='../js/ktah.js')    
+    script(type='text/javascript', src='../js/ktah.js')
   body
     div.loadingScreen(id="loadingScreen") Entering K'tah...
     input(type='hidden', id='gameId', data="#{gameId}")
     input(type="hidden", id="userName", data="#{userName}")
-    div(id="game-display", class="top-display") Game: #{gameId}
+    div(id="game-display", class="top-display") Game: #{gameId} | 
+      a(href="../../lobby") [Return to Lobby]
       div(id="notifications") Game Over
     hr
     div(id="health-display", class="top-display")
     canvas(id='ktahCanvas', width='960', height='480')
       p OH NOES YOU IDIOT GET A REAL BROWSER
-  p.loginFrame.registerFrame
-    a(href="../../lobby") Return to lobby

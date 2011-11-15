@@ -6,11 +6,17 @@
   hr
   #game-list
     p list of games will go here!
-  #lobby-players
-    p Players in lobby...
   #chat
-    p Welcome back to K'tah, #{userName}
+    #connect
+      Chat failed to connect! Infinite Sadness :(
+    #loading
+      loading
+    #log
+  #toolbar
+    span(class="chat-label") [Enter Message]
+    input#entry(tabindex="1", type="text", size="75")
 input(type='hidden', id='userName', data='#{userName}')
 #links.registerFrame.loginFrame
   a(href="/main") Back to Main Menu
+script(type='text/javascript', src='../js/modules/chat/client.js')
 script(type='text/javascript', src='../js/modules/lobby.js')
