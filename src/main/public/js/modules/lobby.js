@@ -58,7 +58,6 @@ $(function () {
                     classIcons += '<img class="lobby-class-thumbnail" src="../assets/icons/' + allGames[i].playerClasses[j] + 'Icon.png"></img>'
                   }
                 }
-                console.log(classIcons);
                 // Add the HTML to the list area
                 if (allGames[i] !== null && !allGames[i].begun) {
                   gameList.append(
@@ -224,6 +223,15 @@ $(function () {
                       type: 'POST',
                       url: '/gamestate/' + gameId,
                       data: gamestate,
+                      success: function (data) {
+                        if (!data.success) {
+                          alert("You've created a game too recently; try again in 10 seconds.");
+                          return;
+                        } else {
+                          // redirect to the correct url
+                          window.location = '/room/' + gameId;
+                        }
+                      },
                       error: function (jqXHR, textStatus, errorThrown) {
                         console.log(jqXHR);
                         console.log(textStatus);
@@ -232,8 +240,6 @@ $(function () {
                       dataType: 'json',
                       contentType: 'application/json'
                     });
-                    // redirect to the correct url
-                    window.location = '/room/' + gameId;
                   } else {
                     alert("Game name already exists!");
                     return;

@@ -48,8 +48,15 @@ module.exports = function(app) {
     post: function (req, res) {
       var gameId = req.params.gameId,
           gamestate = req.body;
-      GameController.games[gameId] = gamestate;
-      res.send({"success": true});
+      // Only create a game if the user isn't spamming them
+      if (!req.session.lastGameCreated 
+          || Math.abs(req.session.lastGameCreated - (new Date).getTime()) > 10000) {
+        req.session.lastGameCreated = (new Date).getTime();
+        GameController.games[gameId] = gamestate;
+        res.send({"success": true});
+      } else {
+        res.send({"success": false});
+      }
     }
   },
   
