@@ -192,7 +192,9 @@ module.exports = function(app) {
       
       monster.id = gamestate.monsters.length;
       gamestate.monsters.push(monster)
-      res.send({"success": true});
+      
+      res.contentType('application/json');
+      res.send(JSON.stringify({"monsterId": monster.id}));
   });
   
 }

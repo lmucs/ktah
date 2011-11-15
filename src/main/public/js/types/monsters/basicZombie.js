@@ -33,6 +33,10 @@ $(function () {
           console.log(textStatus);
           console.log(errorThrown);
         },
+        success: function (data, textStatus, jqXHR) {
+          this.id = data.monsterId;
+          console.log("monster id: " + this.id);
+        },
         dataType: 'json',
         contentType: 'application/json'
       });

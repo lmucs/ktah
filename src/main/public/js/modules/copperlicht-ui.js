@@ -623,7 +623,8 @@ $(function() {
       // Update the monsters targets, then move the monsters.
       if (playerNumber === 0) {
         for (var i = 0; i < monsterArray.length; i++) {
-          monsterArray[i].updateTarget(ktah.gamestate.players);
+          monsterArray[i].updateTarget();
+          monsterArray[i].stepToTarget();
         }
       }
 
