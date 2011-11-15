@@ -180,21 +180,32 @@ module.exports = function(app) {
   });
   
   // Post handler to add new monsters to the game
-  app.post('/monsters/:gameId', function(req, res) {
+  app.post('/monster/:gameId', function(req, res) {
     
-    var gameId = req.params.gameId,
-        monster = req.body,
-        gamestate = GameController.games[gameId];
+    var monster = req.body,
+        currentGame = GameController.games[req.params.gameId];
         
-      if (!gamestate.monsters || typeof(gamestate.monsters) === "undefined") {
-        gamestate.monsters = [];
+      if (!currentGame.monsters || typeof(currentGame.monsters) === "undefined") {
+    	  currentGame.monsters = [];
       }
       
-      monster.id = gamestate.monsters.length;
-      gamestate.monsters.push(monster)
-      
+      monster.id = currentGame.monsters.length;
+      currentGame.monsters.push(monster);
       res.contentType('application/json');
       res.send(JSON.stringify({"monsterId": monster.id}));
   });
   
+  // Post handler to update the entire monster array
+  app.post('/monsters/:gameId', function(req, res) {
+	  
+	var currentGame = GameController.games[req.params.gameId];
+	
+	// If the game doesn't exist, ABORT!
+	if (!currentGame) {
+	  return;
+	}
+	
+	// Update current monster array
+	currentGame.monsters = req.body;
+  });
 }

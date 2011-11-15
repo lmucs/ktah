@@ -105,23 +105,6 @@ Date.fromString = function(str) {
   return new Date(Date.parse(str));
 };
 
-//  CUT  ///////////////////////////////////////////////////////////////////
-
-
-//Prints the list of other room members to the box
-function printNicks()
-{
-  //Empty out the list first:
-  $('#nicks').html('');
-  
-  //Add the current list of chatters:
-  for (var i = 0; i < nicks.length; i++)
-  {
-    //$('#nicks').add('<li class="nick">' + nicks[i] + '</li>');
-    $('#nicks').html($('#nicks').html() + '<li class="nick">' + nicks[i] + '</li>');
-  }
-}
-
 //handles another person joining chat
 function userJoin(nick, timestamp) {
   //put it in the stream
@@ -131,8 +114,6 @@ function userJoin(nick, timestamp) {
     if (nicks[i] == nick) return;
   //otherwise, add the user to the list
   nicks.push(nick);
-  //update the list of other chatters
-  printNicks();
 }
 
 //Sends a request to the server to join the given chat room
@@ -153,8 +134,6 @@ function thisJoin()
            {
              //Set list of other chatters:
              nicks = data.otherNicks;
-             printNicks();
-             onConnect();
              return true
            }
          });
@@ -171,8 +150,6 @@ function userPart(nick, timestamp) {
       break;
     }
   }
-  //update the list of other chatters
-  printNicks();
 }
 
 // utility functions
@@ -216,7 +193,7 @@ util = {
 
 //used to keep the most recent messages visible
 function scrollDown () {
-  window.scrollBy(0, 100000000000000000);
+  $("#log").attr("scrollTop", $("#log").prop("scrollHeight"));
   $("#entry").focus();
 }
 
@@ -258,8 +235,8 @@ function addMessage (from, text, time, _class) {
   text = text.replace(util.urlRE, '<a target="_blank" href="$&">$&</a>');
 
   var content = '<tr>'
-              + '  <td class="date">' + util.timeString(time) + '</td>'
-              + '  <td class="nick">' + util.toStaticHTML(from) + '</td>'
+              + '  <td class="date">[' + util.timeString(time) + ']</td>'
+              + '  <td class="nick">' + util.toStaticHTML(from) + ':</td>'
               + '  <td class="msg-text">' + text  + '</td>'
               + '</tr>'
               ;
@@ -315,8 +292,6 @@ function longPoll (data) {
           break;
       }
     }
-    //update the document title to include unread message count if blurred
-    updateTitle();
 
     //only after the first request for messages do we want to show who is here
     if (first_poll) {
@@ -386,37 +361,6 @@ function showChat (nick) {
   $("#loading").hide();
 
   scrollDown();
-}
-
-//we want to show a count of unread messages when the window does not have focus
-function updateTitle(){
-  if (CONFIG.unread) {
-    document.title = "(" + CONFIG.unread.toString() + ") node chat";
-  } else {
-    document.title = "node chat";
-  }
-}
-
-//handle the server's response to our nickname and join request
-function onConnect (data) {
-  
-  //Set local references for nick and id:
-  CONFIG.nick = data.nick;
-
-  //update the UI to show the chat
-  showChat(CONFIG.nick);
-
-  //listen for browser events so we know to update the document title
-  $(window).bind("blur", function() {
-    CONFIG.focus = false;
-    updateTitle();
-  });
-
-  $(window).bind("focus", function() {
-    CONFIG.focus = true;
-    CONFIG.unread = 0;
-    updateTitle();
-  });
 }
 
 $(document).ready(function() {

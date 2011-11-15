@@ -484,6 +484,21 @@ $(function() {
               dataType: 'json',
               contentType: 'application/json'
             });
+            
+            if (currentPlayer.id === 0) {
+        	  $.ajax({
+                type: 'POST',
+                url: '/monsters/' + gameId,
+                data: JSON.stringify(ktah.gamestate.monsters),
+                error: function (jqXHR, textStatus, errorThrown) {
+                  console.log(jqXHR);
+                  console.log(textStatus);
+                  console.log(errorThrown);
+                },
+                dataType: 'json',
+                contentType: 'application/json'
+              });
+            }
           } else {
             characterArray[i].Pos.X = currentPlayer.posX;
             characterArray[i].Pos.Z = currentPlayer.posZ;
