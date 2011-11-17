@@ -228,10 +228,13 @@ $(function() {
       // Remove the loading screen
       $("#loadingScreen").fadeOut(3000);
       
-      // ***** testing to make monsters! *****
       var protoGhoul = scene.getSceneNodeFromName('ghoul');
       
-      monsterArray = generateMonsters(protoGhoul, 20);
+      if (playerNumber === 0) {
+        monsterArray = generateMonsters(protoGhoul, 20);
+      } else {
+        monsterArray = synchronizeMonsters(protoGhoul);
+      }
       
       // Begin the server pinging and end-condition checking
       setInterval(updateTeam, 50);
@@ -401,6 +404,28 @@ $(function() {
   		monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500},{gameId: gameId, scene: scene, sceneNode: sceneNode});
   	}
   	return monsterArray;
+  },
+  
+  synchronizeMonsters = function(sceneNode) {    
+    $.ajax({
+      type: 'GET',
+      url: '/monsters/' + gameId,
+      success: function (data) {
+        var monsterArray = [];
+        for (var i = 0; i < data.length; i++) {
+          monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id},{gameId: gameId, scene: scene, sceneNode: sceneNode});
+        }
+        return monsterArray;
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+        synchronizeMonsters(sceneNode);
+      },
+      dataType: 'json',
+      contentType: 'application/json'
+    });
   },
   
   // Updates the positions of other players
