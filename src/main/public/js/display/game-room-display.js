@@ -15,6 +15,7 @@ $(function () {
         newNumber = 0,
         characterChoice = "",
         kickOptions = "",
+        inGame = false,
         
         // function to grab the game state
         getGamestate = function () {
@@ -48,6 +49,10 @@ $(function () {
                   var currentPlayer = gamestate.players[i],
                       playerAccent = "",
                       playerStatus = "room-player-list";
+                      
+                  if (currentPlayer.name === userName) {
+                    inGame = true;
+                  }
                   
                   if (gamestate.players[i].readyState === "ready") {
                     playerStatus += " room-player-ready";
@@ -78,6 +83,12 @@ $(function () {
                       .html("<img class='class-icon class-selected' src='../assets/icons/" + currentPlayer.character + "Icon.png'></img>");
                   }
                 }
+                
+                if (!inGame) {
+                  alert("You cannot join games by URL. Use the lobby functions!");
+                  window.location = '../../lobby';
+                }
+                
                 oldNumber = newNumber;
               }
             },
