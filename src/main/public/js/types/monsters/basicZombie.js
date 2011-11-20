@@ -7,7 +7,7 @@
 $(function () {
   ktah.types.BasicZombie = ktah.types.Monster.extend({
     initialize: function(attributes, options) {
-      this.sceneNode = options.sceneNode.createClone(options.scene.getRootSceneNode());
+      this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());
 
       this.type = 'basicZombie';
       this.health = 100;
@@ -38,7 +38,6 @@ $(function () {
           },
           success: function (data, textStatus, jqXHR) {
             this.id = data.monsterId;
-            console.log("monster id: " + this.id);
           },
           dataType: 'json',
           contentType: 'application/json'
