@@ -121,6 +121,15 @@ $(function() {
           );
         }
       },
+      applyClassTextures = function(currentNode, currentNumber) {
+        // Also add textures
+        var playerClassName = ktah.gamestate.players[currentNumber].character;
+        currentNode.getMaterial(0).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/vest_" + playerClassName + ".jpg", true); // body armor
+        currentNode.getMaterial(1).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/body_" + playerClassName + ".jpg", true); // legs & boots
+        currentNode.getMaterial(2).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/head_" + playerClassName + ".jpg", true); // face
+        currentNode.getMaterial(3).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/eyes_" + playerClassName + ".jpg", true); // eyes
+        currentNode.getMaterial(4).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/body_" + playerClassName + ".jpg", true); // arms  
+      },
       
       // Updates the character array and the player's position within it
       // Set initialization to true for first time setup and population of characters
@@ -145,6 +154,8 @@ $(function() {
             characterArray[i].playerName = ktah.gamestate.players[i].name;
             characterArray[i].playing = true;
             characterArray[i].Pos.Z += i * 15;
+            // Load textures onto classes here
+            applyClassTextures(characterArray[i],i);
           // Otherwise, it's an update
           } else {
             // Reset all the "playing" tags of the scene nodes so that the ones that
@@ -188,6 +199,7 @@ $(function() {
         updateUserInterface();
       };
 
+  
   // Called when loading the 3d scene has finished (from the coppercube file)
   engine.OnLoadingComplete = function () {
     var synchronizedUpdate = seedGamestate();
@@ -206,6 +218,7 @@ $(function() {
           playerSlidingSpeed
         );
         playerSceneNode.addAnimator(playerCollisionAnimator);
+        
         if (tryToUseLighting) {
           // And add a light to the player
           lightNode = new CL3D.LightSceneNode(0);

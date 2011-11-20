@@ -12,18 +12,14 @@
  */
 
 $(function () {
-    ktah.types.Tinker = ktah.types.Character.extend({
-        
-        // Constructor stub
-        constructor: function () {
-            // TODO
-        },
-        
-        // Public properties
+  ktah.types.Herder = ktah.types.Character.extend({
+    initialize: function (attributes, options) {
+      // do what we need to do whenever we create an Architect
+      this.resources = {
         stone: 0,
         wood: 0,
         atomicWaste: 0
-        
-    });
-    
+      }
+    }
+  });
 });
