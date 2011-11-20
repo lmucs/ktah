@@ -8,7 +8,8 @@ var ktah = {
 
   types: {},
   gamestate: {},
-  characterArray: []
+  characterArray: [],
+  monsterArray: []
 
 };
 
@@ -27,7 +28,7 @@ include.includeInit([
   '/js/types/characters/architect.js',
   '/js/types/characters/chemist.js',
   '/js/types/characters/herder.js',
-  '/js/types/characters/tinker.js',
+  '/js/types/characters/tinkerer.js',
   
   // Monster classes
   '/js/types/monsters/monster.js',

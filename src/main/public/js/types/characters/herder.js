@@ -20,6 +20,7 @@ $(function () {
       }
       
       this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());
+      this.characterClass = "herder";
       
     }
   });

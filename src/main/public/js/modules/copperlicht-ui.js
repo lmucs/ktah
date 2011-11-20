@@ -7,9 +7,9 @@
 
 $(function() {
   
-  var engine = startCopperLichtFromFile('ktahCanvas', '../../assets/copperlicht/copperlichtdata/zombieTestRedux.ccbjs'),
+  var engine = ktah.engine = startCopperLichtFromFile('ktahCanvas', '../../assets/copperlicht/copperlichtdata/zombieTestRedux.ccbjs'),
   playerSceneNode = null,
-  monsterArray = [],
+  monsterArray = ktah.monsterArray = [],
   scene = null,
   key = null;
   
@@ -121,16 +121,6 @@ $(function() {
         }
       },
       
-      applyClassTextures = function(currentNode, currentNumber) {
-        // Also add textures
-        var playerClassName = ktah.gamestate.players[currentNumber].character;
-        currentNode.getMaterial(0).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/vest_" + playerClassName + ".jpg", true); // body armor
-        currentNode.getMaterial(1).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/body_" + playerClassName + ".jpg", true); // legs & boots
-        currentNode.getMaterial(2).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/head_" + playerClassName + ".jpg", true); // face
-        currentNode.getMaterial(3).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/eyes_" + playerClassName + ".jpg", true); // eyes
-        currentNode.getMaterial(4).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/body_" + playerClassName + ".jpg", true); // arms  
-      },
-      
       // Updates the character array and the player's position within it
       // Set initialization to true for first time setup and population of characters
       updateCharacterArray = function (currentNumber, initialization) {
@@ -156,16 +146,17 @@ $(function() {
               ktah.characterArray[i] = new ktah.types.Herder({},{sceneNode: protoSoldier});
             } else if (currentCharacter === "pioneer") {
               ktah.characterArray[i] = new ktah.types.Pioneer({},{sceneNode: protoSoldier});
-            } else if (currentCharacter === "tinker") {
-              ktah.characterArray[i] = new ktah.types.Tinker({},{sceneNode: protoSoldier});
+            } else if (currentCharacter === "tinkerer") {
+              ktah.characterArray[i] = new ktah.types.Tinkerer({},{sceneNode: protoSoldier});
             }
             
             ktah.characterArray[i].playerName = ktah.gamestate.players[i].name;
             ktah.characterArray[i].playing = true;
             ktah.characterArray[i].sceneNode.Pos.Z += i * 15;
+            ktah.characterArray[i].sceneNode.Pos.Y = 1.3;
             
             // Load textures onto classes here
-            applyClassTextures(ktah.characterArray[i].sceneNode,i);
+            ktah.characterArray[i].texturization();
             
           // Otherwise, it's an update
           } else {

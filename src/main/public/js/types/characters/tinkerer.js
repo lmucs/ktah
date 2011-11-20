@@ -12,7 +12,7 @@
  */
 
 $(function () {
-  ktah.types.Herder = ktah.types.Character.extend({
+  ktah.types.Tinkerer = ktah.types.Character.extend({
     initialize: function (attributes, options) {
       // do what we need to do whenever we create an Architect
       this.resources = {
@@ -22,6 +22,7 @@ $(function () {
       }
       
       this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());
+      this.characterClass = "tinkerer";
       
     }
   });
