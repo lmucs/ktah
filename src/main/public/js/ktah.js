@@ -7,7 +7,8 @@
 var ktah = {
 
   types: {},
-  gamestate: {}
+  gamestate: {},
+  characterArray: []
 
 };
 
