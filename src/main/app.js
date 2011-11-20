@@ -1,4 +1,4 @@
-/**
+/*
  * app.js
  *
  * Configures, initializes, then runs the application.
@@ -18,7 +18,7 @@ var express = require('express'),
 
 /*
  *
- *  **** APPLICATION CONFIGURATION ****
+ * APPLICATION CONFIGURATION
  *
  */
 
@@ -39,9 +39,8 @@ app.configure(function () {
   app.use(express.methodOverride());
   app.use(express.cookieParser());
   app.use(express.session({
-    secret: 'your secret here'
+    secret: 'zombie devops feynman'
   }));
-  // TODO I don't know much about sessions and what this secret is, but we need to pick one!
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
@@ -59,7 +58,7 @@ app.configure('production', function () {
 
 /*
  *
- *  **** DATABASE CONFIGURATION ****
+ * DATABASE CONFIGURATION
  *
  */
 
@@ -75,7 +74,7 @@ if (process.env.KTAH_DB_USER && process.env.KTAH_DB_PASS) {
 
 /*
  *
- *  **** CONTROLLERS ****
+ * CONTROLLERS
  *
  */
 
@@ -86,7 +85,7 @@ require('./controllers/room-controller.js')(app);
 
 /*
  *
- *  **** ROUTE DEFINITIONS ****
+ * ROUTE DEFINITIONS
  *
  */
 
@@ -124,12 +123,12 @@ app.get('/game/:gameId', function (req, res) {
 
 // Temporary playground for new ideas in zombie play.
 app.get('/zombietest', function (req, res) {
-    res.render('zombieTest');
+  res.render('zombieTest');
 });
 
 /*
  *
- *  **** START THE SERVER ****
+ * START THE SERVER
  *
  */
 
