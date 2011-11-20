@@ -198,14 +198,25 @@ module.exports = function(app) {
   // Post handler to update the entire monster array
   app.post('/monsters/:gameId', function(req, res) {
 	  
-	var currentGame = GameController.games[req.params.gameId];
+  	var currentGame = GameController.games[req.params.gameId];
+  	
+  	// If the game doesn't exist, ABORT!
+  	if (!currentGame) {
+  	  return;
+  	}
 	
-	// If the game doesn't exist, ABORT!
-	if (!currentGame) {
-	  return;
-	}
-	
-	// Update current monster array
-	currentGame.monsters = req.body;
+  	// Update current monster array
+  	currentGame.monsters = req.body;
+  	res.send({"success": true});
+  });
+  
+  // Get handler for the monster array
+  app.get('/monsters/:gameId', function(req, res) {
+    
+    var currentGame = GameController.games[req.params.gameId];
+  
+    // Return the array of monsters
+    res.contentType('application/json');
+    res.send(JSON.stringify(currentGame.monsters));
   });
 }

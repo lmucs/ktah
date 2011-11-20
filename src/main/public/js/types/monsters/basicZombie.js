@@ -17,29 +17,33 @@ $(function () {
       this.sceneNode.Pos.Z = this.posZ = attributes.posZ;
 
       // TODO: Will eventually be refactored to allow different monster types to share code.
-
-      $.ajax({
-        type: 'POST',
-        url: '/monster/' + options.gameId,
-        data: JSON.stringify({
-          type: this.type,
-          id: null,
-          health: this.health,
-          posX: this.sceneNode.Pos.X,
-          posZ: this.sceneNode.Pos.Z
-        }),
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.log(jqXHR);
-          console.log(textStatus);
-          console.log(errorThrown);
-        },
-        success: function (data, textStatus, jqXHR) {
-          this.id = data.monsterId;
-          console.log("monster id: " + this.id);
-        },
-        dataType: 'json',
-        contentType: 'application/json'
-      });
+      
+      if (attributes.id !== null) {
+        this.id = attributes.id;
+      } else {
+        $.ajax({
+          type: 'POST',
+          url: '/monster/' + options.gameId,
+          data: JSON.stringify({
+            type: this.type,
+            id: null,
+            health: this.health,
+            posX: this.sceneNode.Pos.X,
+            posZ: this.sceneNode.Pos.Z
+          }),
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+          },
+          success: function (data, textStatus, jqXHR) {
+            this.id = data.monsterId;
+            console.log("monster id: " + this.id);
+          },
+          dataType: 'json',
+          contentType: 'application/json'
+        });
+      }
     }
   });
 });

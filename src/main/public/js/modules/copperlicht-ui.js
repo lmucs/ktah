@@ -657,8 +657,9 @@ $(function() {
       // Update the monsters targets, then move the monsters.
       if (playerNumber === 0) {
         for (var i = 0; i < monsterArray.length; i++) {
-          monsterArray[i].updateTarget();
-          monsterArray[i].stepToTarget();
+          //muting this for now until it works:
+          //monsterArray[i].updateTarget(ktah.gamestate.players, monsterArray);
+          //monsterArray[i].stepToTarget();
         }
       }
 
