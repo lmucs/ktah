@@ -15,7 +15,6 @@ include.includeInit([
   
   /***** LIBRARIES *****/
   '/js/lib/copperlicht.js',
-  '/js/lib/base2.min.js',
   '/js/lib/jquery.mousewheel.min.js',
   '/js/lib/underscore.min.js', // backbone dependency
   '/js/lib/backbone.min.js',
