@@ -424,11 +424,15 @@ $(function() {
       type: 'GET',
       url: '/monsters/' + gameId,
       success: function (data) {
-        var monsterArray = [];
-        for (var i = 0; i < data.length; i++) {
-          monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id},{gameId: gameId, scene: scene, sceneNode: sceneNode});
+        if(!data) {
+          setTimeout(synchronizeMonsters(sceneNode), 200);
+        } else {
+          var monsterArray = [];
+          for (var i = 0; i < data.length; i++) {
+            monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id},{gameId: gameId, scene: scene, sceneNode: sceneNode});
+          }
+          return monsterArray;
         }
-        return monsterArray;
       },
       error: function (jqXHR, textStatus, errorThrown) {
         console.log(jqXHR);

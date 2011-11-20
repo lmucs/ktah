@@ -214,11 +214,6 @@ module.exports = function(app) {
   app.get('/monsters/:gameId', function(req, res) {
     
     var currentGame = GameController.games[req.params.gameId];
-    
-    // If the game doesn't exist, ABORT!
-    if (!currentGame.monsters) {
-      return;
-    }
   
     // Return the array of monsters
     res.contentType('application/json');
