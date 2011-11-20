@@ -6,7 +6,7 @@ html
     script(type='text/javascript', src='../js/lib/jquery-1.6.4.min.js')
     script(type='text/javascript', src='../js/util/include.js')
     script(type='text/javascript', src='../js/ktah.js')
-  body
+  body.ingame-noselect
     div.loadingScreen(id="loadingScreen") Entering K'tah...
     input(type='hidden', id='gameId', data="#{gameId}")
     input(type="hidden", id="userName", data="#{userName}")
@@ -17,3 +17,16 @@ html
     div(id="health-display", class="top-display")
     canvas(id='ktahCanvas', width='960', height='480')
       p OH NOES YOU IDIOT GET A REAL BROWSER
+    #character-items
+      #character-resources
+      #character-abilities
+    #gameChat
+      #chat
+        #connect
+          Chat failed to connect! Infinite Sadness :(
+        #loading
+          loading
+        #log
+      #toolbar
+        span(class="chat-label") [Enter Message]
+        input#entry(tabindex="1", type="text", size="75")

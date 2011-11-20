@@ -7,7 +7,9 @@
 var ktah = {
 
   types: {},
-  gamestate: {}
+  gamestate: {},
+  characterArray: [],
+  monsterArray: []
 
 };
 
@@ -15,7 +17,6 @@ include.includeInit([
   
   /***** LIBRARIES *****/
   '/js/lib/copperlicht.js',
-  '/js/lib/base2.min.js',
   '/js/lib/jquery.mousewheel.min.js',
   '/js/lib/underscore.min.js', // backbone dependency
   '/js/lib/backbone.min.js',
@@ -27,7 +28,7 @@ include.includeInit([
   '/js/types/characters/architect.js',
   '/js/types/characters/chemist.js',
   '/js/types/characters/herder.js',
-  '/js/types/characters/tinker.js',
+  '/js/types/characters/tinkerer.js',
   
   // Monster classes
   '/js/types/monsters/monster.js',

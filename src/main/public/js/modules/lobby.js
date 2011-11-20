@@ -254,14 +254,14 @@ $(function () {
             contentType: 'application/json'
           });
         };
-    
+        
     // BUTTON BINDINGS
     $('#create').click(function () {
-        createGame();
+      createGame();
     });
     
     $('#join').click(function () {
-        joinGame();
+      joinGame();
     });
     
     // Call the game update once to start

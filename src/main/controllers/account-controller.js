@@ -158,9 +158,9 @@ module.exports = function (app, client) {
                     } else { // If there were not duplicates found in the db, check that the strings are valid
                         // Start with validating and sanitizing the username
                         try {
-                            check(user).notNull().is("^[a-zA-Z0-9_]*$");
+                            check(user).notNull().len(4, 20).is("^[a-zA-Z0-9_]*$");
                         } catch (e) {
-                            req.registerUserFlash = "Your username must contain at least 1 character choosing from numbers and letters alone..."
+                            req.registerUserFlash = "Your username must consist of letters and numbers alone and contain 4 - 20 characters...";
                         }
                         
                         // Finally, the email

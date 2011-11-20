@@ -10,18 +10,18 @@
  */
 
 $(function () {
-    ktah.types.Pioneer = ktah.types.Character.extend({
-        
-        // Constructor stub
-        constructor: function () {
-            // TODO
-        },
-        
-        // Public properties
+  ktah.types.Pioneer = ktah.types.Character.extend({
+    initialize: function (attributes, options) {
+      // do what we need to do whenever we create an Architect
+      this.resources = {
         wood: 0,
         water: 0,
         learningExp: 0
-        
-    });
-    
+      }
+      
+      this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());
+      this.characterClass = "pioneer";
+      
+    }
+  });
 });

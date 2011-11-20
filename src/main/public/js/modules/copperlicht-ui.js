@@ -7,10 +7,9 @@
 
 $(function() {
   
-  var engine = startCopperLichtFromFile('ktahCanvas', '../../assets/copperlicht/copperlichtdata/zombieTestRedux.ccbjs'),
+  var engine = ktah.engine = startCopperLichtFromFile('ktahCanvas', '../../assets/copperlicht/copperlichtdata/zombieTestRedux.ccbjs'),
   playerSceneNode = null,
-  characterArray = [],
-  monsterArray = [],
+  monsterArray = ktah.monsterArray = [],
   scene = null,
   key = null;
   
@@ -125,41 +124,66 @@ $(function() {
       // Updates the character array and the player's position within it
       // Set initialization to true for first time setup and population of characters
       updateCharacterArray = function (currentNumber, initialization) {
-        var updatedCharacters = [];
+        var updatedCharacters = [],
+            currentCharacter = "";
         playerCount = ktah.gamestate.players.length;
         // Setup player information
         for (var i = 0; i < playerCount; i++) {
           // If it's the first setup, populate the array
           if (initialization) {
-            if (ktah.gamestate.players[i].name === userName) {
-              playerNumber = i;
+            var protoSoldier = scene.getSceneNodeFromName('soldier');
+            currentCharacter = ktah.gamestate.players[i].character;
+            
+            // Set the player's class selection
+            if (currentCharacter === "architect") {
+              ktah.characterArray[i] = new ktah.types.Architect({},{sceneNode: protoSoldier});
+            } else if (currentCharacter === "chemist") {
+              ktah.characterArray[i] = new ktah.types.Chemist({},{sceneNode: protoSoldier});
+            } else if (currentCharacter === "herder") {
+              ktah.characterArray[i] = new ktah.types.Herder({},{sceneNode: protoSoldier});
+            } else if (currentCharacter === "pioneer") {
+              ktah.characterArray[i] = new ktah.types.Pioneer({},{sceneNode: protoSoldier});
+            } else if (currentCharacter === "tinkerer") {
+              ktah.characterArray[i] = new ktah.types.Tinkerer({},{sceneNode: protoSoldier});
             }
             
-            if (i === 0) {
-              // "Character 0" gets the original node
-              characterArray[0] = scene.getSceneNodeFromName('soldier');
-            } else {
-              // All other characters are cloned and added to scene
-              characterArray[i] = characterArray[0].createClone(scene.getRootSceneNode());
+            ktah.characterArray[i].playerName = ktah.gamestate.players[i].name;
+            ktah.characterArray[i].playing = true;
+            ktah.characterArray[i].sceneNode.Pos.Z += i * 15;
+            ktah.characterArray[i].sceneNode.Pos.Y = 1.3;
+            
+            // Load textures onto classes here
+            ktah.characterArray[i].texturization();
+            
+            if (ktah.gamestate.players[i].name === userName) {
+              playerNumber = i;
+              
+              // For the current player, set up the class-specific UI
+              for (var currentResource in ktah.characterArray[i].resources) {
+                $("#character-resources").append(
+                  '<span class="character-resource">'
+                  + '<div class="character-resource-icon">&nbsp</div>'
+                  + '<div class="character-resource-bar">&nbsp</div>'
+                  + '<div class="character-resource-text">0 / 3</div></span>'
+                );
+              }
             }
-            characterArray[i].playerName = ktah.gamestate.players[i].name;
-            characterArray[i].playing = true;
-            characterArray[i].Pos.Z += i * 15;
+            
           // Otherwise, it's an update
           } else {
             // Reset all the "playing" tags of the scene nodes so that the ones that
             // no longer are active can be culled by process of elimination
-            for (var k = 0; k < characterArray.length; k++) {
-              characterArray[k].playing = false;
+            for (var k = 0; k < ktah.characterArray.length; k++) {
+              ktah.characterArray[k].playing = false;
             }
             
-            for (var j = 0; j < characterArray.length; j++) {
+            for (var j = 0; j < ktah.characterArray.length; j++) {
               // This lamely removes the player that left by adding the active ones
               // to a new, updated character array
-              if (ktah.gamestate.players[i].name === characterArray[j].playerName) {
-                updatedCharacters.push(characterArray[j]);
-                updatedCharacters[updatedCharacters.length - 1].playerName = characterArray[j].playerName;
-                updatedCharacters[updatedCharacters.length - 1].playing = characterArray[j].playing = true;
+              if (ktah.gamestate.players[i].name === ktah.characterArray[j].playerName) {
+                updatedCharacters.push(ktah.characterArray[j]);
+                updatedCharacters[updatedCharacters.length - 1].playerName = ktah.characterArray[j].playerName;
+                updatedCharacters[updatedCharacters.length - 1].playing = ktah.characterArray[j].playing = true;
               }
             }
           }
@@ -168,15 +192,15 @@ $(function() {
         // If this was a mid-game update, set the players back up
         if (!initialization) {
           // Nuke the "zombie" scene node (pun intended, just nuke the node the player left)
-          for (var k = 0; k < characterArray.length; k++) {
-            if (!characterArray[k].playing) {
-              scene.getRootSceneNode().removeChild(characterArray[k]);
+          for (var k = 0; k < ktah.characterArray.length; k++) {
+            if (!ktah.characterArray[k].playing) {
+              scene.getRootSceneNode().removeChild(ktah.characterArray[k]);
             }
           }
-          // Now, set the characterArray to its updated form
-          characterArray = updatedCharacters;
+          // Now, set the ktah.characterArray to its updated form
+          ktah.characterArray = updatedCharacters;
           // Now we have to reset the player numbers in the new array
-          for (var i = 0; i < characterArray.length; i++) {
+          for (var i = 0; i < ktah.characterArray.length; i++) {
             if (updatedCharacters[i].playerName === userName) {
               playerNumber = i;
             }
@@ -184,16 +208,17 @@ $(function() {
         }
         
         // Grab the character that the player is controlling
-        playerSceneNode = characterArray[playerNumber];
+        playerSceneNode = ktah.characterArray[playerNumber].sceneNode;
         updateUserInterface();
       };
 
+  
   // Called when loading the 3d scene has finished (from the coppercube file)
   engine.OnLoadingComplete = function () {
     var synchronizedUpdate = seedGamestate();
     
     if (ktah.gamestate.players) {
-      scene = engine.getScene();
+      scene = ktah.scene = engine.getScene();
       if (scene) {
         // Add the players to the character array
         updateCharacterArray(ktah.gamestate.players.length, true);
@@ -206,6 +231,7 @@ $(function() {
           playerSlidingSpeed
         );
         playerSceneNode.addAnimator(playerCollisionAnimator);
+        
         if (tryToUseLighting) {
           // And add a light to the player
           lightNode = new CL3D.LightSceneNode(0);
@@ -225,20 +251,24 @@ $(function() {
       scene.getRootSceneNode().addChild(cam);
       scene.setActiveCamera(cam);
       
-      // Remove the loading screen
-      $("#loadingScreen").fadeOut(3000);
-      
-      // ***** testing to make monsters! *****
       var protoGhoul = scene.getSceneNodeFromName('ghoul');
       
-      monsterArray = generateMonsters(protoGhoul, 20);
+      if (playerNumber === 0) {
+        monsterArray = generateMonsters(protoGhoul, 20);
+      } else {
+        monsterArray = synchronizeMonsters(protoGhoul);
+      }
       
       // Begin the server pinging and end-condition checking
       setInterval(updateTeam, 50);
       setInterval(gameEndCheck, 5000);
+      
+      // Remove the loading screen
+      $("#loadingScreen").fadeOut(3000);
+      
       // Kick any PHONIES from the game
       for (var i = 0; i < playerCount; i++) {
-        if (userName === characterArray[i].playerName) {
+        if (userName === ktah.characterArray[i].playerName) {
           return;
         }
       }
@@ -340,7 +370,7 @@ $(function() {
   
   // Helper function for animation display
   animateCharacter = function (characterIndex, animation) {
-    var currentChar = characterArray[characterIndex];
+    var currentChar = ktah.characterArray[characterIndex].sceneNode;
     if (currentChar.currentAnimation !== animation) {
       currentChar.setLoopMode(animation !== "aim");
       if (currentChar.currentAnimation !== "aim") {
@@ -394,13 +424,39 @@ $(function() {
     });
   },
   
-  // Generate a certain amount of zombies.
+//Generate a certain amount of zombies.
   generateMonsters = function(sceneNode, amount) {
-  	var monsterArray = [];
-  	for(var i = 0; i < amount; i++) {
-  		monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500},{gameId: gameId, scene: scene, sceneNode: sceneNode});
-  	}
-  	return monsterArray;
+    var monsterArray = [];
+    for(var i = 0; i < amount; i++) {
+      monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500},{gameId: gameId, sceneNode: sceneNode});
+    }
+    return monsterArray;
+  },
+  
+  synchronizeMonsters = function(sceneNode) {    
+    $.ajax({
+      type: 'GET',
+      url: '/monsters/' + gameId,
+      success: function (data) {
+        if(!data) {
+          setTimeout(synchronizeMonsters(sceneNode), 200);
+        } else {
+          var monsterArray = [];
+          for (var i = 0; i < data.length; i++) {
+            monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id},{gameId: gameId, sceneNode: sceneNode});
+          }
+          return monsterArray;
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+        synchronizeMonsters(sceneNode);
+      },
+      dataType: 'json',
+      contentType: 'application/json'
+    });
   },
   
   // Updates the positions of other players
@@ -420,17 +476,18 @@ $(function() {
         
         // Update player positions based on the gamestate
         for (var i = 0; i < playerCount; i++) {
-          var currentPlayer = ktah.gamestate.players[i];
+          var currentPlayer = ktah.gamestate.players[i],
+              healthBarWidth = (currentPlayer.health / 100) * 148 + "px";
               
           // Update health bars
           $("#" + currentPlayer.name + "-health-num-box").children(":nth-child(2)")
             .text(currentPlayer.health + " / 100");
             
           $("#" + currentPlayer.name + "-health-bar")
-            .css("width", (currentPlayer.health / 100) * 148 + "px");
+            .css({width: healthBarWidth});
           
           // Set zombie animation
-          if (currentPlayer.posX !== characterArray[i].Pos.X || currentPlayer.posZ !== characterArray[i].Pos.Z) {
+          if (currentPlayer.posX !== ktah.characterArray[i].sceneNode.Pos.X || currentPlayer.posZ !== ktah.characterArray[i].sceneNode.Pos.Z) {
             animateCharacter(i, "run");
           } else {
             animateCharacter(i, "stand");
@@ -443,21 +500,21 @@ $(function() {
           
           // Set death animation
           if (currentPlayer.status === "dead") {
-            characterArray[i].Rot.X = -80;
+            ktah.characterArray[i].sceneNode.Rot.X = -80;
           }
           
           if (i === playerNumber) {
-            currentPlayer.posX = characterArray[i].Pos.X;
-            currentPlayer.posZ = characterArray[i].Pos.Z;
-            currentPlayer.posY = characterArray[i].Pos.Y;
-            currentPlayer.theta = characterArray[i].Rot.Y;
+            currentPlayer.posX = ktah.characterArray[i].sceneNode.Pos.X;
+            currentPlayer.posZ = ktah.characterArray[i].sceneNode.Pos.Z;
+            currentPlayer.posY = ktah.characterArray[i].sceneNode.Pos.Y;
+            currentPlayer.theta = ktah.characterArray[i].sceneNode.Rot.Y;
             
-            if (characterArray[i].Pos.Y < -300 || resetKey) {
+            if (ktah.characterArray[i].sceneNode.Pos.Y < -300 || resetKey) {
               currentPlayer.health = currentPlayer.health - 25;
               addPoints(-10);
               resetZombiePosition(i);
               resetGoal();
-              camFollow(cam, characterArray[i]);
+              camFollow(cam, ktah.characterArray[i].sceneNode);
             }
             
             currentPlayer.attacking = zombieBeingAttacked;
@@ -500,10 +557,10 @@ $(function() {
               });
             }
           } else {
-            characterArray[i].Pos.X = currentPlayer.posX;
-            characterArray[i].Pos.Z = currentPlayer.posZ;
-            characterArray[i].Pos.Y = currentPlayer.posY;
-            characterArray[i].Rot.Y = currentPlayer.theta;
+            ktah.characterArray[i].sceneNode.Pos.X = currentPlayer.posX;
+            ktah.characterArray[i].sceneNode.Pos.Z = currentPlayer.posZ;
+            ktah.characterArray[i].sceneNode.Pos.Y = currentPlayer.posY;
+            ktah.characterArray[i].sceneNode.Rot.Y = currentPlayer.theta;
           }
         }
       },
@@ -570,14 +627,14 @@ $(function() {
   },
   
   resetZombiePosition = function(i){
-      characterArray[i].Pos.Y = startingY;
-      characterArray[i].Pos.X = startingX;
-      characterArray[i].Pos.Z = startingZ;
+    ktah.characterArray[i].sceneNode.Pos.Y = startingY;
+    ktah.characterArray[i].sceneNode.Pos.X = startingX;
+    ktah.characterArray[i].sceneNode.Pos.Z = startingZ;
   },
   
   resetGoal = function() {
-      goalX = null; //characterArray[i].Pos.X;
-      goalZ = null; //characterArray[i].Pos.Z;
+    goalX = null; //ktah.characterArray[i].sceneNode.Pos.X;
+    goalZ = null; //ktah.characterArray[i].sceneNode.Pos.Z;
   },
   
   // Helper function for adding points
@@ -638,8 +695,9 @@ $(function() {
       // Update the monsters targets, then move the monsters.
       if (playerNumber === 0) {
         for (var i = 0; i < monsterArray.length; i++) {
-          monsterArray[i].updateTarget();
-          monsterArray[i].stepToTarget();
+          //muting this for now until it works:
+          //monsterArray[i].updateTarget(ktah.gamestate.players, monsterArray);
+          //monsterArray[i].stepToTarget();
         }
       }
 
@@ -744,10 +802,10 @@ $(function() {
         
         // Collision Detection between players
         for (var i = 0; i < playerCount; i++) {
-          if (i !== playerNumber && characterArray[playerNumber].Pos.getDistanceTo(characterArray[i].Pos) < 4) {
+          if (i !== playerNumber && ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(ktah.characterArray[i].sceneNode.Pos) < 4) {
             // Classic X/Z movement system
-            playerSceneNode.Pos.X += (playerSceneNode.Pos.X - characterArray[i].Pos.X)/2;
-            playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - characterArray[i].Pos.Z)/2;
+            playerSceneNode.Pos.X += (playerSceneNode.Pos.X - ktah.characterArray[i].sceneNode.Pos.X)/2;
+            playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.characterArray[i].sceneNode.Pos.Z)/2;
           }
         }
         

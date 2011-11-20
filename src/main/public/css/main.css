@@ -16,6 +16,10 @@
   border: 2px solid black;
   height: 100px;
   overflow: auto;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -o-user-select: text;
 }
 
 .chat-label {
@@ -32,6 +36,11 @@
     height: 200px;
     padding: 5px;
     float: right;
+}
+
+#gameChat {
+    width: 980px;
+    margin: 0 auto;
 }
 
 .lobby-game {
@@ -103,6 +112,14 @@
   border: 1px solid black;
   display: block;
   margin: 0 auto;
+  cursor: crosshair;
+}
+
+.ingame-noselect {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
 }
 
 .top-display {
@@ -116,6 +133,39 @@
     margin-bottom: 10px;
     color: gray;
     font-size: 20px;
+}
+
+#character-items {
+    width: 960px;
+    height: 75px;
+    margin: 0 auto;
+}
+
+.character-resource {
+    display: inline-block;
+    margin-top: 5px;
+    margin-left: 10px;
+    height: 30px;
+    width: 180px;
+}
+
+.character-resource-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+}
+
+.character-resource-bar {
+    display: inline-block;
+    margin-left: 5px;
+    width: 100px;
+    background-color: black;
+}
+
+.character-resource-text {
+    display: inline-block;
+    margin-left: 5px;
 }
 
 #notifications {

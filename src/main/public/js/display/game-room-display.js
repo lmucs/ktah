@@ -14,6 +14,8 @@ $(function () {
         oldNumber = 0,
         newNumber = 0,
         characterChoice = "",
+        kickOptions = "",
+        inGame = false,
         
         // function to grab the game state
         getGamestate = function () {
@@ -26,12 +28,11 @@ $(function () {
               character : characterChoice
             },
             success: function (data) {
-              newNumber = data.players.length;
-              console.log(data);
               if (!data) {
                 alert("Game-room closed. Redirecting to Lobby.");
                 window.location = '../../lobby';
               }
+              newNumber = data.players.length;
               if (data.environment.readyState) {
                 window.location = '/game/' + gameId;
               } else {
@@ -47,6 +48,10 @@ $(function () {
                   var currentPlayer = gamestate.players[i],
                       playerAccent = "",
                       playerStatus = "room-player-list";
+                      
+                  if (currentPlayer.name === userName) {
+                    inGame = true;
+                  }
                   
                   if (gamestate.players[i].readyState === "ready") {
                     playerStatus += " room-player-ready";
@@ -63,8 +68,10 @@ $(function () {
                     }
                   
                     // Add the HTML to the list area
-                    playerList.append('<div id="' + currentPlayer.name + '-listing" class="' + playerStatus + '"><strong ' + playerAccent + '>'
-                    + currentPlayer.name + '</strong><span class="class-selection"></span></div>');
+                    playerList.append(
+                      '<div id="' + currentPlayer.name + '-listing" class="' + playerStatus + '">'
+                      + '<strong ' + playerAccent + '>' + currentPlayer.name + '</strong><span class="class-selection"></span></div>'
+                    );
                   }
                   
                   // Then, update the necessary list components
@@ -75,6 +82,12 @@ $(function () {
                       .html("<img class='class-icon class-selected' src='../assets/icons/" + currentPlayer.character + "Icon.png'></img>");
                   }
                 }
+                
+                if (!inGame) {
+                  alert("You cannot join games by URL. Use the lobby functions!");
+                  window.location = '../../lobby';
+                }
+                
                 oldNumber = newNumber;
               }
             },
@@ -86,6 +99,26 @@ $(function () {
             dataType: 'json',
             contentType: 'application/json'
           });
+        },
+        
+        // Set the handlers for the class selection
+        buttonizeClasses = function () {
+          $("#class-options").children().each(function () {
+            $(this).click(function () {
+              characterChoice = $(this).children(":nth-child(1)").attr("id");
+              $(this).siblings().each(function () {$(this).removeClass("class-selected")});
+              $(this).addClass("class-selected");
+              classSelected = true;
+              getGamestate();
+            });
+          });
+        },
+        
+        // Remove class selection handlers to lock them after readying up
+        lockClasses = function() {
+          $("#class-options").children().each(function () {
+            $(this).unbind("click");
+          });
         };
         
     // Pull the current gamestate on entrance
@@ -94,15 +127,7 @@ $(function () {
     // Update the room every 2 seconds to reflect players leaving / staying
     window.setInterval(getGamestate, 2000);
     
-    // Set the handlers for the class selection
-    $("#class-options").children().each(function () {
-      $(this).click(function () {
-        characterChoice = $(this).children(":nth-child(1)").attr("id");
-        $(this).siblings().each(function () {$(this).removeClass("class-selected")});
-        $(this).addClass("class-selected");
-        classSelected = true;
-      });
-    });
+    buttonizeClasses();
     
     // Set the ready state button
     $("#readyButton").click(function () {
@@ -111,9 +136,11 @@ $(function () {
           alert("You must choose a class before readying up!");
           return;
         }
+        lockClasses();
         readyState = "ready";
         $("#readyButton").attr("value", "I'm Not Ready!");
       } else {
+        buttonizeClasses();
         readyState = "notReady";
         $("#readyButton").attr("value", "I'm Ready!");
       }

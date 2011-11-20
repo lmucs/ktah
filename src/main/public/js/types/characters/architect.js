@@ -10,20 +10,21 @@
  */
 
 $(function () {
-    ktah.types.Architect = ktah.types.Character.extend({
-        
-        // Constructor stub
-        constructor: function () {
-            // TODO
-        },
-        
-        // Public properties
+  ktah.types.Architect = ktah.types.Character.extend({
+    initialize: function (attributes, options) {
+      
+      // do what we need to do whenever we create an Architect
+      this.resources = {
         stone: 0,
         wood: 0,
         scrapMetal: 0,
         sand: 0,
         atomicWaste: 0
-        
-    });
-    
+      }
+      
+      this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());
+      this.characterClass = "architect";
+
+    }
+  });
 });
