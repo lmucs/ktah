@@ -21,6 +21,9 @@ $(function () {
         zombieFlesh: 0,
         atomicWaste: 0
       }
+      
+      this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());
+      
     }
   });
 });

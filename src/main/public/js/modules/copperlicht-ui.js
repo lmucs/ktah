@@ -134,7 +134,8 @@ $(function() {
       // Updates the character array and the player's position within it
       // Set initialization to true for first time setup and population of characters
       updateCharacterArray = function (currentNumber, initialization) {
-        var updatedCharacters = [];
+        var updatedCharacters = [],
+            currentCharacter = "";
         playerCount = ktah.gamestate.players.length;
         // Setup player information
         for (var i = 0; i < playerCount; i++) {
@@ -144,19 +145,27 @@ $(function() {
               playerNumber = i;
             }
             
-            if (i === 0) {
-              // "Character 0" gets the original node
-              ktah.characterArray[0] = scene.getSceneNodeFromName('soldier');
-            } else {
-              // All other characters are cloned and added to scene
-              ktah.characterArray[i] = ktah.characterArray[0].createClone(scene.getRootSceneNode());
+            var protoSoldier = scene.getSceneNodeFromName('soldier');
+            currentCharacter = ktah.gamestate.players[i].character;
+            
+            if (currentCharacter === "architect") {
+              ktah.characterArray[i] = new ktah.types.Architect({},{sceneNode: protoSoldier});
+            } else if (currentCharacter === "chemist") {
+              ktah.characterArray[i] = new ktah.types.Chemist({},{sceneNode: protoSoldier});
+            } else if (currentCharacter === "herder") {
+              ktah.characterArray[i] = new ktah.types.Herder({},{sceneNode: protoSoldier});
+            } else if (currentCharacter === "pioneer") {
+              ktah.characterArray[i] = new ktah.types.Pioneer({},{sceneNode: protoSoldier});
+            } else if (currentCharacter === "tinker") {
+              ktah.characterArray[i] = new ktah.types.Tinker({},{sceneNode: protoSoldier});
             }
+            
             ktah.characterArray[i].playerName = ktah.gamestate.players[i].name;
             ktah.characterArray[i].playing = true;
-            ktah.characterArray[i].Pos.Z += i * 15;
+            ktah.characterArray[i].sceneNode.Pos.Z += i * 15;
             
             // Load textures onto classes here
-            applyClassTextures(ktah.characterArray[i],i);
+            applyClassTextures(ktah.characterArray[i].sceneNode,i);
             
           // Otherwise, it's an update
           } else {
@@ -197,7 +206,7 @@ $(function() {
         }
         
         // Grab the character that the player is controlling
-        playerSceneNode = ktah.characterArray[playerNumber];
+        playerSceneNode = ktah.characterArray[playerNumber].sceneNode;
         updateUserInterface();
       };
 
@@ -359,7 +368,7 @@ $(function() {
   
   // Helper function for animation display
   animateCharacter = function (characterIndex, animation) {
-    var currentChar = ktah.characterArray[characterIndex];
+    var currentChar = ktah.characterArray[characterIndex].sceneNode;
     if (currentChar.currentAnimation !== animation) {
       currentChar.setLoopMode(animation !== "aim");
       if (currentChar.currentAnimation !== "aim") {
@@ -479,7 +488,7 @@ $(function() {
             );
           
           // Set zombie animation
-          if (currentPlayer.posX !== ktah.characterArray[i].Pos.X || currentPlayer.posZ !== ktah.characterArray[i].Pos.Z) {
+          if (currentPlayer.posX !== ktah.characterArray[i].sceneNode.Pos.X || currentPlayer.posZ !== ktah.characterArray[i].sceneNode.Pos.Z) {
             animateCharacter(i, "run");
           } else {
             animateCharacter(i, "stand");
@@ -492,21 +501,21 @@ $(function() {
           
           // Set death animation
           if (currentPlayer.status === "dead") {
-            ktah.characterArray[i].Rot.X = -80;
+            ktah.characterArray[i].sceneNode.Rot.X = -80;
           }
           
           if (i === playerNumber) {
-            currentPlayer.posX = ktah.characterArray[i].Pos.X;
-            currentPlayer.posZ = ktah.characterArray[i].Pos.Z;
-            currentPlayer.posY = ktah.characterArray[i].Pos.Y;
-            currentPlayer.theta = ktah.characterArray[i].Rot.Y;
+            currentPlayer.posX = ktah.characterArray[i].sceneNode.Pos.X;
+            currentPlayer.posZ = ktah.characterArray[i].sceneNode.Pos.Z;
+            currentPlayer.posY = ktah.characterArray[i].sceneNode.Pos.Y;
+            currentPlayer.theta = ktah.characterArray[i].sceneNode.Rot.Y;
             
-            if (ktah.characterArray[i].Pos.Y < -300 || resetKey) {
+            if (ktah.characterArray[i].sceneNode.Pos.Y < -300 || resetKey) {
               currentPlayer.health = currentPlayer.health - 25;
               addPoints(-10);
               resetZombiePosition(i);
               resetGoal();
-              camFollow(cam, ktah.characterArray[i]);
+              camFollow(cam, ktah.characterArray[i].sceneNode);
             }
             
             currentPlayer.attacking = zombieBeingAttacked;
@@ -549,10 +558,10 @@ $(function() {
               });
             }
           } else {
-            ktah.characterArray[i].Pos.X = currentPlayer.posX;
-            ktah.characterArray[i].Pos.Z = currentPlayer.posZ;
-            ktah.characterArray[i].Pos.Y = currentPlayer.posY;
-            ktah.characterArray[i].Rot.Y = currentPlayer.theta;
+            ktah.characterArray[i].sceneNode.Pos.X = currentPlayer.posX;
+            ktah.characterArray[i].sceneNode.Pos.Z = currentPlayer.posZ;
+            ktah.characterArray[i].sceneNode.Pos.Y = currentPlayer.posY;
+            ktah.characterArray[i].sceneNode.Rot.Y = currentPlayer.theta;
           }
         }
       },
@@ -619,14 +628,14 @@ $(function() {
   },
   
   resetZombiePosition = function(i){
-    ktah.characterArray[i].Pos.Y = startingY;
-    ktah.characterArray[i].Pos.X = startingX;
-    ktah.characterArray[i].Pos.Z = startingZ;
+    ktah.characterArray[i].sceneNode.Pos.Y = startingY;
+    ktah.characterArray[i].sceneNode.Pos.X = startingX;
+    ktah.characterArray[i].sceneNode.Pos.Z = startingZ;
   },
   
   resetGoal = function() {
-    goalX = null; //ktah.characterArray[i].Pos.X;
-    goalZ = null; //ktah.characterArray[i].Pos.Z;
+    goalX = null; //ktah.characterArray[i].sceneNode.Pos.X;
+    goalZ = null; //ktah.characterArray[i].sceneNode.Pos.Z;
   },
   
   // Helper function for adding points
@@ -794,10 +803,10 @@ $(function() {
         
         // Collision Detection between players
         for (var i = 0; i < playerCount; i++) {
-          if (i !== playerNumber && ktah.characterArray[playerNumber].Pos.getDistanceTo(ktah.characterArray[i].Pos) < 4) {
+          if (i !== playerNumber && ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(ktah.characterArray[i].sceneNode.Pos) < 4) {
             // Classic X/Z movement system
-            playerSceneNode.Pos.X += (playerSceneNode.Pos.X - ktah.characterArray[i].Pos.X)/2;
-            playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.characterArray[i].Pos.Z)/2;
+            playerSceneNode.Pos.X += (playerSceneNode.Pos.X - ktah.characterArray[i].sceneNode.Pos.X)/2;
+            playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.characterArray[i].sceneNode.Pos.Z)/2;
           }
         }
         

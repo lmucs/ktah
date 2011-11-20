@@ -18,6 +18,9 @@ $(function () {
         water: 0,
         learningExp: 0
       }
+      
+      this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());
+      
     }
   });
 });

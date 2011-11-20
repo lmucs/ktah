@@ -12,6 +12,7 @@
 $(function () {
   ktah.types.Architect = ktah.types.Character.extend({
     initialize: function (attributes, options) {
+      
       // do what we need to do whenever we create an Architect
       this.resources = {
         stone: 0,
@@ -20,6 +21,9 @@ $(function () {
         sand: 0,
         atomicWaste: 0
       }
+      
+      this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());
+
     }
   });
 });
