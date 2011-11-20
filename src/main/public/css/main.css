@@ -123,6 +123,20 @@
     font-size: 20px;
 }
 
+#character-items {
+    width: 960px;
+    height: 75px;
+    margin: 0 auto;
+    border: 1px solid black;
+}
+
+.character-resource {
+    display: inline-block;
+    height: 20px;
+    width: 60px;
+    background-color: red;
+}
+
 #notifications {
     width: 200px;
     background-color: red;

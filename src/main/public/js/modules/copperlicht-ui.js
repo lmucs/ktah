@@ -121,6 +121,7 @@ $(function() {
           );
         }
       },
+      
       applyClassTextures = function(currentNode, currentNumber) {
         // Also add textures
         var playerClassName = ktah.gamestate.players[currentNumber].character;
@@ -238,9 +239,6 @@ $(function() {
       scene.getRootSceneNode().addChild(cam);
       scene.setActiveCamera(cam);
       
-      // Remove the loading screen
-      $("#loadingScreen").fadeOut(3000);
-      
       // ***** testing to make monsters! *****
       var protoGhoul = scene.getSceneNodeFromName('ghoul');
       
@@ -249,6 +247,10 @@ $(function() {
       // Begin the server pinging and end-condition checking
       setInterval(updateTeam, 50);
       setInterval(gameEndCheck, 5000);
+      
+      // Remove the loading screen
+      $("#loadingScreen").fadeOut(3000);
+      
       // Kick any PHONIES from the game
       for (var i = 0; i < playerCount; i++) {
         if (userName === characterArray[i].playerName) {
@@ -433,14 +435,18 @@ $(function() {
         
         // Update player positions based on the gamestate
         for (var i = 0; i < playerCount; i++) {
-          var currentPlayer = ktah.gamestate.players[i];
+          var currentPlayer = ktah.gamestate.players[i],
+              healthBarWidth = (currentPlayer.health / 100) * 148 + "px";
               
           // Update health bars
           $("#" + currentPlayer.name + "-health-num-box").children(":nth-child(2)")
             .text(currentPlayer.health + " / 100");
             
           $("#" + currentPlayer.name + "-health-bar")
-            .css("width", (currentPlayer.health / 100) * 148 + "px");
+            .animate(
+              {width: healthBarWidth},
+              100
+            );
           
           // Set zombie animation
           if (currentPlayer.posX !== characterArray[i].Pos.X || currentPlayer.posZ !== characterArray[i].Pos.Z) {
@@ -583,14 +589,14 @@ $(function() {
   },
   
   resetZombiePosition = function(i){
-      characterArray[i].Pos.Y = startingY;
-      characterArray[i].Pos.X = startingX;
-      characterArray[i].Pos.Z = startingZ;
+    characterArray[i].Pos.Y = startingY;
+    characterArray[i].Pos.X = startingX;
+    characterArray[i].Pos.Z = startingZ;
   },
   
   resetGoal = function() {
-      goalX = null; //characterArray[i].Pos.X;
-      goalZ = null; //characterArray[i].Pos.Z;
+    goalX = null; //characterArray[i].Pos.X;
+    goalZ = null; //characterArray[i].Pos.Z;
   },
   
   // Helper function for adding points
