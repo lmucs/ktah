@@ -6,13 +6,9 @@
  */
 
 $(function () {
-    ktah.types.Sand = ktah.types.Resource.extend({
-        
-        // Constructor stub
-        constructor: function () {
-            // TODO
-        },
-        
-    });
-    
+  ktah.types.Sand = ktah.types.Resource.extend({
+    initialize: function (attributes, options) {
+      //TODO: stuffs
+    }
+  });
 });

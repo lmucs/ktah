@@ -6,12 +6,16 @@
  */
 
 $(function () {
-    ktah.types.Character = base2.Base.extend({
-            // Public properties
-            name: "",
-            level: 1,
-            health: 100, // TODO: Arbitrary placeholder
-            roundExp: 0
-    });
-    
+  ktah.types.Character = Backbone.Model.extend({
+    defaults: {
+      
+      // Public properties
+      name: "",
+      characterClass: null,
+      id: null,
+      level: 1,
+      health: 100, // TODO: Arbitrary placeholder
+      sceneNode: null
+    }
+  });
 });
