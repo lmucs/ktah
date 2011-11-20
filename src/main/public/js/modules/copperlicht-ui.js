@@ -131,13 +131,10 @@ $(function() {
         for (var i = 0; i < playerCount; i++) {
           // If it's the first setup, populate the array
           if (initialization) {
-            if (ktah.gamestate.players[i].name === userName) {
-              playerNumber = i;
-            }
-            
             var protoSoldier = scene.getSceneNodeFromName('soldier');
             currentCharacter = ktah.gamestate.players[i].character;
             
+            // Set the player's class selection
             if (currentCharacter === "architect") {
               ktah.characterArray[i] = new ktah.types.Architect({},{sceneNode: protoSoldier});
             } else if (currentCharacter === "chemist") {
@@ -157,6 +154,20 @@ $(function() {
             
             // Load textures onto classes here
             ktah.characterArray[i].texturization();
+            
+            if (ktah.gamestate.players[i].name === userName) {
+              playerNumber = i;
+              
+              // For the current player, set up the class-specific UI
+              for (var currentResource in ktah.characterArray[i].resources) {
+                $("#character-resources").append(
+                  '<span class="character-resource">'
+                  + '<div class="character-resource-icon">&nbsp</div>'
+                  + '<div class="character-resource-bar">&nbsp</div>'
+                  + '<div class="character-resource-text">0 / 3</div></span>'
+                );
+              }
+            }
             
           // Otherwise, it's an update
           } else {
@@ -473,10 +484,7 @@ $(function() {
             .text(currentPlayer.health + " / 100");
             
           $("#" + currentPlayer.name + "-health-bar")
-            .animate(
-              {width: healthBarWidth},
-              100
-            );
+            .css({width: healthBarWidth});
           
           // Set zombie animation
           if (currentPlayer.posX !== ktah.characterArray[i].sceneNode.Pos.X || currentPlayer.posZ !== ktah.characterArray[i].sceneNode.Pos.Z) {

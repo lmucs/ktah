@@ -28,12 +28,11 @@ $(function () {
               character : characterChoice
             },
             success: function (data) {
-              newNumber = data.players.length;
-              console.log(data);
               if (!data) {
                 alert("Game-room closed. Redirecting to Lobby.");
                 window.location = '../../lobby';
               }
+              newNumber = data.players.length;
               if (data.environment.readyState) {
                 window.location = '/game/' + gameId;
               } else {
@@ -110,6 +109,7 @@ $(function () {
               $(this).siblings().each(function () {$(this).removeClass("class-selected")});
               $(this).addClass("class-selected");
               classSelected = true;
+              getGamestate();
             });
           });
         },
