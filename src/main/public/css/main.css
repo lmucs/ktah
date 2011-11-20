@@ -34,6 +34,11 @@
     float: right;
 }
 
+#gameChat {
+    width: 980px;
+    margin: 0 auto;
+}
+
 .lobby-game {
     margin: 5px;
     padding: 5px;
