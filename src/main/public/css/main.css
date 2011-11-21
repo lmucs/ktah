@@ -277,6 +277,11 @@
   background-color: #D8D8D8;
 }
 
+#registerButton {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
 #flashMessage {
   color: white;
   margin: 10px;

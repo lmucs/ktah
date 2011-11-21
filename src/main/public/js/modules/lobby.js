@@ -269,7 +269,8 @@ $(function () {
             .dialog({
               width: 400,
               resizable: false,
-              modal: true
+              modal: true,
+              buttons: { "Ok": function() { $(this).dialog("close"); } }
             });
         };
         
