@@ -138,11 +138,13 @@ $(function () {
         }
         lockClasses();
         readyState = "ready";
+        getGamestate();
         $("#readyButton").attr("value", "I'm Not Ready!");
       } else {
         buttonizeClasses();
         readyState = "notReady";
         $("#readyButton").attr("value", "I'm Ready!");
+        getGamestate();
       }
     });
     

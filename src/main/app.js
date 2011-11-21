@@ -79,52 +79,11 @@ if (process.env.KTAH_DB_USER && process.env.KTAH_DB_PASS) {
  */
 
 require('./controllers/game-controller.js')(app);
+require('./controllers/lobby-controller.js')(app);
 require('./controllers/chat-controller.js')(app);
 require('./controllers/account-controller.js')(app, client);
 require('./controllers/room-controller.js')(app);
 
-/*
- *
- * ROUTE DEFINITIONS
- *
- */
-
-// The lobby
-app.get('/lobby', function (req, res) {
-  if (req.session.is_logged_in) {
-    res.render('lobby', {
-      layout: true,
-      userName: req.session.userInfo.accountName
-    });
-  } else {
-    res.redirect('/');
-  }
-});
-
-// A chat tester
-app.get('/chattest/:room', function (req, res) {
-  res.render('chat', {
-    layout: true,
-    gameId: req.params.room
-  });
-});
-
-// Play the game with the given id
-app.get('/game/:gameId', function (req, res) {
-  if (req.session.is_logged_in) {
-    res.render('game', {
-      gameId: req.params.gameId,
-      userName: req.session.userInfo.accountName
-    });
-  } else {
-    res.redirect('/');
-  }
-});
-
-// Temporary playground for new ideas in zombie play.
-app.get('/zombietest', function (req, res) {
-  res.render('zombieTest');
-});
 
 /*
  *

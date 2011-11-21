@@ -132,6 +132,18 @@ module.exports = function(app) {
     res.send({"success": true});
   });
   
+  // Play the game with the given id
+  app.get('/game/:gameId', function (req, res) {
+    if (req.session.is_logged_in) {
+      res.render('game', {
+        gameId: req.params.gameId,
+        userName: req.session.userInfo.accountName
+      });
+    } else {
+      res.redirect('/');
+    }
+  });
+  
   // Handler to remove a player from a game or game room
   app.get('/gamestate/:gameId/:userName', function(req, res) {
     var gamePlayers;
