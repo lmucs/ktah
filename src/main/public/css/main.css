@@ -10,6 +10,29 @@
   overflow: auto;
 }
 
+.title-spacing {
+  margin-left: 10px;
+}
+
+.main-button {
+  width: 200px;
+  margin-left: 20px;
+}
+
+.minor-button {
+  font-size: 16px !important;
+}
+
+#welcome {
+  font-size: 20px;
+  text-align: center;
+}
+
+#news {
+  margin-top: 30px;
+  text-align: center;
+}
+
 #chat {
   margin: 0px 10px 5px 10px;
   padding: 5px;
@@ -31,16 +54,20 @@
 }
 
 #lobby-players {
-    border: 2px solid green;
-    width: 220px;
-    height: 200px;
-    padding: 5px;
-    float: right;
+  border: 2px solid green;
+  width: 220px;
+  height: 200px;
+  padding: 5px;
+  float: right;
 }
 
 #gameChat {
     width: 980px;
     margin: 0 auto;
+}
+
+#waiting-dialogue {
+  display: none;
 }
 
 .lobby-game {

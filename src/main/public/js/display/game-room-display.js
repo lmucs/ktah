@@ -130,7 +130,9 @@ $(function () {
     buttonizeClasses();
     
     // Set the ready state button
-    $("#readyButton").click(function () {
+    $("#readyButton")
+      .button()
+      .click(function () {
       if (readyState !== "ready") {
         if (!classSelected) {
           alert("You must choose a class before readying up!");

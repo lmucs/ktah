@@ -1,11 +1,13 @@
 #main
   #button-upper-right
-    input(type='button', id='create', value='Create a game')
-    input(type='button', id='join', value='Join a game')
-  h1 K'tah!
-  hr
+    input.main-button(type='button', id='create', value='Create a game')
+    input.main-button(type='button', id='join', value='Join a game')
+    button#menu-button.main-button Main Menu
+  h1.title-spacing K'tah!
   #game-list
     p list of games will go here!
+  div(id="waiting-dialogue", title="Please wait...")
+    p Joining / Creating game...
   #chat
     #connect
       Chat failed to connect! Infinite Sadness :(
@@ -16,7 +18,5 @@
     span(class="chat-label") [Enter Message]
     input#entry(tabindex="1", type="text", size="75")
 input(type='hidden', id='userName', data='#{userName}')
-#links.registerFrame.loginFrame
-  a(href="/main") Back to Main Menu
 script(type='text/javascript', src='../js/modules/chat/client.js')
 script(type='text/javascript', src='../js/modules/lobby.js')

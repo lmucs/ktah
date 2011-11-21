@@ -1,9 +1,14 @@
 #main.framePadding
   #button-upper-right
-    form(method="POST", action="/main")
-      input(type='submit', name="logout", value='Logout')
+    button#logout-button.minor-button Logout
   h1 K'tah!
-  #navbar
-    a.navItem(href='../lobby') Lobby
+  hr
   #welcome
     p Welcome back to K'tah, #{user}.
+    button#lobby-button.main-button Lobby
+    button#account-button.main-button Account
+    button#about-button.main-button About K'tah!
+  hr
+  #news
+    p News items may go here to keep the populace of K'tah! up to date.
+script(type='text/javascript', src='../js/display/main-display.js')

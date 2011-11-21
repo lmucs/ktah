@@ -8,6 +8,7 @@ $(function () {
     
     // Name of the user in the current session
     var userName = $('#userName').attr('data'),
+        inputGameName = "",
     
         // Helper function to determine if player is present in lobby
         checkForPlayer = function (player, gamestate) {
@@ -94,10 +95,13 @@ $(function () {
           // If nothing was passed in, user used the join game button, so prompt
           // them for a game name. Otherwise, use the game they chose from the game list.
           if (!gameName) {
-            var gameId = prompt("What game would you like to join?", "");
+            var gameId = prompt("Enter a game name that you would like to join.");
           } else {
             gameId = gameName;
           }
+          
+          warningDialog("Joining game now, please wait...");
+          
           var gamestate = null;
           // create the player to be added to the game state.
           var player = {
@@ -128,12 +132,12 @@ $(function () {
               if (gamestate) {
                 // Can't join if there are already 4 players
                 if (gamestate.players.length >= 4) {
-                    alert("Cannot join; game is full!");
+                    warningDialog("The game is already full!");
                     return;
                 }
                 
                 if (gamestate.environment.readyState) {
-                  alert("Cannot join game in progress!");
+                  warningDialog("Cannot join game in progress!");
                   return;
                 }
                 
@@ -160,7 +164,7 @@ $(function () {
                 // redirect to waiting room url
                 window.location = '/room/' + gameId;
               } else {
-                alert("Game does not exist!");
+                warningDialog("Game does not exist!");
               }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -181,9 +185,11 @@ $(function () {
           if (gameId === null) {
             return;
           } else if (gameId.length > 20) {
-            alert("Game name too long! (Less than 20 characters please)");
+            warningDialog("Game name too long! Less than 20 characters please.");
             return;
           }
+          
+          warningDialog("Creating game now, please wait...");
           
           // Check that the game name isn't already taken
           $.ajax({
@@ -225,7 +231,7 @@ $(function () {
                       data: gamestate,
                       success: function (data) {
                         if (!data.success) {
-                          alert("You've created a game too recently; try again in 10 seconds.");
+                          warningDialog("You've created a game too recently; try again in 10 seconds.");
                           return;
                         } else {
                           // redirect to the correct url
@@ -241,7 +247,7 @@ $(function () {
                       contentType: 'application/json'
                     });
                   } else {
-                    alert("Game name already exists!");
+                    warningDialog("A game with that name already exists!");
                     return;
                   }
                 },
@@ -253,16 +259,38 @@ $(function () {
             dataType: 'json',
             contentType: 'application/json'
           });
+        },
+        
+        warningDialog = function (message) {
+          $("#waiting-dialogue")
+            .attr("title", "K'tah! Lobby")
+            .text(message)
+            .dialog("close")
+            .dialog({
+              width: 400,
+              resizable: false,
+              modal: true
+            });
         };
         
     // BUTTON BINDINGS
-    $('#create').click(function () {
-      createGame();
-    });
+    $('#create')
+      .button()
+      .click(function () {
+        createGame();
+      });
     
-    $('#join').click(function () {
-      joinGame();
-    });
+    $('#join')
+      .button()
+      .click(function () {
+        joinGame();
+      });
+    
+    $("#menu-button")
+      .button()
+      .click(function () {
+        window.location = "../main";
+      });
     
     // Call the game update once to start
     updateGames();
