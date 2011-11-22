@@ -78,6 +78,8 @@ $(function() {
       userName = $("#userName").attr("data"),
       playerNumber = 0,
       playerCount = 0,
+      usingAbility = 0,
+      notificationReporting = false,
       leftGame = false,
       gameOver = false,
       
@@ -170,19 +172,18 @@ $(function() {
               
               // Set up the player abilities
               // TODO: Change iterators based on abilities available
-              for (var i = 0; i < 5; i++) {
+              for (var j = 1; j < 6; j++) {
                 $("#character-abilities").append(
-                  '<div class="character-ability">' + (i + 1) + '</div>'
+                  '<div class="character-ability">' + j + '</div>'
                 );
               }
               
               // Bind click events to the abilities
-              // TODO: MAKE THIS WERKKKK
               $("#character-abilities").children().each(function(index) {
                 $(this)
-                  .button()
-                  .click(function (index) {
-                    keyStateChange((index + 1), true);
+                  .button({icons: {secondary:'ui-icon-locked'}})
+                  .click(function () {
+                    usingAbility = index + 1;
                   });
               });
             }
@@ -229,7 +230,73 @@ $(function() {
         playerSceneNode = ktah.characterArray[playerNumber].sceneNode;
         updateUserInterface();
       };
-
+  
+  // Called when loading the 3d scene has finished (from the coppercube file)
+  engine.OnLoadingComplete = function () {
+    var synchronizedUpdate = seedGamestate();
+    
+    if (ktah.gamestate.players) {
+      scene = ktah.scene = engine.getScene();
+      if (scene) {
+        // Add the players to the character array
+        updateCharacterArray(ktah.gamestate.players.length, true);
+        // Collision for player set when scene loaded
+        playerCollisionAnimator = new CL3D.AnimatorCollisionResponse(
+          new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
+          new CL3D.Vect3d(0,0,0), // no gravity!
+          new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
+          scene.getCollisionGeometry(),
+          playerSlidingSpeed
+        );
+        playerSceneNode.addAnimator(playerCollisionAnimator);
+        
+        if (tryToUseLighting) {
+          // And add a light to the player
+          lightNode = new CL3D.LightSceneNode(0);
+          lightNode.LightData.Color = new CL3D.ColorF(1,1,0,1);
+          playerSceneNode.addChild(lightNode);
+          // alternative may be scene.getRootSceneNode().addChild(lightNode);
+          for (var i=0; i<scene.getRootSceneNode().getMaterialCount(); i++) {
+            scene.getRootSceneNode().getMaterial(i).Lighting = true;
+            console.log("lighting for " + i + " is " + scene.getRootSceneNode().getMaterial(i).Lighting);
+          }
+        }
+      } else {
+        return;
+      }
+      
+      // Finish setting up by adding camera to scene
+      scene.getRootSceneNode().addChild(cam);
+      scene.setActiveCamera(cam);
+      
+      var protoGhoul = scene.getSceneNodeFromName('ghoul');
+      
+      if (playerNumber === 0) {
+        monsterArray = generateMonsters(protoGhoul, 20);
+      } else {
+        monsterArray = synchronizeMonsters(protoGhoul);
+      }
+      
+      // Begin the server pinging and end-condition checking
+      setInterval(updateTeam, 50);
+      setInterval(gameEndCheck, 5000);
+      
+      // Remove the loading screen
+      $("#loadingScreen").fadeOut(3000);
+      
+      // Kick any PHONIES from the game
+      for (var i = 0; i < playerCount; i++) {
+        if (userName === ktah.characterArray[i].playerName) {
+          return;
+        }
+      }
+      // If we get here, we're a PHONY!
+      bootMiscreants("You tried to access this game illegally. This incident has been reported.");
+    } else {
+      setTimeout(engine.OnLoadingComplete, 250);
+    }    
+  };
+  
   // Default camera instructions
   var camFollow = function(cam, target) {
     if (isometricView) {
@@ -258,12 +325,17 @@ $(function() {
   // Do stuff based on when a character uses an ability
   useAbility = function (key) {
     // Use the ability as defined in the created character
-    if (!ktah.characterArray[playerNumber].abilities[key]()) {
-      // If the ability is locked, the conditional will evaluate to false
-      $("#notifications")
-        .html("Ability Not Available")
-        .fadeIn(2000)
-        .fadeOut(2000);
+    // If the ability is locked, the conditional will evaluate to false
+    if (!ktah.characterArray[playerNumber].abilities[key - 1]()) {
+      // Make sure you don't spam errors
+      if (!notificationReporting) {
+        notificationReporting = true;
+        setTimeout(function () {notificationReporting = false;}, 1500);
+        $("#notifications")
+          .html("Ability Not Available")
+          .fadeIn(750)
+          .fadeOut(750);
+      }
     }
   },
   
@@ -310,7 +382,7 @@ $(function() {
     	case '3':
     	case '4':
     	case '5':
-    	  useAbility(key); 
+    	  usingAbility = key; 
     	  break;
     	case '': // There is a Left Shift character here, eclipse just can't display it
         standKey = bool;
@@ -704,6 +776,11 @@ $(function() {
     	  //goalX = playerSceneNode.Pos.X;
         //goalZ = playerSceneNode.Pos.Z;
       }
+      
+      if (usingAbility) {
+        useAbility(usingAbility);
+        usingAbility = 0;
+      }
 
       if (!cameraStarted) {
         camFollow(cam, playerSceneNode);
@@ -831,72 +908,6 @@ $(function() {
     }
   });
   
-  // Called when loading the 3d scene has finished (from the coppercube file)
-  engine.OnLoadingComplete = function () {
-    var synchronizedUpdate = seedGamestate();
-    
-    if (ktah.gamestate.players) {
-      scene = ktah.scene = engine.getScene();
-      if (scene) {
-        // Add the players to the character array
-        updateCharacterArray(ktah.gamestate.players.length, true);
-        // Collision for player set when scene loaded
-        playerCollisionAnimator = new CL3D.AnimatorCollisionResponse(
-          new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
-          new CL3D.Vect3d(0,0,0), // no gravity!
-          new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
-          scene.getCollisionGeometry(),
-          playerSlidingSpeed
-        );
-        playerSceneNode.addAnimator(playerCollisionAnimator);
-        
-        if (tryToUseLighting) {
-          // And add a light to the player
-          lightNode = new CL3D.LightSceneNode(0);
-          lightNode.LightData.Color = new CL3D.ColorF(1,1,0,1);
-          playerSceneNode.addChild(lightNode);
-          // alternative may be scene.getRootSceneNode().addChild(lightNode);
-          for (var i=0; i<scene.getRootSceneNode().getMaterialCount(); i++) {
-            scene.getRootSceneNode().getMaterial(i).Lighting = true;
-            console.log("lighting for " + i + " is " + scene.getRootSceneNode().getMaterial(i).Lighting);
-          }
-        }
-      } else {
-        return;
-      }
-      
-      // Finish setting up by adding camera to scene
-      scene.getRootSceneNode().addChild(cam);
-      scene.setActiveCamera(cam);
-      
-      var protoGhoul = scene.getSceneNodeFromName('ghoul');
-      
-      if (playerNumber === 0) {
-        monsterArray = generateMonsters(protoGhoul, 20);
-      } else {
-        monsterArray = synchronizeMonsters(protoGhoul);
-      }
-      
-      // Begin the server pinging and end-condition checking
-      setInterval(updateTeam, 50);
-      setInterval(gameEndCheck, 5000);
-      
-      // Remove the loading screen
-      $("#loadingScreen").fadeOut(3000);
-      
-      // Kick any PHONIES from the game
-      for (var i = 0; i < playerCount; i++) {
-        if (userName === ktah.characterArray[i].playerName) {
-          return;
-        }
-      }
-      // If we get here, we're a PHONY!
-      bootMiscreants("You tried to access this game illegally. This incident has been reported.");
-    } else {
-      setTimeout(engine.OnLoadingComplete, 250);
-    }    
-  };
-
   // Now initialize the time variables
   currentTime = (new Date()).getTime();
   lastTime = currentTime;

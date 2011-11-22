@@ -20,6 +20,7 @@ include.includeInit([
   '/js/lib/jquery.mousewheel.min.js',
   '/js/lib/underscore.min.js', // backbone dependency
   '/js/lib/backbone.min.js',
+  '/js/lib/jquery-ui-1.8.16.custom.min.js',
   
   /***** TYPES *****/
   // Character classes
