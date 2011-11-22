@@ -16,7 +16,7 @@ $(function() {
   engine.addScene(scene);
 
   // Setup dynamic lighting
-  var lightNode, tryToUseLighting = false, // not working right now, may work if ccbjs is changed
+  var lightNode, enableLighting = false, lightAttenuation = 0.5, renderer = engine.getRenderer(), // lighting working now
   
   // Rate of how much to play catchup so stats applied equally
   catchupRate = 1.0, catchupRateEnabled = true, lastTime = timeDiff = 0.0, currentTime,
@@ -250,16 +250,20 @@ $(function() {
         );
         playerSceneNode.addAnimator(playerCollisionAnimator);
         
-        if (tryToUseLighting) {
+        if (enableLighting) {
           // And add a light to the player
           lightNode = new CL3D.LightSceneNode(0);
-          lightNode.LightData.Color = new CL3D.ColorF(1,1,0,1);
+          lightNode.LightData.Color = new CL3D.ColorF(1,1,1,1);
+          lightNode.LightData.Attenuation = lightAttenuation;
           playerSceneNode.addChild(lightNode);
-          // alternative may be scene.getRootSceneNode().addChild(lightNode);
-          for (var i=0; i<scene.getRootSceneNode().getMaterialCount(); i++) {
-            scene.getRootSceneNode().getMaterial(i).Lighting = true;
-            console.log("lighting for " + i + " is " + scene.getRootSceneNode().getMaterial(i).Lighting);
+          // used to use scene.getRootSceneNode()
+          var arrayOfSceneNodes = scene.getAllSceneNodesOfType("mesh");
+          for (x in arrayOfSceneNodes) {
+           for (var i = 0; i<arrayOfSceneNodes[x].getMaterialCount(); i++) {
+              arrayOfSceneNodes[x].getMaterial(i).Lighting = true;
+            }
           }
+          renderer.addDynamicLight(lightNode);
         }
       } else {
         return;
