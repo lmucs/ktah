@@ -867,6 +867,16 @@ $(function() {
             playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.characterArray[i].sceneNode.Pos.Z)/2;
           }
         }
+        // Collision Detection between you and AI / zombie collision
+        for (var i = 0; i < monsterArray.length; i++) {
+          if (ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(monsterArray[i].sceneNode.Pos) < 4) {
+            // Classic X/Z movement system
+            playerSceneNode.Pos.X += (playerSceneNode.Pos.X - monsterArray[i].sceneNode.Pos.X)*3/3;
+            playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - monsterArray[i].sceneNode.Pos.Z)*3/3;
+            // this not working, but set a flag here to hurt the player when run into zombie
+            //ktah.gamestate.players[playerNumber].beingAttacked = true;
+          }
+        }
         
         updatePos(playerSceneNode, newX, newZ);
         
