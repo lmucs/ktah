@@ -167,6 +167,24 @@ $(function() {
                   + '<div class="character-resource-text">0 / 3</div></span>'
                 );
               }
+              
+              // Set up the player abilities
+              // TODO: Change iterators based on abilities available
+              for (var i = 0; i < 5; i++) {
+                $("#character-abilities").append(
+                  '<div class="character-ability">' + (i + 1) + '</div>'
+                );
+              }
+              
+              // Bind click events to the abilities
+              // TODO: MAKE THIS WERKKKK
+              $("#character-abilities").children().each(function(index) {
+                $(this)
+                  .button()
+                  .click(function (index) {
+                    keyStateChange((index + 1), true);
+                  });
+              });
             }
             
           // Otherwise, it's an update
@@ -212,73 +230,6 @@ $(function() {
         updateUserInterface();
       };
 
-  
-  // Called when loading the 3d scene has finished (from the coppercube file)
-  engine.OnLoadingComplete = function () {
-    var synchronizedUpdate = seedGamestate();
-    
-    if (ktah.gamestate.players) {
-      scene = ktah.scene = engine.getScene();
-      if (scene) {
-        // Add the players to the character array
-        updateCharacterArray(ktah.gamestate.players.length, true);
-        // Collision for player set when scene loaded
-        playerCollisionAnimator = new CL3D.AnimatorCollisionResponse(
-          new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
-          new CL3D.Vect3d(0,0,0), // no gravity!
-          new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
-          scene.getCollisionGeometry(),
-          playerSlidingSpeed
-        );
-        playerSceneNode.addAnimator(playerCollisionAnimator);
-        
-        if (tryToUseLighting) {
-          // And add a light to the player
-          lightNode = new CL3D.LightSceneNode(0);
-          lightNode.LightData.Color = new CL3D.ColorF(1,1,0,1);
-          playerSceneNode.addChild(lightNode);
-          // alternative may be scene.getRootSceneNode().addChild(lightNode);
-          for (var i=0; i<scene.getRootSceneNode().getMaterialCount(); i++) {
-            scene.getRootSceneNode().getMaterial(i).Lighting = true;
-            console.log("lighting for " + i + " is " + scene.getRootSceneNode().getMaterial(i).Lighting);
-          }
-        }
-      } else {
-        return;
-      }
-      
-      // Finish setting up by adding camera to scene
-      scene.getRootSceneNode().addChild(cam);
-      scene.setActiveCamera(cam);
-      
-      var protoGhoul = scene.getSceneNodeFromName('ghoul');
-      
-      if (playerNumber === 0) {
-        monsterArray = generateMonsters(protoGhoul, 20);
-      } else {
-        monsterArray = synchronizeMonsters(protoGhoul);
-      }
-      
-      // Begin the server pinging and end-condition checking
-      setInterval(updateTeam, 50);
-      setInterval(gameEndCheck, 5000);
-      
-      // Remove the loading screen
-      $("#loadingScreen").fadeOut(3000);
-      
-      // Kick any PHONIES from the game
-      for (var i = 0; i < playerCount; i++) {
-        if (userName === ktah.characterArray[i].playerName) {
-          return;
-        }
-      }
-      // If we get here, we're a PHONY!
-      bootMiscreants("You tried to access this game illegally. This incident has been reported.");
-    } else {
-      setTimeout(engine.OnLoadingComplete, 250);
-    }    
-  };
-  
   // Default camera instructions
   var camFollow = function(cam, target) {
     if (isometricView) {
@@ -302,6 +253,18 @@ $(function() {
     cam.Pos.Y = target.Pos.Y + (camSetDist + 2*zoomDist  + 10);
     cam.Pos.Z = target.Pos.Z - (camSetDist + zoomDist);
     animator.lookAt(new CL3D.Vect3d(playerSceneNode.Pos.X, playerSceneNode.Pos.Y + 10, playerSceneNode.Pos.Z));
+  },
+  
+  // Do stuff based on when a character uses an ability
+  useAbility = function (key) {
+    // Use the ability as defined in the created character
+    if (!ktah.characterArray[playerNumber].abilities[key]()) {
+      // If the ability is locked, the conditional will evaluate to false
+      $("#notifications")
+        .html("Ability Not Available")
+        .fadeIn(2000)
+        .fadeOut(2000);
+    }
   },
   
   // A more complicated key change state event. Uppercase and lowercase
@@ -340,9 +303,18 @@ $(function() {
         // reset key is zero
     	resetKey = bool;
     	break;
+    	
+    	// Ability usage keys
+    	case '1':
+    	case '2':
+    	case '3':
+    	case '4':
+    	case '5':
+    	  useAbility(key); 
+    	  break;
     	case '': // There is a Left Shift character here, eclipse just can't display it
-          standKey = bool;
-          break;
+        standKey = bool;
+        break;
       default:
         break;
     }
@@ -584,7 +556,13 @@ $(function() {
     }
     // Otherwise, everyone's dead! End the game...
     gameOver = true;
-    $("#notifications").fadeIn(2000);
+    $("#end-dialog")
+      .dialog({
+        width: 400,
+        resizable: false,
+        modal: true,
+        show: 'fade'
+      });
     setTimeout(function () {
       $.ajax({
         type: 'POST',
@@ -852,6 +830,72 @@ $(function() {
       camFollow(cam, playerSceneNode);
     }
   });
+  
+  // Called when loading the 3d scene has finished (from the coppercube file)
+  engine.OnLoadingComplete = function () {
+    var synchronizedUpdate = seedGamestate();
+    
+    if (ktah.gamestate.players) {
+      scene = ktah.scene = engine.getScene();
+      if (scene) {
+        // Add the players to the character array
+        updateCharacterArray(ktah.gamestate.players.length, true);
+        // Collision for player set when scene loaded
+        playerCollisionAnimator = new CL3D.AnimatorCollisionResponse(
+          new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
+          new CL3D.Vect3d(0,0,0), // no gravity!
+          new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
+          scene.getCollisionGeometry(),
+          playerSlidingSpeed
+        );
+        playerSceneNode.addAnimator(playerCollisionAnimator);
+        
+        if (tryToUseLighting) {
+          // And add a light to the player
+          lightNode = new CL3D.LightSceneNode(0);
+          lightNode.LightData.Color = new CL3D.ColorF(1,1,0,1);
+          playerSceneNode.addChild(lightNode);
+          // alternative may be scene.getRootSceneNode().addChild(lightNode);
+          for (var i=0; i<scene.getRootSceneNode().getMaterialCount(); i++) {
+            scene.getRootSceneNode().getMaterial(i).Lighting = true;
+            console.log("lighting for " + i + " is " + scene.getRootSceneNode().getMaterial(i).Lighting);
+          }
+        }
+      } else {
+        return;
+      }
+      
+      // Finish setting up by adding camera to scene
+      scene.getRootSceneNode().addChild(cam);
+      scene.setActiveCamera(cam);
+      
+      var protoGhoul = scene.getSceneNodeFromName('ghoul');
+      
+      if (playerNumber === 0) {
+        monsterArray = generateMonsters(protoGhoul, 20);
+      } else {
+        monsterArray = synchronizeMonsters(protoGhoul);
+      }
+      
+      // Begin the server pinging and end-condition checking
+      setInterval(updateTeam, 50);
+      setInterval(gameEndCheck, 5000);
+      
+      // Remove the loading screen
+      $("#loadingScreen").fadeOut(3000);
+      
+      // Kick any PHONIES from the game
+      for (var i = 0; i < playerCount; i++) {
+        if (userName === ktah.characterArray[i].playerName) {
+          return;
+        }
+      }
+      // If we get here, we're a PHONY!
+      bootMiscreants("You tried to access this game illegally. This incident has been reported.");
+    } else {
+      setTimeout(engine.OnLoadingComplete, 250);
+    }    
+  };
 
   // Now initialize the time variables
   currentTime = (new Date()).getTime();

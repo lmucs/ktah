@@ -22,6 +22,15 @@ $(function () {
       this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());
       this.characterClass = "pioneer";
       
+      // Set the abilities with their defaults
+      this.abilities = [];
+      for (var i = 0; i < 5; i++) {
+        this.abilities[i] = function () {
+          return false;
+        }
+      }
+      
+      // TODO: Class abilities added based on a person's experience
     }
   });
 });

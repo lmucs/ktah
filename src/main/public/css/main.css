@@ -67,7 +67,7 @@
     margin: 0 auto;
 }
 
-#waiting-dialogue {
+.dialog {
   display: none;
 }
 
@@ -138,9 +138,13 @@
   
 #ktahCanvas {
   border: 1px solid black;
-  display: block;
+}
+  
+#canvasWrapper {
+  text-align: center;
   margin: 0 auto;
   cursor: crosshair;
+  position: relative;
 }
 
 .ingame-noselect {
@@ -165,7 +169,7 @@
 
 #character-items {
     width: 960px;
-    height: 75px;
+    height: 110px;
     margin: 0 auto;
 }
 
@@ -196,7 +200,19 @@
     margin-left: 5px;
 }
 
+.character-ability {
+    text-align: center;
+    border: 1px solid black;
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 110px;
+    padding: 5px;
+    width: 50px;
+    height: 50px;
+}
+
 #notifications {
+    position: absolute;
     width: 200px;
     background-color: red;
     color: white;
@@ -204,8 +220,11 @@
     border: 1px solid black;
     -moz-border-radius: 10px;
     border-radius: 10px;
-    float: right;
     display: none;
+    left: 50%;
+    margin-left: -100px;
+    top: 425px;
+    z-index: 1000;
 }
 
 #health-display {

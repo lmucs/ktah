@@ -4,19 +4,24 @@ html
     title K'tah
     link(rel='stylesheet', type='text/css', href='/css/main.css')
     script(type='text/javascript', src='../js/lib/jquery-1.6.4.min.js')
+    script(type='text/javascript', src='../js/lib/jquery-ui-1.8.16.custom.min.js')
+    link(rel='stylesheet', type='text/css', href='/css/jquery-ui-1.8.16.custom.css')
     script(type='text/javascript', src='../js/util/include.js')
     script(type='text/javascript', src='../js/ktah.js')
   body.ingame-noselect
     div.loadingScreen(id="loadingScreen") Entering K'tah...
+    div(id="end-dialog", class="dialog", title="Game Over...")
+      p K'tah has claimed yet another victim...
     input(type='hidden', id='gameId', data="#{gameId}")
     input(type="hidden", id="userName", data="#{userName}")
     div(id="game-display", class="top-display") Game: #{gameId} | 
       a(href="../../lobby") [Return to Lobby]
-      div(id="notifications") Game Over
     hr
     div(id="health-display", class="top-display")
-    canvas(id='ktahCanvas', width='960', height='480')
-      p OH NOES YOU IDIOT GET A REAL BROWSER
+    #canvasWrapper
+      div(id="notifications") Ability not available
+      canvas(id='ktahCanvas', width='960', height='480')
+        p OH NOES YOU IDIOT GET A REAL BROWSER
     #character-items
       #character-resources
       #character-abilities
