@@ -1,7 +1,7 @@
 /**
- * account-management.js
+ * account-controller.js
  * 
- * Modularizes account-related routing and verification
+ * Controller for account-related routes.
  */
 
 module.exports = function (app, client) {
@@ -17,15 +17,9 @@ module.exports = function (app, client) {
   };
   
   /*
-   * LOGIN ROUTERS
-   * 
    * GET /
-   *   Redirect to the main page if already logged in, else render the login page.
-   * 
-   * POST /
-   *   Handle submission of login information.
+   *   Redirect to the main page if already logged in, else render the login view.
    */
-  
   app.get('/', function (req, res) {
     // If the user has an active session, send them to the main page
     if (req.session.is_logged_in) {
@@ -39,6 +33,10 @@ module.exports = function (app, client) {
     }
   });
   
+  /*
+   * POST /
+   *   Handle submission of login information.
+   */
   app.post('/', function (req, res) {
     var inputs = req.body,
       user = inputs.user,
@@ -85,15 +83,9 @@ module.exports = function (app, client) {
   });
   
   /*
-   * LOGOUT ROUTERS
-   * 
    * GET /main
    *   Render main page if already logged in and session is valid, else redirect to login.
-   * 
-   * POST /main
-   *   Redirect to login.
    */
-
   app.get('/main', function (req, res) {
     if (req.session.is_logged_in && req.session.userInfo) {
       res.render('main', {
@@ -106,30 +98,30 @@ module.exports = function (app, client) {
     }
   });
     
+  /*
+   * POST /main
+   *   Redirect to login.
+   */
   app.post('/main', function (req, res) {
     req.session.is_logged_in = false;
     res.redirect('/');
   });
        
   /*
-   * REGISTRATION ROUTERS
-   * 
    * GET /register
    *   Render registration page.
-   * 
-   * POST /register
-   *   Handle submission of registration information.
    */
-  
-  // Simple get router for the register page
   app.get('/register', function (req, res) {
     res.render('register', {
       layout : true
     });
   });
-  
-  // Occurs on "submit" of registration information
-  // Validates a registration, then enters to DB if acceptable
+
+  /*  
+   * POST /register
+   *   Handle submission of registration information.  Validates a registration, then
+   *   enters into database if acceptable.
+   */
   app.post('/register', function(req, res) {
     var inputs = req.body,
       email = inputs.email,
@@ -227,12 +219,9 @@ module.exports = function (app, client) {
   });
   
   /*
-   * ACCOUNT ROUTERS
-   * 
    * GET /account
    *   Render user's account page.
    */
-  
   app.get('/account', function (req, res) {
     if (req.session.is_logged_in && req.session.userInfo) {
       res.render('account', {
@@ -246,16 +235,12 @@ module.exports = function (app, client) {
   });
   
   /*
-   * INFORMATION ROUTERS
-   * 
    * GET /about
    *   Render universally accessible "about" page
    */
-  
   app.get('/about', function (req, res) {
     res.render('about', {
       layout: true
     });
-  });
-  
+  });  
 }

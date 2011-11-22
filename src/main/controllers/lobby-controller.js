@@ -1,21 +1,23 @@
 /**
  * lobby-controller.js
- * 
- * Modularizes lobby-related routing
+ *
+ * Controller for lobby routes.
  */
 
 module.exports = function (app) {
-	
-	// Simple route for fetching the lobby display
-	app.get('/lobby', function (req, res) {
+
+  /*
+   * GET /lobby
+   *   Renders the lobby view if logged in, else redirects to login page.
+   */
+  app.get('/lobby', function (req, res) {
     if (req.session.is_logged_in) {
       res.render('lobby', {
-        layout: true,
-        userName: req.session.userInfo.accountName
+        layout : true,
+        userName : req.session.userInfo.accountName
       });
     } else {
       res.redirect('/');
     }
   });
-
 }
