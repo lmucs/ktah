@@ -17,4 +17,10 @@ $(function () {
       .click(function () {
         window.location = "/register";
       });
+      
+    $("#aboutButton")
+      .button()
+      .click(function () {
+        window.location = "/about";
+      });
 });

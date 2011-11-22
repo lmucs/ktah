@@ -187,6 +187,9 @@ $(function () {
           } else if (gameId.length > 20) {
             warningDialog("Game name too long! Less than 20 characters please.");
             return;
+          } else if(gameId.indexOf("/") !== -1) {
+            warningDialog("Game name cannot contain a slash ('/')");
+            return;
           }
           
           warningDialog("Creating game now, please wait...");

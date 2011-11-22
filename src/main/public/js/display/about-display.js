@@ -1,8 +1,8 @@
 /**
- * main-display.js
+ * account-display.js
  * 
  * Script for dealing with display elements on the
- * main menu.
+ * account menu.
  */
 
 $(function () {
@@ -25,22 +25,16 @@ $(function () {
   });
   
   // Set up the lobby, account, and about buttons using jquery-ui
-  $("#lobby-button")
+  $("#main-menu-button")
     .button()
     .click(function () {
-      window.location = "../lobby";
+      window.location = "../main";
     });
     
-  $("#account-button")
-    .button()
-    .click(function () {
-      window.location = "../account";
+  // Set up the account tabs
+  $("#tabs")
+    .tabs({ 
+      fx: { opacity: 'toggle' } 
     });
     
-  $("#about-button")
-    .button()
-    .click(function () {
-      window.location = "../about";
-    });
-  
 });

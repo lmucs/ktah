@@ -225,4 +225,37 @@ module.exports = function (app, client) {
       );
     }
   });
+  
+  /*
+   * ACCOUNT ROUTERS
+   * 
+   * GET /account
+   *   Render user's account page.
+   */
+  
+  app.get('/account', function (req, res) {
+    if (req.session.is_logged_in && req.session.userInfo) {
+      res.render('account', {
+        layout: true,
+        user: req.session.userInfo.accountName
+      });
+    } else {
+      req.session.is_logged_in = false;
+      res.redirect("/");
+    }
+  });
+  
+  /*
+   * INFORMATION ROUTERS
+   * 
+   * GET /about
+   *   Render universally accessible "about" page
+   */
+  
+  app.get('/about', function (req, res) {
+    res.render('about', {
+      layout: true
+    });
+  });
+  
 }

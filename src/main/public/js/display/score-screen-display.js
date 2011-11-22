@@ -29,4 +29,11 @@ $(function () {
     + '<span class="class-selection"><img class="class-icon class-selected" src="../assets/icons/'
     + currentPlayer.character + 'Icon.png"></img></span></div>');
   }
+  
+  // Buttonize the lobby button
+  $("#lobby-button")
+    .button()
+    .click(function () {
+      window.location = "../../lobby";
+    });
 });

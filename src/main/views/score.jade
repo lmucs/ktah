@@ -1,4 +1,6 @@
 #main
+  #button-upper-right
+    button#lobby-button.minor-button Lobby
   h1.topLeftMargin Score Report: #{gameId}
   hr
   #room-options
@@ -12,8 +14,6 @@
   #toolbar
     span(class="chat-label") [Enter Message]
     input#entry(tabindex="1", type="text", size="75")
-#links.registerFrame.loginFrame
-  a(href="/lobby") Back to Lobby
 input(type='hidden', id='userName', data="#{userName}")
 input(type='hidden', id='gameId', data="#{gameId}")
 script

@@ -21,6 +21,7 @@
 
 .minor-button {
   font-size: 16px !important;
+  margin-left: 10px;
 }
 
 #welcome {
@@ -275,6 +276,10 @@
 .registerFrame {
   margin: 0px auto 0 auto;
   background-color: #D8D8D8;
+}
+
+.login-page-button {
+  width: 150px;
 }
 
 #registerButton {

@@ -1,0 +1,32 @@
+#main.framePadding
+  #button-upper-right
+    button#logout-button.minor-button Logout
+    button#main-menu-button.minor-button Main Menu
+  h1 Account: #{user}
+  hr
+  h2 Class Progress
+  #tabs
+    ul
+      li
+        a(href="#architect-tab") Architect
+      li
+        a(href="#herder-tab") Herder
+      li
+        a(href="#pioneer-tab") Pioneer
+      li
+        a(href="#chemist-tab") Chemist
+      li
+        a(href="#tinkerer-tab") Tinkerer
+    div#architect-tab
+      p Class information placeholder. More fun to come!
+    div#herder-tab
+      p Class information placeholder. More fun to come!
+    div#pioneer-tab
+      p Class information placeholder. More fun to come!
+    div#chemist-tab
+      p Class information placeholder. More fun to come!
+    div#tinkerer-tab
+      p Class information placeholder. More fun to come!
+  h2 Account Statistics
+  p Account information / achievements will go here!
+script(type='text/javascript', src='../js/display/account-display.js')
