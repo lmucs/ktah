@@ -334,11 +334,12 @@ $(function() {
       // Make sure you don't spam errors
       if (!notificationReporting) {
         notificationReporting = true;
-        setTimeout(function () {notificationReporting = false;}, 1500);
         $("#notifications")
           .html("Ability Not Available")
           .fadeIn(750)
-          .fadeOut(750);
+          .fadeOut(750, function () {
+            notificationReporting = false;
+          });
       }
     }
   },
