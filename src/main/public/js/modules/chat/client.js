@@ -193,7 +193,7 @@ util = {
 
 //used to keep the most recent messages visible
 function scrollDown () {
-  $("#log").attr("scrollTop", $("#log").prop("scrollHeight"));
+  $('#log').parent().scrollTop( $('#log').height() );
   $("#entry").focus();
 }
 

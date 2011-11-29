@@ -97,8 +97,6 @@ module.exports = function(app) {
       inbox[room][user].messages.push({ nick: nick, type: type, body: body, time: time });
     }
     
-      //test:
-      console.log("message sent from ", nick, " in room ", room);
   }
   
   //Delete user with the given nick in the given room and notify
