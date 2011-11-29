@@ -44,7 +44,7 @@ $(function () {
       
         //test:
         //for right now, just direct the zombies to (0, 0):
-        this.
+        //this.
       
       //Direct it to the desired point:
       //this.stepToTarget(targetPoint);
