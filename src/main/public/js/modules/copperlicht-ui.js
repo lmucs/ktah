@@ -31,12 +31,6 @@ $(function() {
   playerCollisionAnimator, // initialized once scene loaded
   playerCollisionRadius = 6, playerSlidingSpeed = 10,
 
-  // Death procedural animation values
-  sinkingValue = 2,
-  randomJumpingValue = 3,
-  // These will be set at the point of death, then you jump around in relation to these
-  deathSpot = null,
-  
   // Camera positioning values
   camSetDist = 10, camDistRatio = 1.0,
 
@@ -63,6 +57,9 @@ $(function() {
   mouseIsDown = false,
   mouseClicked = false,
   mouseClickedTimer = 0,
+
+  // Visual effects
+  arrow, arrowHeight = 10,
 
   // Variables for keyboard controls
   wKey = aKey = sKey = dKey = upKey = leftKey = downKey = rightKey = resetKey = standKey = false;
@@ -265,6 +262,16 @@ $(function() {
           }
           renderer.addDynamicLight(lightNode);
         }
+        
+        // Initialize the visual effects
+        // Add the arrow to show destination
+        arrow = new CL3D.BillboardSceneNode();
+        arrow.setSize(20,20);
+        arrow.Pos = (0,0,0);
+        arrow.getMaterial(0).Tex1 = engine.getTextureManager().getTexture("../assets/effects/arrow.png", true);
+        arrow.getMaterial(0).Type = CL3D.Material.EMT_TRANSPARENT_ADD_COLOR;
+        scene.getRootSceneNode().addChild(arrow);
+
       } else {
         return;
       }
@@ -405,8 +412,13 @@ $(function() {
   	  goal = newGoal;
   	  goalX = goal.X;
   	  goalZ = goal.Z;
-        originalX = playerSceneNode.Pos.X;
-        originalZ = playerSceneNode.Pos.Z;
+      originalX = playerSceneNode.Pos.X;
+      originalZ = playerSceneNode.Pos.Z;
+      // so if arrow exists, position it at goal to show where goal is
+      if (arrow && goal) {
+        arrow.Pos = goal;
+        arrow.Pos.Y = goal.Y + arrowHeight;  
+      }
   	}
   },
   
@@ -690,6 +702,7 @@ $(function() {
   resetGoal = function() {
     goalX = null; //ktah.characterArray[i].sceneNode.Pos.X;
     goalZ = null; //ktah.characterArray[i].sceneNode.Pos.Z;
+    if (arrow) { arrow.Pos.Y = -1 * arrowHeight; } // hide arrow when goal reset
   },
   
   // Helper function for adding points
@@ -780,6 +793,10 @@ $(function() {
         resetGoal();
     	  //goalX = playerSceneNode.Pos.X;
         //goalZ = playerSceneNode.Pos.Z;
+      } else if (goal && arrow.Pos.Y > 0) {
+        // not working as intended, but doings something that looks good!
+        // should be making arrow rise and fall, instead it jumps between a high and low position
+        arrow.Pos.Y = arrowHeight + arrowHeight * Math.sin(timeLoopCurrent/arrowHeight);
       }
       
       if (usingAbility) {
@@ -858,6 +875,8 @@ $(function() {
             playerSceneNode.Pos.X += newX;
             playerSceneNode.Pos.Z += newZ;
           }
+        } else if (arrow.Pos.Y > 0) { // so if within range of goal, hide arrow
+          arrow.Pos.Y = -1 * arrowHeight; 
         }
         
         // Collision Detection between players
