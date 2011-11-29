@@ -53,7 +53,6 @@ $(function () {
     stepToTarget: function () {
       // console.log("monster " + this.id + " moving to player " + this.target);
       
-      
     },
     
     //Check to see whether there is an obstacle between the monster and the

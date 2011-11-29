@@ -34,6 +34,23 @@ $(function () {
       }
       
       // TODO: Class abilities added based on a person's experience
+      var that = this;
+      this.abilities = [
+        function () {
+        },
+        
+        function () {
+        },
+        
+        function () {
+        },
+        
+        function () {
+        },
+        
+        function () {
+        }
+      ];
     }
   });
 });

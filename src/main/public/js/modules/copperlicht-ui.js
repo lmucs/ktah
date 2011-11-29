@@ -333,21 +333,32 @@ $(function() {
     animator.lookAt(new CL3D.Vect3d(playerSceneNode.Pos.X, playerSceneNode.Pos.Y + 10, playerSceneNode.Pos.Z));
   },
   
+  // Helper method used to report messages to the player
+  notify = function (message, messageColor) {
+    if (!notificationReporting) {
+      notificationReporting = true;
+      $("#notifications")
+        .html(message)
+        .css("background-color", messageColor)
+        .fadeIn(750)
+        .fadeOut(750, function () {
+          notificationReporting = false;
+        });
+    }
+  },
+  
   // Do stuff based on when a character uses an ability
   useAbility = function (key) {
+    abilityResult = ktah.characterArray[playerNumber].abilities[key - 1]();
     // Use the ability as defined in the created character
     // If the ability is locked, the conditional will evaluate to false
-    if (!ktah.characterArray[playerNumber].abilities[key - 1]()) {
+    if (typeof(abilityResult) === "undefined") {
       // Make sure you don't spam errors
-      if (!notificationReporting) {
-        notificationReporting = true;
-        $("#notifications")
-          .html("Ability Not Available")
-          .fadeIn(750)
-          .fadeOut(750, function () {
-            notificationReporting = false;
-          });
-      }
+      notify("Ability Not Available", "red");
+    } else if (abilityResult === "used") {
+      $(".character-ability:nth-child(" + key + ")")
+        .fadeTo(1, (1 / abilityResult))
+        .fadeTo(abilityResult * 1000, 1);
     }
   },
   
