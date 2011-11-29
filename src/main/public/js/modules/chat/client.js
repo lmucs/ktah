@@ -375,8 +375,11 @@ $(document).ready(function() {
   
   //New stuff written for K'tah to implement auto-joining:
   showLoad();
-
-  CONFIG.room = $("#roomNumber").html();
+  
+  //Set the room name:
+  var myUrl = window.location.href;
+  var myUrlSections = myUrl.split('/');
+  CONFIG.room = myUrlSections[myUrlSections.length - 1];
 
   //Send a join request to the server         
   thisJoin();

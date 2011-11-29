@@ -83,8 +83,6 @@ module.exports = function(app) {
         break;
         
       case 'part':
-        //delete inbox[room][nick];
-        //addMessage(nick, 'part', null, time, room);
         deleteUser(nick, room);
         res.send({"success": true});
         break;
@@ -98,6 +96,9 @@ module.exports = function(app) {
     {
       inbox[room][user].messages.push({ nick: nick, type: type, body: body, time: time });
     }
+    
+      //test:
+      console.log("message sent from ", nick, " in room ", room);
   }
   
   //Delete user with the given nick in the given room and notify
@@ -118,8 +119,6 @@ module.exports = function(app) {
     {
       for (var nick in inbox[room])
       {
-          //test:
-          //console.log(nick);
         
         if (time - inbox[room][nick].lastPing > 30*1000)
         {

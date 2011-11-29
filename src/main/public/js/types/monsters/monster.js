@@ -37,13 +37,17 @@ $(function () {
       }
       
       //get the coords of the chosen target
-      targetPoint = {x: target.pos.x, y: target.pos.y};
+      //targetPoint = {x: target.pos.x, y: target.pos.y};
       
       //Handle obstacle avoidance:
-      this.navigate(targetPoint);
+      //targetPoint = this.navigate(targetPoint);
+      
+        //test:
+        //for right now, just direct the zombies to (0, 0):
+        this.
       
       //Direct it to the desired point:
-      this.stepToTarget(targetPoint);
+      //this.stepToTarget(targetPoint);
     },
     
     stepToTarget: function () {
