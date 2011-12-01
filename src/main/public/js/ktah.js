@@ -24,6 +24,9 @@ include.includeInit([
   
   /***** TYPES *****/
   // Character classes
+  '/js/types/bipedal.js',
+  
+  // Character classes
   '/js/types/characters/character.js',
   '/js/types/characters/pioneer.js',
   '/js/types/characters/architect.js',
