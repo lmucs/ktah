@@ -5,7 +5,7 @@
  */
 
 $(function () {
-  ktah.types.Monster = Backbone.Model.extend({
+  ktah.types.Monster = ktah.types.Bipedal.extend({
     defaults: {
       type: 'monster',
       id: null,

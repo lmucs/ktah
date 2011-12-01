@@ -6,7 +6,7 @@
  */
 
 $(function () {
-  ktah.types.Character = Backbone.Model.extend({
+  ktah.types.Character = ktah.types.Bipedal.extend({
     defaults: {
       
       // Public properties
