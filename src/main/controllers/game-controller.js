@@ -232,14 +232,15 @@ module.exports = function (app) {
     var monster = req.body,
         currentGame = GameController.games[req.params.gameId];
         
-      if (!currentGame.monsters || typeof(currentGame.monsters) === "undefined") {
+      if (!typeof(currentGame.monsters) === "undefined" && !currentGame.monsters) {
     	  currentGame.monsters = [];
+        monster.id = currentGame.monsters.length;
+        currentGame.monsters.push(monster);
+        res.contentType('application/json');
+        res.send(JSON.stringify({"monsterId": monster.id}));
+      } else {
+        res.send(false);
       }
-      
-      monster.id = currentGame.monsters.length;
-      currentGame.monsters.push(monster);
-      res.contentType('application/json');
-      res.send(JSON.stringify({"monsterId": monster.id}));
   });
   
   /*

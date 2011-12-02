@@ -135,6 +135,12 @@
   height: 100%;
   width: 100%;
 }
+
+#loading-screen-error {
+  color: red;
+  text-align: center;
+  display: none;
+}
   
 #ktahCanvas {
   border: 1px solid black;
@@ -209,6 +215,7 @@
     padding: 5px;
     width: 50px;
     height: 50px;
+    overflow: hidden;
 }
 
 #notifications {

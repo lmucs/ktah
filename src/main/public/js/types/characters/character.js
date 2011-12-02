@@ -25,6 +25,13 @@ $(function () {
       this.sceneNode.getMaterial(2).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/head_" + this.characterClass + ".jpg", true); // face
       this.sceneNode.getMaterial(3).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/eyes_" + this.characterClass + ".jpg", true); // eyes
       this.sceneNode.getMaterial(4).Tex1 = engine.getTextureManager().getTexture("../assets/class_skins/body_" + this.characterClass + ".jpg", true); // arms  
+    },
+    
+    fadeAbilities: function (abilityNumber, abilityTimer) {
+      $(".character-ability:nth-child(" + (abilityNumber + 1) + ")")
+        .fadeTo(1, (1 / abilityTimer))
+        .fadeTo(abilityTimer * 1000, 1)
+        .effect("highlight", 1000);
     }
   });
 });

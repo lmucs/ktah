@@ -32,19 +32,19 @@ $(function () {
         // Ability 1: Build Wall
         function () {
           if (!that.cooldowns[0]) {
-            that.cooldowns[0] = 10;
             var wall = ktah.scene.getSceneNodeFromName('wall').createClone(ktah.scene.getRootSceneNode());
             // TODO: Fix the maffs on the wall building
             wall.Rot.Y = that.sceneNode.Rot.Y + 270;
-            wall.Pos.X = that.sceneNode.Pos.X + 10 * Math.cos(wall.Rot.Y);
+            wall.Pos.X = that.sceneNode.Pos.X + 10 * Math.cos(wall.Rot.Y + 180);
             wall.Pos.Y = that.sceneNode.Pos.Y + 15;
             wall.Pos.Z = that.sceneNode.Pos.Z + 10 * Math.sin(wall.Rot.Y);
             wall.Scale.Y = 4;
             wall.Scale.Z = 5;
             // TODO: Post wall to gamestate
             that.cooldowns[0] = 10;
-            //that.tickCooldown(0, wall);
-            return "used";
+            that.fadeAbilities(0, 10);
+            that.tickCooldown(0, wall);
+            return -1;
           }
           return that.cooldowns[0];
         },
@@ -67,10 +67,13 @@ $(function () {
       this.tickCooldown = function (cooldownNumber, sceneNode) {
         var currentCooldown = that.cooldowns[cooldownNumber];
         if (currentCooldown > 0) {
-          currentCooldown--;
-          setTimeout(that.tickCooldown(cooldownNumber, sceneNode), 1000);
+          setTimeout(function () {
+            that.cooldowns[cooldownNumber]--;
+            that.tickCooldown(cooldownNumber, sceneNode);
+            }, 1000);
         } else {
           ktah.scene.getRootSceneNode().removeChild(sceneNode);
+          that.cooldowns[cooldownNumber] = 0;
         }
       }
     }

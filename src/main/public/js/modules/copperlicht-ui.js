@@ -358,10 +358,8 @@ $(function() {
     if (typeof(abilityResult) === "undefined") {
       // Make sure you don't spam errors
       notify("Ability Not Available", "red");
-    } else if (abilityResult === "used") {
-      $(".character-ability:nth-child(" + key + ")")
-        .fadeTo(1, (1 / abilityResult))
-        .fadeTo(abilityResult * 1000, 1);
+    } else if (abilityResult !== -1) {
+      notify("Ability Recharging (" + abilityResult + "s)", "orange");
     }
   },
   
@@ -690,6 +688,11 @@ $(function() {
   // Function that periodically checks for players coming or going
   updatePlayers = function (data) {
     updateGamestate(data);
+    if (typeof(data) === "undefined") {
+      bootMiscreants("You've lost connection with the server!");
+      return;
+    }
+    
     // Update the players if any have come or gone
     if (playerCount !== data.players.length) {
       updateCharacterArray(playerCount, false);
@@ -979,6 +982,11 @@ $(function() {
 
   //timeLoop();
   mainLoop();
+  
+  // Set some error feedback for long loading / booting
+  setTimeout(function () {
+    $("#loading-screen-error").fadeIn(1000);
+  }, 10000);
   
   // If a player leaves the room, remove them from the gamestate
   $(window).unload(function () {
