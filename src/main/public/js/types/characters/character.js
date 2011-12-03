@@ -14,8 +14,7 @@ $(function () {
       characterClass: null,
       id: null,
       level: 1,
-      health: 100, // TODO: Arbitrary placeholder
-      sceneNode: null
+      health: 100 // TODO: Arbitrary placeholder
     },
     
     texturization: function () {

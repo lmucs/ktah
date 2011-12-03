@@ -37,16 +37,6 @@ $(function() {
   // Last direction traveled
   difX = -1.0, difZ = 0.0, dirAngle = 0.0,
 
-  // Mouse Controls values
-  /*
-  goal = null, //new CL3D.Vect3d(),
-  goalX = NaN, // where to travel to
-  goalZ = NaN, // where to travel to
-  originalX = NaN,
-  originalZ = NaN,
-  */
-  walkDist = 1.85, // how fast character moves
-
   // Camera positioning values
   camSetDist = 10,
   camDistRatio = 1.0,
@@ -150,6 +140,8 @@ $(function() {
             
             ktah.characterArray[i].playerName = ktah.gamestate.players[i].name;
             ktah.characterArray[i].playing = true;
+            ktah.characterArray[i].isZombie = false;
+            ktah.characterArray[i].walkSpeed = 1.85;
             ktah.characterArray[i].sceneNode.Pos.Z += i * 15;
             ktah.characterArray[i].sceneNode.Pos.Y = 1.3;
             
@@ -423,13 +415,7 @@ $(function() {
   	if (newGoal) {
       var currentCharacter = ktah.characterArray[playerNumber];//ktah.gamestate.players[playerNumber];
       currentCharacter.updateGoal(newGoal);
-      /*
-  	  goal = newGoal;
-  	  goalX = goal.X;
-  	  goalZ = goal.Z;
-      originalX = playerSceneNode.Pos.X;
-      originalZ = playerSceneNode.Pos.Z;
-      */
+
       // so if arrow exists, position it at goal to show where goal is
       if (arrow && currentCharacter.getGoal()) {
         arrow.Pos = currentCharacter.getGoal();
@@ -506,6 +492,11 @@ $(function() {
     var monsterArray = [];
     for(var i = 0; i < amount; i++) {
       monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500},{gameId: gameId, sceneNode: sceneNode});
+      monsterArray[i].isZombie = true;
+      monsterArray[i].walkSpeed = 1.0;
+      // Want to add zombie collision with world here, but way too memory intensive right now or something
+      // makes grass texture disappear and collision for player stop working
+      //monsterArray[i].sceneNode.addAnimator(playerCollisionAnimator);
     }
     return monsterArray;
   },
@@ -699,22 +690,6 @@ $(function() {
     }
   },
   
-  // To move any node from position origin to position destination at walkDist
-  goFromTo = function(origin, destination) {
-    var newVal = 0;
-    // Try to reach destination or give up
-    if (destination != origin) {
-      if (destination > origin + 1) {
-        newVal += walkDist * catchupRate;
-      } else if (destination < origin - 1) { 
-        newVal -= walkDist * catchupRate;
-      } else {
-        destination = origin;
-      }
-    }
-    return newVal;
-  },
-  
   resetZombiePosition = function(i){
     ktah.characterArray[i].sceneNode.Pos.Y = startingY;
     ktah.characterArray[i].sceneNode.Pos.X = startingX;
@@ -789,6 +764,19 @@ $(function() {
           //muting this for now until it works:
           //monsterArray[i].updateTarget(ktah.gamestate.players, monsterArray);
           //monsterArray[i].stepToTarget();
+          
+          // Brian Handy here, doing the same using my system...
+          monsterArray[i].updateCatchupRate(catchupRate);
+          monsterArray[i].setGoal(ktah.characterArray[0].sceneNode.Pos);
+          monsterArray[i].moveToGoal();
+          // Collision Detection between AI / zombie and AI / zombie
+          for (var j = i+1; j < monsterArray.length; j++) {
+            if (monsterArray[j].sceneNode.Pos.getDistanceTo(monsterArray[i].sceneNode.Pos) < 8) {
+              // Classic X/Z movement system
+              monsterArray[j].sceneNode.Pos.X += (monsterArray[j].sceneNode.Pos.X - monsterArray[i].sceneNode.Pos.X)*1/9*catchupRate;
+              monsterArray[j].sceneNode.Pos.Z += (monsterArray[j].sceneNode.Pos.Z - monsterArray[i].sceneNode.Pos.Z)*1/9*catchupRate;
+            }
+          }
         }
       }
 
@@ -867,52 +855,17 @@ $(function() {
       zombieBeingAttacked = -1;
       
       // Update position and camera if any control changes made
-      var goalX = currentBeing.getGoalX();
-      var goalZ = currentBeing.getGoalZ();
-      var goal = currentBeing.getGoal();
-      var originalX = currentBeing.getOriginalX();
-      var originalZ = currentBeing.getOriginalZ();
-      if (goalX || goalZ || aKey || wKey || dKey || sKey) {
-      	var lastDirAngle = dirAngle;
-        if (!goalX && !goalZ) { // if Keyboard Commands, just update dirAngle
-          dirAngle = (270 - playerSceneNode.Rot.Y) / 180 * Math.PI;
-          // if Mouse, update rotation of player character appropriately
-        } else if (goal && playerSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, playerSceneNode.Pos.Y,goal.Z)) > 3*walkDist) {
-          dirAngle = Math.atan((goalZ - originalZ) / (goalX - originalX));
-          if (goalX > playerSceneNode.Pos.X) { dirAngle = Math.PI + dirAngle; }
-
-          // Seeking a goal, but flipping positions? (based on rounded nums) Undo Goal and flip yourself back
-          if (Math.floor(100*((dirAngle + 3*Math.PI) % (2 * Math.PI))) === Math.floor(100*((lastDirAngle + 2*Math.PI) % (2 * Math.PI)))) {
-        	currentBeing.resetGoal();
-        	resetArrow();
-            dirAngle = Math.PI + dirAngle;
-          }
-          
-          // Otherwise, go for it!
-          playerSceneNode.Rot.Y = 270 - dirAngle * 180 / Math.PI; // dirAngle must be converted into 360
-          
-        }
-
-        newX = newZ = 0; // reset so we can recalculate based on new angle
-        newX -= walkDist * Math.sin(Math.PI/2 + dirAngle) * catchupRate;
-        newZ += walkDist * Math.cos(Math.PI/2 + dirAngle) * catchupRate;
-        // so this calculates the new X and new Z twice, but this one makes it right to the facing angle
-        // and reload goal values since may have been reset
-        goalX = currentBeing.getGoalX();
-        goalZ = currentBeing.getGoalZ();
-        goal = currentBeing.getGoal();
-        originalX = currentBeing.getOriginalX();
-        originalZ = currentBeing.getOriginalZ();
-        
-        if ((!goalX && !goalZ) || (goal && playerSceneNode.Pos.getDistanceTo(new CL3D.Vect3d(goal.X, playerSceneNode.Pos.Y,goal.Z)) > 2*walkDist)) {
-          if (!standKey) {
-            playerSceneNode.Pos.X += newX;
-            playerSceneNode.Pos.Z += newZ;
-          }
-        } else if (arrow.Pos.Y > 0) { // so if within range of goal, hide arrow
-          arrow.Pos.Y = -1 * arrowHeight; 
-        }
-        
+      currentBeing.updateCatchupRate(catchupRate);
+      currentBeing.updateStandState(standKey);
+      if (aKey || wKey || dKey || sKey) {
+        currentBeing.moveOnAngle(angle);
+      } else if (currentBeing.getGoal()) {
+        currentBeing.moveToGoal();
+        angle = currentBeing.getAngle();
+      }
+      if (aKey || wKey || dKey || sKey || currentBeing.getGoal()) {
+        /* Still need to put in a system here to reset goal if player gets stuck */
+       
         // Collision Detection between players
         for (var i = 0; i < playerCount; i++) {
           if (i !== playerNumber && ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(ktah.characterArray[i].sceneNode.Pos) < 4) {
@@ -932,10 +885,16 @@ $(function() {
           }
         }
         
-        updatePos(playerSceneNode, newX, newZ);
+        // DELETEME IFF this function doesn't matter anymore, which I think it doesn't
+        //updatePos(playerSceneNode, newX, newZ);
         
         // Finally, update Camera for new positions
         camFollow(cam, playerSceneNode);
+        
+        // And show arrow if currentBeing dictates it
+        if ((arrow.Pos.Y > 0) && (!currentBeing.getArrowVisible())) { // so if within range of goal, hide arrow
+          arrow.Pos.Y = -1 * arrowHeight;
+        }
       }
       
     }
