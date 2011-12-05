@@ -9,7 +9,6 @@ $(function() {
   
   var engine = ktah.engine = startCopperLichtFromFile('ktahCanvas', '../../assets/copperlicht/copperlichtdata/zombieTestRedux.ccbjs'),
   playerSceneNode = null,
-  monsterArray = ktah.monsterArray = [],
   scene = null,
   key = null;
   
@@ -278,9 +277,9 @@ $(function() {
       var protoGhoul = scene.getSceneNodeFromName('ghoul');
       
       if (playerNumber === 0) {
-        monsterArray = generateMonsters(protoGhoul, 20);
+        ktah.monsterArray = generateMonsters(protoGhoul, 20);
       } else {
-        monsterArray = synchronizeMonsters(protoGhoul);
+        synchronizeMonsters(protoGhoul);
       }
       
       // Begin the server pinging and end-condition checking
@@ -490,8 +489,9 @@ $(function() {
 //Generate a certain amount of zombies.
   generateMonsters = function(sceneNode, amount) {
     var monsterArray = [];
-    for(var i = 0; i < amount; i++) {
-      monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500},{gameId: gameId, sceneNode: sceneNode});
+    for (var i = 0; i < amount; i++) {
+      monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500, lastZombie: (i === amount - 1)}
+        ,{gameId: gameId, sceneNode: sceneNode});
       monsterArray[i].isZombie = true;
       monsterArray[i].walkSpeed = 1.0;
       // Want to add zombie collision with world here, but way too memory intensive right now or something
@@ -501,26 +501,27 @@ $(function() {
     return monsterArray;
   },
   
-  synchronizeMonsters = function(sceneNode) {    
+  synchronizeMonsters = function(sceneNode) {
     $.ajax({
       type: 'GET',
       url: '/monsters/' + gameId,
       success: function (data) {
-        if(!data) {
-          setTimeout(synchronizeMonsters(sceneNode), 200);
+        var monsterArray = [];
+        if(!data || (data && !data[data.length - 1].lastZombie)) {
+          console.warn("in the TRUE!");
+          setTimeout(function() {synchronizeMonsters(sceneNode);}, 200);
         } else {
-          var monsterArray = [];
           for (var i = 0; i < data.length; i++) {
             monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id},{gameId: gameId, sceneNode: sceneNode});
           }
-          return monsterArray;
+          console.warn(monsterArray);
+          ktah.monsterArray = monsterArray;
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
         console.log(jqXHR);
         console.log(textStatus);
         console.log(errorThrown);
-        synchronizeMonsters(sceneNode);
       },
       dataType: 'json',
       contentType: 'application/json'
@@ -545,7 +546,8 @@ $(function() {
         // Update player positions based on the gamestate
         for (var i = 0; i < playerCount; i++) {
           var currentPlayer = ktah.gamestate.players[i],
-              healthBarWidth = (currentPlayer.health / 100) * 148 + "px";
+              healthBarWidth = (currentPlayer.health / 100) * 148 + "px",
+              abilityList = [];
               
           // Update health bars
           $("#" + currentPlayer.name + "-health-num-box").children(":nth-child(2)")
@@ -572,6 +574,13 @@ $(function() {
           }
           
           if (i === playerNumber) {
+            // Render abilities if the player's individual queue has any
+            if (currentPlayer.abilityQueue.length) {
+              abilityList = currentPlayer.abilityQueue;
+              ktah.abilities.renderAbilities(abilityList);
+              currentPlayer.abilityQueue = [];
+            }
+            
             currentPlayer.posX = ktah.characterArray[i].sceneNode.Pos.X;
             currentPlayer.posZ = ktah.characterArray[i].sceneNode.Pos.Z;
             currentPlayer.posY = ktah.characterArray[i].sceneNode.Pos.Y;
@@ -612,7 +621,7 @@ $(function() {
             });
             
             if (currentPlayer.id === 0) {
-        	  $.ajax({
+        	    $.ajax({
                 type: 'POST',
                 url: '/monsters/' + gameId,
                 data: JSON.stringify(ktah.gamestate.monsters),
@@ -624,6 +633,17 @@ $(function() {
                 dataType: 'json',
                 contentType: 'application/json'
               });
+            } else {
+              for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
+                for (var k = 0; k < ktah.monsterArray.length; k++) {
+                  if (ktah.monsterArray[k].id === ktah.gamestate.monsters[j].id) {
+                    ktah.monsterArray[k].sceneNode.Pos.X = ktah.gamestate.monsters[j].posX;
+                    ktah.monsterArray[k].sceneNode.Pos.Z = ktah.gamestate.monsters[j].posZ;
+                    ktah.monsterArray[k].sceneNode.Rot.Y = ktah.gamestate.monsters[j].rotY;
+                    break;
+                  }
+                }
+              }
             }
           } else {
             ktah.characterArray[i].sceneNode.Pos.X = currentPlayer.posX;
@@ -760,21 +780,21 @@ $(function() {
       
       // Update the monsters targets, then move the monsters.
       if (playerNumber === 0) {
-        for (var i = 0; i < monsterArray.length; i++) {
+        for (var i = 0; i < ktah.monsterArray.length; i++) {
           //muting this for now until it works:
           //monsterArray[i].updateTarget(ktah.gamestate.players, monsterArray);
           //monsterArray[i].stepToTarget();
           
           // Brian Handy here, doing the same using my system...
-          monsterArray[i].updateCatchupRate(catchupRate);
-          monsterArray[i].setGoal(ktah.characterArray[0].sceneNode.Pos);
-          monsterArray[i].moveToGoal();
+          ktah.monsterArray[i].updateCatchupRate(catchupRate);
+          ktah.monsterArray[i].setGoal(ktah.characterArray[0].sceneNode.Pos);
+          ktah.monsterArray[i].moveToGoal();
           // Collision Detection between AI / zombie and AI / zombie
-          for (var j = i+1; j < monsterArray.length; j++) {
-            if (monsterArray[j].sceneNode.Pos.getDistanceTo(monsterArray[i].sceneNode.Pos) < 8) {
+          for (var j = i+1; j < ktah.monsterArray.length; j++) {
+            if (ktah.monsterArray[j].sceneNode.Pos.getDistanceTo(ktah.monsterArray[i].sceneNode.Pos) < 8) {
               // Classic X/Z movement system
-              monsterArray[j].sceneNode.Pos.X += (monsterArray[j].sceneNode.Pos.X - monsterArray[i].sceneNode.Pos.X)*1/9*catchupRate;
-              monsterArray[j].sceneNode.Pos.Z += (monsterArray[j].sceneNode.Pos.Z - monsterArray[i].sceneNode.Pos.Z)*1/9*catchupRate;
+              ktah.monsterArray[j].sceneNode.Pos.X += (ktah.monsterArray[j].sceneNode.Pos.X - ktah.monsterArray[i].sceneNode.Pos.X)*1/9*catchupRate;
+              ktah.monsterArray[j].sceneNode.Pos.Z += (ktah.monsterArray[j].sceneNode.Pos.Z - ktah.monsterArray[i].sceneNode.Pos.Z)*1/9*catchupRate;
             }
           }
         }
@@ -875,13 +895,15 @@ $(function() {
           }
         }
         // Collision Detection between you and AI / zombie collision
-        for (var i = 0; i < monsterArray.length; i++) {
-          if (ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(monsterArray[i].sceneNode.Pos) < 4) {
-            // Classic X/Z movement system
-            playerSceneNode.Pos.X += (playerSceneNode.Pos.X - monsterArray[i].sceneNode.Pos.X)*3/3;
-            playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - monsterArray[i].sceneNode.Pos.Z)*3/3;
-            // this not working, but set a flag here to hurt the player when run into zombie
-            //ktah.gamestate.players[playerNumber].beingAttacked = true;
+        if (ktah.monsterArray) {
+          for (var i = 0; i < ktah.monsterArray.length; i++) {
+            if (ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(ktah.monsterArray[i].sceneNode.Pos) < 4) {
+              // Classic X/Z movement system
+              playerSceneNode.Pos.X += (playerSceneNode.Pos.X - ktah.monsterArray[i].sceneNode.Pos.X)*3/3;
+              playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.monsterArray[i].sceneNode.Pos.Z)*3/3;
+              // this not working, but set a flag here to hurt the player when run into zombie
+              //ktah.gamestate.players[playerNumber].beingAttacked = true;
+            }
           }
         }
         

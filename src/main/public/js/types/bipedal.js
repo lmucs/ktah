@@ -23,9 +23,11 @@ $(function () {
     	this.goal = newGoal;
     	this.original = this.sceneNode.Pos;
     },
+    
     getGoal: function () {
     	return this.goal;
     },
+    
     // in case someone tries to use update instead of set, it does the same thing
     updateGoal: function (newGoal) {
       this.setGoal(newGoal);

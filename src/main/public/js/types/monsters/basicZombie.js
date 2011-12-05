@@ -13,9 +13,9 @@ $(function () {
       this.health = 100;
 
       this.sceneNode.Pos.Y = 1.3;
-      this.sceneNode.Pos.X = this.posX = attributes.posX;
-      this.sceneNode.Pos.Z = this.posZ = attributes.posZ;
-
+      this.sceneNode.Pos.X = attributes.posX;
+      this.sceneNode.Pos.Z = attributes.posZ;
+      
       // TODO: Will eventually be refactored to allow different monster types to share code.
       
       if (attributes.id !== null) {
@@ -29,7 +29,9 @@ $(function () {
             id: null,
             health: this.health,
             posX: this.sceneNode.Pos.X,
-            posZ: this.sceneNode.Pos.Z
+            posZ: this.sceneNode.Pos.Z,
+            rotY: this.sceneNode.Rot.Y,
+            lastZombie: attributes.lastZombie
           }),
           error: function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR);

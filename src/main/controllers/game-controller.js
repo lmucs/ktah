@@ -232,15 +232,14 @@ module.exports = function (app) {
     var monster = req.body,
         currentGame = GameController.games[req.params.gameId];
         
-      if (!typeof(currentGame.monsters) === "undefined" && !currentGame.monsters) {
-    	  currentGame.monsters = [];
-        monster.id = currentGame.monsters.length;
-        currentGame.monsters.push(monster);
-        res.contentType('application/json');
-        res.send(JSON.stringify({"monsterId": monster.id}));
-      } else {
-        res.send(false);
-      }
+    if (typeof(currentGame.monsters) === "undefined" || !currentGame.monsters) {
+  	  currentGame.monsters = [];
+  	}
+    monster.id = currentGame.monsters.length;
+    currentGame.monsters.push(monster);
+    res.contentType('application/json');
+    res.send(JSON.stringify({"monsterId": monster.id}));
+    console.warn(currentGame.monsters);
   });
   
   /*
@@ -266,9 +265,22 @@ module.exports = function (app) {
    *   Retrieves the monster array
    */
   app.get('/monsters/:gameId', function (req, res) {
-    
     var currentGame = GameController.games[req.params.gameId];
     res.contentType('application/json');
     res.send(JSON.stringify(currentGame.monsters));
+  });
+  
+  /*
+   * POST /abilities/:gameId
+   *   Updates abilities used
+   */
+  app.post('/abilities/:gameId', function (req, res) {
+    var abilityUsed = req.body,
+        currentGame = GameController.games[req.params.gameId];
+    for (var i = 0; i < currentGame.players.length; i++) {
+      var currentPlayer = currentGame.players[i];
+      currentPlayer.abilityQueue.push(abilityUsed);
+    }
+    res.send({"success": true});
   });
 }

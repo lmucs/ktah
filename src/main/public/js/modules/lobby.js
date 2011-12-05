@@ -9,6 +9,24 @@ $(function () {
     // Name of the user in the current session
     var userName = $('#userName').attr('data'),
         inputGameName = "",
+        protoPlayer = 
+          {
+            name: userName,
+            character: null,
+            health : 100,
+            pointsRemaining: 0,
+            pointsEarned: 0,
+            attacking: -1,
+            beingAttacked: false,
+            posX: 0,
+            posZ: 0,
+            posY: 0,
+            theta: 0,
+            timeOut: 0,
+            status: "alive",
+            readyState: "notReady",
+            abilityQueue: []
+          },
     
         // Helper function to determine if player is present in lobby
         checkForPlayer = function (player, gamestate) {
@@ -104,22 +122,7 @@ $(function () {
           
           var gamestate = null;
           // create the player to be added to the game state.
-          var player = {
-            name: userName,
-            character: null,
-            health: 100,
-            pointsRemaining: 0,
-            pointsEarned: 0,
-            attacking: -1,
-            beingAttacked: false,
-            posX: 0,
-            posZ: 0,
-            posY: 0,
-            theta: 0,
-            timeOut: 0,
-            status: "alive",
-            readyState: "notReady"
-          };      
+          var player = protoPlayer;      
           
           // get the gamestate of the game they are attempting to join
           $.ajax({
@@ -208,22 +211,7 @@ $(function () {
                       },
                       players: [
                         // automatically add in the game creators player object
-                        {
-                          name: userName,
-                          character: null,
-                          health : 100,
-                          pointsRemaining: 0,
-                          pointsEarned: 0,
-                          attacking: -1,
-                          beingAttacked: false,
-                          posX: 0,
-                          posZ: 0,
-                          posY: 0,
-                          theta: 0,
-                          timeOut: 0,
-                          status: "alive",
-                          readyState: "notReady"
-                        }
+                        protoPlayer
                       ]
                     });
                       
