@@ -563,7 +563,6 @@ $(function() {
             }
             */
           }
-          console.warn(monsterArray);
           ktah.monsterArray = monsterArray;
         }
       },
@@ -675,7 +674,7 @@ $(function() {
             });
             
             // Meaning they're the host...
-            if (currentPlayer.id === 0) {
+            if (playerNumber === 0) {
         	    $.ajax({
                 type: 'POST',
                 url: '/monsters/' + gameId,
@@ -690,14 +689,11 @@ $(function() {
               });
             // Otherwise you're a client
             } else {
-              for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
-                for (var k = 0; k < ktah.monsterArray.length; k++) {
-                  if (ktah.monsterArray[k].id === ktah.gamestate.monsters[j].id) {
-                    ktah.monsterArray[k].sceneNode.Pos.X = ktah.gamestate.monsters[j].posX;
-                    ktah.monsterArray[k].sceneNode.Pos.Z = ktah.gamestate.monsters[j].posZ;
-                    ktah.monsterArray[k].sceneNode.Rot.Y = ktah.gamestate.monsters[j].rotY;
-                    break;
-                  }
+              if (ktah.monsters) {
+                for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
+                  ktah.monsterArray[j].sceneNode.Pos.X = ktah.gamestate.monsters[j].posX;
+                  ktah.monsterArray[j].sceneNode.Pos.Z = ktah.gamestate.monsters[j].posZ;
+                  ktah.monsterArray[j].sceneNode.Rot.Y = ktah.gamestate.monsters[j].rotY;
                 }
               }
             }
@@ -833,11 +829,11 @@ $(function() {
   	// Only check angle and movement if player exists and player is not dead
     if (playerSceneNode && (ktah.gamestate.players[playerNumber].health >= 1)) {
 
-      var currentBeing = ktah.characterArray[playerNumber];//ktah.gamestate.players[playerNumber].character;
-      
+      var currentBeing = ktah.characterArray[playerNumber], //ktah.gamestate.players[playerNumber].character;
+          monsters = ktah.gamestate.monsters;
       // Update the monsters targets, then move the monsters.
       // This is the "host loop"
-      if (playerNumber === 0) {
+      if (playerNumber === 0 && monsters) {
         for (var i = 0; i < ktah.monsterArray.length; i++) {
           //muting this for now until it works:
           //monsterArray[i].updateTarget(ktah.gamestate.players, monsterArray);
@@ -847,6 +843,11 @@ $(function() {
           ktah.monsterArray[i].updateCatchupRate(catchupRate);
           ktah.monsterArray[i].setGoal(ktah.characterArray[0].sceneNode.Pos);
           ktah.monsterArray[i].moveToGoal();
+          // Update gamestate to reflect zombie movement
+          monsters[i].posX = ktah.monsterArray[i].sceneNode.Pos.X;
+          monsters[i].posZ = ktah.monsterArray[i].sceneNode.Pos.Z;
+          monsters[i].rotY = ktah.monsterArray[i].sceneNode.Rot.Y;
+          
           // Collision Detection between AI / zombie and AI / zombie
           for (var j = i+1; j < ktah.monsterArray.length; j++) {
             if (ktah.monsterArray[j].sceneNode.Pos.getDistanceTo(ktah.monsterArray[i].sceneNode.Pos) < 8) {
