@@ -138,30 +138,9 @@ module.exports = function (app) {
       return;
     }
     for (var i = 0; i < currentGame.players.length; i++) {
-      /* TESTING
       var currentPlayer = currentGame.players[i];
       if (currentPlayer.name === req.params.userName) {
-        // Make sure an ability queue isn't lost from asynchrony
-        var pendingAbilities = [];
-        if (!currentPlayer.abilitiesRendered && currentPlayer.abilityQueue.length) {
-          pendingAbilities = currentPlayer.abilityQueue;
-        }
         GameController.games[req.params.gameId].players[i] = req.body;
-        if (pendingAbilities.length) {
-          currentPlayer.abilityQueue = pendingAbilities;
-        } else {
-          GameController.games[req.params.gameId].players[i].abilityQueue = [];
-          currentPlayer.abilitiesRendered = false;
-        }
-      }
-      */
-     
-      var currentPlayer = currentGame.players[i];
-      if (currentPlayer.name === req.params.userName) {
-        // Make sure an ability queue isn't lost from asynchrony
-        var pendingAbilities = currentPlayer.abilityQueue;
-        GameController.games[req.params.gameId].players[i] = req.body;
-        currentPlayer.abilityQueue = pendingAbilities;
       }
     }
     res.send({"success": true});
@@ -293,8 +272,24 @@ module.exports = function (app) {
     var abilityUsed = req.body,
         currentGame = GameController.games[req.params.gameId];
     for (var i = 0; i < currentGame.players.length; i++) {
-      var currentPlayer = currentGame.players[i];
-      currentPlayer.abilityQueue.push(abilityUsed);
+      var currentName = currentGame.players[i].name;
+      currentGame.environment.abilityQueue[currentName].push(req.body);
+    }
+    res.send({"success": true});
+  });
+  
+  /*
+   * POST /abilities/:gameId
+   *   Updates abilities used
+   */
+  app.post('/abilityDone/:gameId/:userName', function (req, res) {
+    var abilityCount = req.body.count,
+        currentGame = GameController.games[req.params.gameId];
+    for (var i = 0; i < currentGame.players.length; i++) {
+      var currentName = currentGame.players[i].name;
+      if (req.params.userName === currentName) {
+        currentGame.environment.abilityQueue[currentName].splice(0, abilityCount);
+      }
     }
     res.send({"success": true});
   });

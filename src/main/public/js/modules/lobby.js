@@ -24,9 +24,7 @@ $(function () {
             theta: 0,
             timeOut: 0,
             status: "alive",
-            readyState: "notReady",
-            abilityQueue: [],
-            abilitiesRendered: false
+            readyState: "notReady"
           },
     
         // Helper function to determine if player is present in lobby
@@ -149,6 +147,7 @@ $(function () {
                 if (!checkForPlayer(player, gamestate)) {
                     // add your player to the game.
                     gamestate.players.push(player);
+                    gamestate.environment.abilityQueue[player.name] = [];
                 }   
                 
                 // post the updated gamestate to the server
@@ -183,7 +182,8 @@ $(function () {
         
         // Function to create a game
         createGame = function () {
-          var gameId = prompt("What would you like to call your game?", "");
+          var gameId = prompt("What would you like to call your game?", ""),
+              playerName = protoPlayer.name;
           
           // User may have aborted game creation...
           if (gameId === null) {
@@ -205,22 +205,25 @@ $(function () {
             success: function (data) {
                 // If the game already exists, don't create it
                 if (!data) {
-                    var gamestate = JSON.stringify({
+                    var gamestate = {
                       environment: {
                         game: gameId,
-                        readyState : false
+                        readyState : false,
+                        abilityQueue: {}
                       },
                       players: [
                         // automatically add in the game creators player object
                         protoPlayer
                       ]
-                    });
+                    };
+                    
+                    gamestate.environment.abilityQueue[playerName] = [];
                       
                     // post the gamestate to the server
                     $.ajax({
                       type: 'POST',
                       url: '/gamestate/' + gameId,
-                      data: gamestate,
+                      data: JSON.stringify(gamestate),
                       success: function (data) {
                         if (!data.success) {
                           warningDialog("You've created a game too recently; try again in 10 seconds.");

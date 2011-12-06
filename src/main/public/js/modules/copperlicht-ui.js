@@ -593,7 +593,8 @@ $(function() {
         // Update player positions based on the gamestate
         for (var i = 0; i < playerCount; i++) {
           var currentPlayer = ktah.gamestate.players[i],
-              healthBarWidth = (currentPlayer.health / 100) * 148 + "px";
+              healthBarWidth = (currentPlayer.health / 100) * 148 + "px",
+              currentAbilityQueue = ktah.gamestate.environment.abilityQueue[currentPlayer.name];
               
           // Update health bars
           $("#" + currentPlayer.name + "-health-num-box").children(":nth-child(2)")
@@ -616,12 +617,22 @@ $(function() {
           
           if (i === playerNumber) {
             // Render abilities if the player's individual queue has any
-            console.warn(currentPlayer.abilityQueue.length);
-            if (currentPlayer.abilityQueue.length) {
-              abilityList = currentPlayer.abilityQueue;
+            if (currentAbilityQueue.length) {
+              abilityList = currentAbilityQueue;
               ktah.abilities.renderAbilities(abilityList);
-              currentPlayer.abilitiesRendered = true;
-              currentPlayer.abilityQueue = [];
+              // Remove rendered abilities from the abilityQueue
+              $.ajax({
+                type: 'POST',
+                url: '/abilityDone/' + gameId + "/" + userName,
+                data: JSON.stringify({count: abilityList.length}),
+                error: function (jqXHR, textStatus, errorThrown) {
+                  console.log(jqXHR);
+                  console.log(textStatus);
+                  console.log(errorThrown);
+                },
+                dataType: 'json',
+                contentType: 'application/json'
+              });
             }
             
             currentPlayer.posX = ktah.characterArray[i].sceneNode.Pos.X;
