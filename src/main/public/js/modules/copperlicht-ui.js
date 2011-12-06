@@ -433,14 +433,7 @@ $(function() {
       }
   	}
   },
-  
-  updatePos = function(playerSceneNode, newX, newZ) {
-    changeRate = 20;
-    difX = (difX * (changeRate - 1) + newX) / changeRate;
-    difZ = (difZ * (changeRate - 1) + newZ) / changeRate;
-    camDistRatio = camSetDist / (Math.sqrt(Math.pow(difX, 2) + Math.pow(difZ, 2)));
-  },
-  
+
   // Helper function for animation display
   animateCharacter = function (characterIndex, animation) {
     var currentChar = ktah.characterArray[characterIndex].sceneNode;
@@ -455,6 +448,23 @@ $(function() {
       setTimeout(function () {
         currentChar.currentAnimation = "run";
         animateCharacter(characterIndex, "run");
+      }, 600);
+    }
+  },
+  
+  animateMonster = function (monsterIndex, animation) {
+    var currentMonster = ktah.monsterArray[monsterIndex].sceneNode;
+    if (currentMonster.currentAnimation !== animation) {
+      currentMonster.setLoopMode(animation !== "aim");
+      if (currentMonster.currentAnimation !== "aim") {
+        currentMonster.currentAnimation = animation;
+        currentMonster.setAnimation(animation);
+      }
+    }
+    if (animation === "aim") {
+      setTimeout(function () {
+        currentMonster.currentAnimation = "run";
+        animateMonster(currentMonster, "run");
       }, 600);
     }
   },
@@ -523,6 +533,7 @@ $(function() {
           setTimeout(function() {synchronizeMonsters(sceneNode);}, 200);
         } else {
           for (var i = 0; i < data.length; i++) {
+            if (monsterArray[i].sceneNode.Pos != new CL3D.Vect3d(data[i].posX, data[i].posY, data[i].posZ))
             monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id},{gameId: gameId, sceneNode: sceneNode});
           }
           console.warn(monsterArray);
@@ -566,7 +577,7 @@ $(function() {
           $("#" + currentPlayer.name + "-health-bar")
             .css({width: healthBarWidth});
           
-          // Set zombie animation
+          // Set character animation
           if (currentPlayer.posX !== ktah.characterArray[i].sceneNode.Pos.X || currentPlayer.posZ !== ktah.characterArray[i].sceneNode.Pos.Z) {
             animateCharacter(i, "run");
           } else {
@@ -806,6 +817,16 @@ $(function() {
               ktah.monsterArray[j].sceneNode.Pos.Z += (ktah.monsterArray[j].sceneNode.Pos.Z - ktah.monsterArray[i].sceneNode.Pos.Z)*1/9*catchupRate;
             }
           }
+          // Then check to see if you successfully have hit and pushed back the player
+          if (ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(ktah.monsterArray[i].sceneNode.Pos) < 4) {
+            // Classic X/Z movement system
+            playerSceneNode.Pos.X += (playerSceneNode.Pos.X - ktah.monsterArray[i].sceneNode.Pos.X)*3/3;
+            playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.monsterArray[i].sceneNode.Pos.Z)*3/3;
+            beingAttacked = true;
+            // Since moved, update the camera
+            camFollow(cam, playerSceneNode);
+            // TODO: Zombie attack animation (use animator method in place)
+          }
         }
       }
 
@@ -900,21 +921,6 @@ $(function() {
             playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.characterArray[i].sceneNode.Pos.Z)/2;
           }
         }
-        // Collision Detection between you and AI / zombie collision
-        if (ktah.monsterArray) {
-          for (var i = 0; i < ktah.monsterArray.length; i++) {
-            if (ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(ktah.monsterArray[i].sceneNode.Pos) < 4) {
-              // Classic X/Z movement system
-              playerSceneNode.Pos.X += (playerSceneNode.Pos.X - ktah.monsterArray[i].sceneNode.Pos.X)*3/3;
-              playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.monsterArray[i].sceneNode.Pos.Z)*3/3;
-              beingAttacked = true;
-              // TODO: Zombie attack animation (use animator method in place)
-            }
-          }
-        }
-        
-        // DELETEME IFF this function doesn't matter anymore, which I think it doesn't
-        //updatePos(playerSceneNode, newX, newZ);
         
         // Finally, update Camera for new positions
         camFollow(cam, playerSceneNode);
