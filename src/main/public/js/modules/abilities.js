@@ -38,7 +38,7 @@ $(function () {
   ktah.abilities.renderAbilities = function (abilityQueue) {
     for (var i = 0; i < abilityQueue.length; i++) {
       var currentAbility = abilityQueue[i];
-      console.warn(abilityMap[currentAbility.name]);
+      console.warn(currentAbility);
       abilityMap[currentAbility.name](currentAbility.x, currentAbility.y, currentAbility.z, currentAbility.theta, currentAbility.cooldown);
     }
   };

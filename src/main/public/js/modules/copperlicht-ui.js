@@ -61,12 +61,13 @@ $(function() {
   cam.addAnimator(animator);
   
   // Gameplay mechanics
-  var zombieBeingAttacked = -1,
+  var beingAttacked = -1,
       gameId = $("#gameId").attr("data"),
       userName = $("#userName").attr("data"),
       playerNumber = 0,
       playerCount = 0,
       usingAbility = 0,
+      abilityList = [],
       notificationReporting = false,
       leftGame = false,
       gameOver = false,
@@ -546,8 +547,7 @@ $(function() {
         // Update player positions based on the gamestate
         for (var i = 0; i < playerCount; i++) {
           var currentPlayer = ktah.gamestate.players[i],
-              healthBarWidth = (currentPlayer.health / 100) * 148 + "px",
-              abilityList = [];
+              healthBarWidth = (currentPlayer.health / 100) * 148 + "px";
               
           // Update health bars
           $("#" + currentPlayer.name + "-health-num-box").children(":nth-child(2)")
@@ -563,11 +563,6 @@ $(function() {
             animateCharacter(i, "stand");
           }
           
-          // Set attack animation
-          if (currentPlayer.attacking !== -1) {
-            animateCharacter(i, "aim");
-          }
-          
           // Set death animation
           if (currentPlayer.status === "dead") {
             ktah.characterArray[i].sceneNode.Rot.X = -80;
@@ -578,7 +573,7 @@ $(function() {
             if (currentPlayer.abilityQueue.length) {
               abilityList = currentPlayer.abilityQueue;
               ktah.abilities.renderAbilities(abilityList);
-              currentPlayer.abilityQueue = [];
+              currentPlayer.abilitiesRendered = true;
             }
             
             currentPlayer.posX = ktah.characterArray[i].sceneNode.Pos.X;
@@ -595,11 +590,9 @@ $(function() {
               camFollow(cam, ktah.characterArray[i].sceneNode);
             }
             
-            currentPlayer.attacking = zombieBeingAttacked;
-            
-            if (currentPlayer.beingAttacked) {
-              currentPlayer.health -= 30;
-              currentPlayer.beingAttacked = false;
+            if (beingAttacked) {
+              currentPlayer.health -= Math.ceil(1 * catchupRate);
+              beingAttacked = false;
             }
             
             if (currentPlayer.health <= 0) {
@@ -620,6 +613,7 @@ $(function() {
               contentType: 'application/json'
             });
             
+            // Meaning they're the host...
             if (currentPlayer.id === 0) {
         	    $.ajax({
                 type: 'POST',
@@ -633,6 +627,7 @@ $(function() {
                 dataType: 'json',
                 contentType: 'application/json'
               });
+            // Otherwise you're a client
             } else {
               for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
                 for (var k = 0; k < ktah.monsterArray.length; k++) {
@@ -871,9 +866,6 @@ $(function() {
       	// except that, apparently, cam.Rot values only return zero with the code we have right now.
       }
       
-      // Reset attack value
-      zombieBeingAttacked = -1;
-      
       // Update position and camera if any control changes made
       currentBeing.updateCatchupRate(catchupRate);
       currentBeing.updateStandState(standKey);
@@ -901,8 +893,8 @@ $(function() {
               // Classic X/Z movement system
               playerSceneNode.Pos.X += (playerSceneNode.Pos.X - ktah.monsterArray[i].sceneNode.Pos.X)*3/3;
               playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.monsterArray[i].sceneNode.Pos.Z)*3/3;
-              // this not working, but set a flag here to hurt the player when run into zombie
-              //ktah.gamestate.players[playerNumber].beingAttacked = true;
+              beingAttacked = true;
+              // TODO: Zombie attack animation (use animator method in place)
             }
           }
         }

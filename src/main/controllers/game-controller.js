@@ -140,11 +140,20 @@ module.exports = function (app) {
     for (var i = 0; i < currentGame.players.length; i++) {
       var currentPlayer = currentGame.players[i];
       if (currentPlayer.name === req.params.userName) {
+        // Make sure an ability queue isn't lost from asynchrony
+        var pendingAbilities = [];
+        if (!currentPlayer.abilitiesRendered && currentPlayer.abilityQueue.length) {
+          pendingAbilities = currentPlayer.abilityQueue;
+        }
+        console.log("Pending before post:" + pendingAbilities);
         GameController.games[req.params.gameId].players[i] = req.body;
-        if (currentPlayer.attacking !== -1) {
-          currentGame.players[i].pointsRemaining += 5;
-          currentGame.players[i].pointsEarned += 5;
-          currentGame.players[currentPlayer.attacking].beingAttacked = true;
+        console.log("Pending after post:" + pendingAbilities);
+        console.log("Abilities rendered after:" + currentPlayer.abilitiesRendered);
+        if (pendingAbilities.length) {
+          currentPlayer.abilityQueue = pendingAbilities;
+        } else {
+          currentPlayer.abilityQueue = [];
+          currentPlayer.abilitiesRendered = false;
         }
       }
     }
@@ -239,7 +248,6 @@ module.exports = function (app) {
     currentGame.monsters.push(monster);
     res.contentType('application/json');
     res.send(JSON.stringify({"monsterId": monster.id}));
-    console.warn(currentGame.monsters);
   });
   
   /*

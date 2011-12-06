@@ -25,7 +25,8 @@ $(function () {
             timeOut: 0,
             status: "alive",
             readyState: "notReady",
-            abilityQueue: []
+            abilityQueue: [],
+            abilitiesRendered: false
           },
     
         // Helper function to determine if player is present in lobby
