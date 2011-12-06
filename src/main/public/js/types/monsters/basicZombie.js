@@ -16,6 +16,8 @@ $(function () {
       this.sceneNode.Pos.X = attributes.posX;
       this.sceneNode.Pos.Z = attributes.posZ;
       
+      var that = this;
+      
       // TODO: Will eventually be refactored to allow different monster types to share code.
       
       if (attributes.id !== null) {
@@ -39,7 +41,7 @@ $(function () {
             console.log(errorThrown);
           },
           success: function (data, textStatus, jqXHR) {
-            this.id = data.monsterId;
+            that.id = data.monsterId;
           },
           dataType: 'json',
           contentType: 'application/json'
