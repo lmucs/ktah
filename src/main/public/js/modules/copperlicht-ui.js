@@ -242,6 +242,8 @@ $(function() {
         );
         playerSceneNode.addAnimator(playerCollisionAnimator);
         
+        
+        
         if (enableLighting) {
           // And add a light to the player
           lightNode = new CL3D.LightSceneNode(0);
@@ -281,6 +283,14 @@ $(function() {
         ktah.monsterArray = generateMonsters(protoGhoul, 20);
       } else {
         synchronizeMonsters(protoGhoul);
+      }
+      
+      // Make host add collision detection for zombies:
+      if (playerNumber === 0) /*(true)*/ {
+        for (var i = 0; i < ktah.monsterArray.length; i++) {
+          //ktah.monsterArray[i].sceneNode.addAnimator(playerCollisionAnimator);
+          //commented until we find a way to make this work
+        }
       }
       
       // Begin the server pinging and end-condition checking
@@ -777,6 +787,7 @@ $(function() {
       var currentBeing = ktah.characterArray[playerNumber];//ktah.gamestate.players[playerNumber].character;
       
       // Update the monsters targets, then move the monsters.
+      // This is the "host loop"
       if (playerNumber === 0) {
         for (var i = 0; i < ktah.monsterArray.length; i++) {
           //muting this for now until it works:
