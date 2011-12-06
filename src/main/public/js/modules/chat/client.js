@@ -282,14 +282,6 @@ function longPoll (data) {
           }
           addMessage(message.nick, message.body, message.time);
           break;
-
-        case "join":
-          userJoin(message.nick, message.time);
-          break;
-
-        case "part":
-          userPart(message.nick, message.time);
-          break;
       }
     }
 
@@ -306,7 +298,6 @@ function longPoll (data) {
          , dataType: "json"
          , data: { }
          , error: function () {
-             addMessage("", "long poll error. trying again...", new Date(), "error");
              transmission_errors += 1;
              //don't flood the servers on error, wait 10 seconds before retrying
              setTimeout(longPoll, 10*1000);

@@ -548,18 +548,20 @@ $(function() {
         var monsterArray = [];
         if(!data || (data && !data[data.length - 1].lastZombie)) {
           console.warn("in the TRUE!");
-          setTimeout(function() {synchronizeMonsters(sceneNode);}, 200);
+          setTimeout(function () {synchronizeMonsters(sceneNode);}, 200);
         } else {
           for (var i = 0; i < data.length; i++) {
-            var currentMonster = ktah.gamestate.environment.monsters[i];
+            var currentMonster = ktah.gamestate.monsters[i];
             monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id},{gameId: gameId, sceneNode: sceneNode});
             
+            /* SHOULD NOT BE IN HERE: synchronizeMonsters only called ONCE to sync the scene nodes with the host; host does not even call it
             // Set zombie animation
             if (currentMonster.posX !== ktah.monsterArray[i].sceneNode.Pos.X || currentMonster.posZ !== ktah.monsterArray[i].sceneNode.Pos.Z) {
               animateCharacter(i, "run");
             } else {
               animateCharacter(i, "stand");
             }
+            */
           }
           console.warn(monsterArray);
           ktah.monsterArray = monsterArray;
