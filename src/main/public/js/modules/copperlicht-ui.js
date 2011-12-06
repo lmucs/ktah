@@ -570,10 +570,12 @@ $(function() {
           
           if (i === playerNumber) {
             // Render abilities if the player's individual queue has any
+            console.warn(currentPlayer.abilityQueue.length);
             if (currentPlayer.abilityQueue.length) {
               abilityList = currentPlayer.abilityQueue;
               ktah.abilities.renderAbilities(abilityList);
               currentPlayer.abilitiesRendered = true;
+              currentPlayer.abilityQueue = [];
             }
             
             currentPlayer.posX = ktah.characterArray[i].sceneNode.Pos.X;
@@ -670,6 +672,7 @@ $(function() {
     gameOver = true;
     $("#end-dialog")
       .dialog({
+        title: "Loading score...",
         width: 400,
         resizable: false,
         modal: true,

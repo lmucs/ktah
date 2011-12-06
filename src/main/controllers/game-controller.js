@@ -138,6 +138,7 @@ module.exports = function (app) {
       return;
     }
     for (var i = 0; i < currentGame.players.length; i++) {
+      /* TESTING
       var currentPlayer = currentGame.players[i];
       if (currentPlayer.name === req.params.userName) {
         // Make sure an ability queue isn't lost from asynchrony
@@ -145,16 +146,22 @@ module.exports = function (app) {
         if (!currentPlayer.abilitiesRendered && currentPlayer.abilityQueue.length) {
           pendingAbilities = currentPlayer.abilityQueue;
         }
-        console.log("Pending before post:" + pendingAbilities);
         GameController.games[req.params.gameId].players[i] = req.body;
-        console.log("Pending after post:" + pendingAbilities);
-        console.log("Abilities rendered after:" + currentPlayer.abilitiesRendered);
         if (pendingAbilities.length) {
           currentPlayer.abilityQueue = pendingAbilities;
         } else {
-          currentPlayer.abilityQueue = [];
+          GameController.games[req.params.gameId].players[i].abilityQueue = [];
           currentPlayer.abilitiesRendered = false;
         }
+      }
+      */
+     
+      var currentPlayer = currentGame.players[i];
+      if (currentPlayer.name === req.params.userName) {
+        // Make sure an ability queue isn't lost from asynchrony
+        var pendingAbilities = currentPlayer.abilityQueue;
+        GameController.games[req.params.gameId].players[i] = req.body;
+        currentPlayer.abilityQueue = pendingAbilities;
       }
     }
     res.send({"success": true});
