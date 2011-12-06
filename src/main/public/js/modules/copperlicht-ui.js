@@ -240,7 +240,7 @@ $(function() {
           scene.getCollisionGeometry(),
           playerSlidingSpeed
         );
-        playerSceneNode.addAnimator(playerCollisionAnimator);
+        playerSceneNode.addAnimator(playerCollisionAnimator); //gonna put this after the zombies are created
         
         
         
@@ -286,12 +286,23 @@ $(function() {
       }
       
       // Make host add collision detection for zombies:
-      if (playerNumber === 0) /*(true)*/ {
+      monsterCollisionAnimator = new CL3D.AnimatorCollisionResponse(
+        new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
+        new CL3D.Vect3d(0,0,0), // no gravity!
+        new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
+        scene.getCollisionGeometry(),
+        playerSlidingSpeed
+      );
+      
+      if /*(playerNumber === 0)*/ (true) {
         for (var i = 0; i < ktah.monsterArray.length; i++) {
-          //ktah.monsterArray[i].sceneNode.addAnimator(playerCollisionAnimator);
+          ktah.monsterArray[i].sceneNode.addAnimator(monsterCollisionAnimator);
           //commented until we find a way to make this work
         }
       }
+      // Initialize collision detection for player:
+      //playerSceneNode.addAnimator(playerCollisionAnimator);
+      
       
       // Begin the server pinging and end-condition checking
       setInterval(updateTeam, 50);
@@ -459,6 +470,23 @@ $(function() {
     }
   },
   
+  animateMonster = function (monsterIndex, animation) {
+    var currentMonster = ktah.monsterArray[monsterIndex].sceneNode;
+    if (currentMonster.currentAnimation !== animation) {
+      currentMonster.setLoopMode(animation !== "aim");
+      if (currentMonster.currentAnimation !== "aim") {
+        currentMonster.currentAnimation = animation;
+        currentMonster.setAnimation(animation);
+      }
+    }
+    if (animation === "aim") {
+      setTimeout(function() {
+        currentMonster.currentAnimation = "run";
+        animateMonster(monsterIndex, "run");
+      }, 600);
+    }
+  },
+  
   // Helper function to store the asynchronous gamestate data
   updateGamestate = function (data) {
     ktah.gamestate = data;
@@ -523,7 +551,15 @@ $(function() {
           setTimeout(function() {synchronizeMonsters(sceneNode);}, 200);
         } else {
           for (var i = 0; i < data.length; i++) {
+            var currentMonster = ktah.gamestate.environment.monsters[i];
             monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id},{gameId: gameId, sceneNode: sceneNode});
+            
+            // Set zombie animation
+            if (currentMonster.posX !== ktah.monsterArray[i].sceneNode.Pos.X || currentMonster.posZ !== ktah.monsterArray[i].sceneNode.Pos.Z) {
+              animateCharacter(i, "run");
+            } else {
+              animateCharacter(i, "stand");
+            }
           }
           console.warn(monsterArray);
           ktah.monsterArray = monsterArray;
@@ -566,7 +602,7 @@ $(function() {
           $("#" + currentPlayer.name + "-health-bar")
             .css({width: healthBarWidth});
           
-          // Set zombie animation
+          // Set player animation
           if (currentPlayer.posX !== ktah.characterArray[i].sceneNode.Pos.X || currentPlayer.posZ !== ktah.characterArray[i].sceneNode.Pos.Z) {
             animateCharacter(i, "run");
           } else {
