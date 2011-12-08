@@ -843,7 +843,8 @@ $(function() {
           
           // Brian Handy here, doing the same using my system...
           ktah.monsterArray[i].updateCatchupRate(catchupRate);
-          ktah.monsterArray[i].setGoal(ktah.characterArray[0].sceneNode.Pos);
+          ktah.monsterArray[i].huntClosest(ktah.characterArray);
+          
           ktah.monsterArray[i].moveToGoal();
           // Update gamestate to reflect zombie movement
           monsters[i].posX = ktah.monsterArray[i].sceneNode.Pos.X;

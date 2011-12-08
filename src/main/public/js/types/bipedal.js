@@ -90,6 +90,28 @@ $(function () {
         return null;
       }
     },
+
+    // Hunt down the closest node in array, and return its Pos    
+    findClosest: function (array) {
+      var closest = array[0].sceneNode.Pos,
+      closestDist = this.sceneNode.Pos.getDistanceTo(array[0].sceneNode.Pos);
+      for (var i = 0; i < array.length; i++) {
+        if (array[i] && array[i].sceneNode) {
+          var newDist = this.sceneNode.Pos.getDistanceTo(array[i].sceneNode.Pos);
+          if (newDist < closestDist) {
+            closest = array[i].sceneNode.Pos;
+            closestDist = newDist;
+          }
+        }
+      }
+      return closest;
+    },
+    
+    // Find closest and set as target
+    huntClosest: function (array) {
+      this.setGoal(this.findClosest(array));
+      this.moveToGoal();
+    },
     
     move: function (newAngle) {
       // Then see if there's a new angle being given for directional movement (not goal movement)
