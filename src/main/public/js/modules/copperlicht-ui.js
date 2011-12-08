@@ -568,7 +568,8 @@ $(function() {
         // Update player positions based on the gamestate
         for (var i = 0; i < playerCount; i++) {
           var currentPlayer = ktah.gamestate.players[i],
-              healthBarWidth = (currentPlayer.health / 100) * 148 + "px";
+              healthBarWidth = (currentPlayer.health / 100) * 148 + "px",
+              currentAbilityQueue = ktah.gamestate.environment.abilityQueue[currentPlayer.name];
               
           // Update health bars
           $("#" + currentPlayer.name + "-health-num-box").children(":nth-child(2)")
@@ -591,12 +592,23 @@ $(function() {
           
           if (i === playerNumber) {
             // Render abilities if the player's individual queue has any
-            console.warn(currentPlayer.abilityQueue.length);
-            if (currentPlayer.abilityQueue.length) {
-              abilityList = currentPlayer.abilityQueue;
+            
+            if (currentAbilityQueue.length) {
+              abilityList = currentAbilityQueue;
               ktah.abilities.renderAbilities(abilityList);
-              currentPlayer.abilitiesRendered = true;
-              currentPlayer.abilityQueue = [];
+              // Remove rendered abilities from the abilityQueue
+              $.ajax({
+                type: 'POST',
+                url: '/abilityDone/' + gameId + "/" + userName,
+                data: JSON.stringify({count: abilityList.length}),
+                error: function (jqXHR, textStatus, errorThrown) {
+                  console.log(jqXHR);
+                  console.log(textStatus);
+                  console.log(errorThrown);
+                },
+                dataType: 'json',
+                contentType: 'application/json'
+              });
             }
             
             currentPlayer.posX = ktah.characterArray[i].sceneNode.Pos.X;
@@ -638,6 +650,8 @@ $(function() {
             
             // Meaning they're the host...
             if (playerNumber === 0) {
+              // *** testing to see if the monsters are being correctly updated.
+              // console.warn("posx: " + ktah.gamestate.monsters[0].posX + "posz: " + ktah.gamestate.monsters[0].posX);
         	    $.ajax({
                 type: 'POST',
                 url: '/monsters/' + gameId,
@@ -652,7 +666,7 @@ $(function() {
               });
             // Otherwise you're a client
             } else {
-              if (ktah.monsters) {
+              if (ktah.gamestate.monsters) {
                 for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
                   ktah.monsterArray[j].sceneNode.Pos.X = ktah.gamestate.monsters[j].posX;
                   ktah.monsterArray[j].sceneNode.Pos.Z = ktah.gamestate.monsters[j].posZ;
@@ -811,6 +825,7 @@ $(function() {
           monsters[i].posX = ktah.monsterArray[i].sceneNode.Pos.X;
           monsters[i].posZ = ktah.monsterArray[i].sceneNode.Pos.Z;
           monsters[i].posY = ktah.monsterArray[i].sceneNode.Pos.Y;
+          ktah.gamestate.monsters = monsters;
           
           // Collision Detection between AI / zombie and AI / zombie
           for (var j = i+1; j < ktah.monsterArray.length; j++) {
