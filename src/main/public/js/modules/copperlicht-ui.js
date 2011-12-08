@@ -947,7 +947,7 @@ $(function() {
       currentBeing.updateCatchupRate(catchupRate);
       currentBeing.updateStandState(standKey);
       if (aKey || wKey || dKey || sKey) {
-        currentBeing.moveOnAngle(angle);
+        currentBeing.moveOnAngle(angle + 90);
       } else if (currentBeing.getGoal()) {
         currentBeing.moveToGoal();
         angle = currentBeing.getAngle();

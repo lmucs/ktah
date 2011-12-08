@@ -1,20 +1,21 @@
 /*
  * app.js
  *
- * Configures, initializes, then runs the application.
+ * It all starts here. This is the script to run from node.  It configures, initializes, 
+ * and starts the server.
  */
 
 var express = require('express'),
 
-    app = module.exports = express.createServer(),
+  app = module.exports = express.createServer(),
 
-    mysql = require('mysql'),
+  mysql = require('mysql'),
 
-    client = mysql.createClient({
-      ACCOUNTS_TABLE : "ktah_accounts",
-      host : "mysql.cs.lmu.edu",
-      database : "aforney2"
-    });
+  client = mysql.createClient({
+    ACCOUNTS_TABLE : "ktah_accounts",
+    host : "mysql.cs.lmu.edu",
+    database : "aforney2"
+  });
 
 /*
  *
@@ -42,7 +43,7 @@ app.configure(function () {
     secret: 'zombie devops feynman'
   }));
   app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+  app.use(express["static"](__dirname + '/public'));
 });
 
 app.configure('development', function () {
