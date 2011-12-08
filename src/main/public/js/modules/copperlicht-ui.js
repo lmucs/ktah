@@ -286,12 +286,23 @@ $(function() {
       }
       
       // Make host add collision detection for zombies:
-      if (playerNumber === 0) /*(true)*/ {
+      monsterCollisionAnimator = new CL3D.AnimatorCollisionResponse(
+        new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
+        new CL3D.Vect3d(0,0,0), // no gravity!
+        new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
+        scene.getCollisionGeometry(),
+        playerSlidingSpeed
+      );
+      
+      if /*(playerNumber === 0)*/ (true) {
         for (var i = 0; i < ktah.monsterArray.length; i++) {
-          //ktah.monsterArray[i].sceneNode.addAnimator(playerCollisionAnimator);
+          ktah.monsterArray[i].sceneNode.addAnimator(monsterCollisionAnimator);
           //commented until we find a way to make this work
         }
       }
+      // Initialize collision detection for player:
+      //playerSceneNode.addAnimator(playerCollisionAnimator);
+      
       
       // Begin the server pinging and end-condition checking
       setInterval(updateTeam, 50);
@@ -453,19 +464,21 @@ $(function() {
   },
   
   animateMonster = function (monsterIndex, animation) {
-    var currentMonster = ktah.monsterArray[monsterIndex].sceneNode;
-    if (currentMonster.currentAnimation !== animation) {
-      currentMonster.setLoopMode(animation !== "aim");
-      if (currentMonster.currentAnimation !== "aim") {
-        currentMonster.currentAnimation = animation;
-        currentMonster.setAnimation(animation);
+    if (monsterIndex < ktah.monsterArray.length) {
+      var currentMonster = ktah.monsterArray[monsterIndex].sceneNode;
+      if (currentMonster.currentAnimation !== animation) {
+        currentMonster.setLoopMode(animation !== "look");
+        if (currentMonster.currentAnimation !== "look") {
+          currentMonster.currentAnimation = animation;
+          currentMonster.setAnimation(animation);
+        }
       }
-    }
-    if (animation === "aim") {
-      setTimeout(function () {
-        currentMonster.currentAnimation = "run";
-        animateMonster(currentMonster, "run");
-      }, 600);
+      if (animation === "look") {
+        setTimeout(function () {
+          currentMonster.currentAnimation = "walk";
+          animateMonster(currentMonster, "walk");
+        }, 600);
+      }
     }
   },
   
@@ -533,8 +546,6 @@ $(function() {
           setTimeout(function() {synchronizeMonsters(sceneNode);}, 200);
         } else {
           for (var i = 0; i < data.length; i++) {
-            // Working on this... DELETEME if no more progress made here
-            // if (monsterArray[i].sceneNode.Pos != new CL3D.Vect3d(data[i].posX, data[i].posY, data[i].posZ))
             monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id},{gameId: gameId, sceneNode: sceneNode});
           }
           ktah.monsterArray = monsterArray;
@@ -568,7 +579,8 @@ $(function() {
         // Update player positions based on the gamestate
         for (var i = 0; i < playerCount; i++) {
           var currentPlayer = ktah.gamestate.players[i],
-              healthBarWidth = (currentPlayer.health / 100) * 148 + "px";
+              healthBarWidth = (currentPlayer.health / 100) * 148 + "px",
+              currentAbilityQueue = ktah.gamestate.environment.abilityQueue[currentPlayer.name];
               
           // Update health bars
           $("#" + currentPlayer.name + "-health-num-box").children(":nth-child(2)")
@@ -577,7 +589,7 @@ $(function() {
           $("#" + currentPlayer.name + "-health-bar")
             .css({width: healthBarWidth});
           
-          // Set character animation
+          // Set player animation
           if (currentPlayer.posX !== ktah.characterArray[i].sceneNode.Pos.X || currentPlayer.posZ !== ktah.characterArray[i].sceneNode.Pos.Z) {
             animateCharacter(i, "run");
           } else {
@@ -591,12 +603,22 @@ $(function() {
           
           if (i === playerNumber) {
             // Render abilities if the player's individual queue has any
-            console.warn(currentPlayer.abilityQueue.length);
-            if (currentPlayer.abilityQueue.length) {
-              abilityList = currentPlayer.abilityQueue;
+            if (currentAbilityQueue.length) {
+              abilityList = currentAbilityQueue;
               ktah.abilities.renderAbilities(abilityList);
-              currentPlayer.abilitiesRendered = true;
-              currentPlayer.abilityQueue = [];
+              // Remove rendered abilities from the abilityQueue
+              $.ajax({
+                type: 'POST',
+                url: '/abilityDone/' + gameId + "/" + userName,
+                data: JSON.stringify({count: abilityList.length}),
+                error: function (jqXHR, textStatus, errorThrown) {
+                  console.log(jqXHR);
+                  console.log(textStatus);
+                  console.log(errorThrown);
+                },
+                dataType: 'json',
+                contentType: 'application/json'
+              });
             }
             
             currentPlayer.posX = ktah.characterArray[i].sceneNode.Pos.X;
@@ -636,6 +658,17 @@ $(function() {
               contentType: 'application/json'
             });
             
+            // Make sure the "to" and "from" exist, and the "to" has enough room for all "from"s
+            if (ktah.gamestate.monsters && ktah.monsterArray && ktah.monsterArray.length >= ktah.gamestate.monsters.length) {
+              for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
+                // Zombies animated here if they move, regardless if host/client
+                if ((ktah.monsterArray[j].sceneNode.Pos.X != ktah.gamestate.monsters[j].posX) || (ktah.monsterArray[j].sceneNode.Pos.Z != ktah.gamestate.monsters[j].posZ)) {
+                  animateMonster(j, "walk");
+                } else {
+                  animateMonster(j, "look");
+                }
+              }
+            }
             // Meaning they're the host...
             if (playerNumber === 0) {
         	    $.ajax({
@@ -652,8 +685,11 @@ $(function() {
               });
             // Otherwise you're a client
             } else {
-              if (ktah.monsters) {
+              // Make sure the "to" and "from" exist, and the "to" has enough room for all "from"s
+              if (ktah.gamestate.monsters && ktah.monsterArray && ktah.monsterArray.length >= ktah.gamestate.monsters.length) {
+              console.log("At least I'm trying to position the zombies!");
                 for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
+                  console.log("Doin it once...");
                   ktah.monsterArray[j].sceneNode.Pos.X = ktah.gamestate.monsters[j].posX;
                   ktah.monsterArray[j].sceneNode.Pos.Z = ktah.gamestate.monsters[j].posZ;
                   ktah.monsterArray[j].sceneNode.Rot.Y = ktah.gamestate.monsters[j].rotY;
@@ -810,7 +846,7 @@ $(function() {
           // Update gamestate to reflect zombie movement
           monsters[i].posX = ktah.monsterArray[i].sceneNode.Pos.X;
           monsters[i].posZ = ktah.monsterArray[i].sceneNode.Pos.Z;
-          monsters[i].posY = ktah.monsterArray[i].sceneNode.Pos.Y;
+          monsters[i].rotY = ktah.monsterArray[i].sceneNode.Rot.Y;
           
           // Collision Detection between AI / zombie and AI / zombie
           for (var j = i+1; j < ktah.monsterArray.length; j++) {
