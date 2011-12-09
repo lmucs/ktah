@@ -195,6 +195,13 @@ util = {
 function scrollDown () {
   $('#log').parent().scrollTop( $('#log').height() );
   $("#entry").focus();
+  //TODO: decide whether we want to focus whenever we receive a message
+  
+  //Fix for in-game chat:
+  if ($('#gameChat'))
+  {
+    $('body').scrollTop('0px');
+  }
 }
 
 //inserts an event into the stream for display
@@ -333,7 +340,6 @@ function showConnect () {
   $("#connect").show();
   $("#loading").hide();
   $("#toolbar").hide();
-  $("#nickInput").focus();
 }
 
 //transition the page to the loading screen
