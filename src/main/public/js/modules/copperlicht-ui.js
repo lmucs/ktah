@@ -242,8 +242,6 @@ $(function() {
         );
         playerSceneNode.addAnimator(playerCollisionAnimator);
         
-        
-        
         if (enableLighting) {
           // And add a light to the player
           lightNode = new CL3D.LightSceneNode(0);
@@ -281,28 +279,25 @@ $(function() {
       
       if (playerNumber === 0) {
         ktah.monsterArray = generateMonsters(protoGhoul, 20);
+        //ktah.monsterArray = generateMonsters(protoGhoul, 1);
       } else {
         synchronizeMonsters(protoGhoul);
       }
       
       // Make host add collision detection for zombies:
-      monsterCollisionAnimator = new CL3D.AnimatorCollisionResponse(
-        new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
-        new CL3D.Vect3d(0,0,0), // no gravity!
-        new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
-        scene.getCollisionGeometry(),
-        playerSlidingSpeed
-      );
-      
-      if /*(playerNumber === 0)*/ (true) {
+      if (playerNumber === 0) {
         for (var i = 0; i < ktah.monsterArray.length; i++) {
+          var monsterCollisionAnimator = new CL3D.AnimatorCollisionResponse(
+            new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
+            new CL3D.Vect3d(0,0,0), // no gravity!
+            new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
+            scene.getCollisionGeometry(),
+            playerSlidingSpeed
+          );
           ktah.monsterArray[i].sceneNode.addAnimator(monsterCollisionAnimator);
-          //commented until we find a way to make this work
         }
+        
       }
-      // Initialize collision detection for player:
-      //playerSceneNode.addAnimator(playerCollisionAnimator);
-      
       
       // Begin the server pinging and end-condition checking
       setInterval(updateTeam, 50);
@@ -834,10 +829,9 @@ $(function() {
   },
   
   mainLoop = function() {
-	
+	    
   	// Only check angle and movement if player exists and player is not dead
     if (playerSceneNode && (ktah.gamestate.players[playerNumber].health >= 1)) {
-
       var currentBeing = ktah.characterArray[playerNumber], //ktah.gamestate.players[playerNumber].character;
         monsters = ktah.gamestate.monsters;
       
@@ -845,9 +839,6 @@ $(function() {
       // This is the "host loop"
       if (playerNumber === 0 && monsters) {
         for (var i = 0; i < ktah.monsterArray.length; i++) {
-          //muting this for now until it works:
-          //monsterArray[i].updateTarget(ktah.gamestate.players, monsterArray);
-          //monsterArray[i].stepToTarget();
           
           // Brian Handy here, doing the same using my system...
           ktah.monsterArray[i].updateCatchupRate(catchupRate);
