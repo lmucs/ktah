@@ -23,10 +23,7 @@ $(function () {
       if (attributes.id !== null) {
         this.id = attributes.id;
       } else {
-        $.ajax({
-          type: 'POST',
-          url: '/monster/' + options.gameId,
-          data: JSON.stringify({
+        var monster = {
             type: this.type,
             id: null,
             health: this.health,
@@ -34,7 +31,12 @@ $(function () {
             posZ: this.sceneNode.Pos.Z,
             rotY: this.sceneNode.Rot.Y,
             lastZombie: attributes.lastZombie
-          }),
+        };
+        ktah.gamestate.monsters.push(monster);
+        $.ajax({
+          type: 'POST',
+          url: '/monster/' + options.gameId,
+          data: JSON.stringify(monster),
           error: function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR);
             console.log(textStatus);

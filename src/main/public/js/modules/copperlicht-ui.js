@@ -484,7 +484,12 @@ $(function() {
   
   // Helper function to store the asynchronous gamestate data
   updateGamestate = function (data) {
-    ktah.gamestate = data;
+    if (playerNumber === 0) {
+      ktah.gamestate.players = data.players;
+      ktah.gamestate.environment = data.environment;
+    } else {
+      ktah.gamestate = data;
+    }
   },
   
   // Helper function to rid the game of any miscreants
@@ -509,6 +514,7 @@ $(function() {
           bootMiscreants("You tried to access this game illegally. This incident has been reported.");
         }
         updateGamestate(data);
+        console.log("initialize here! " + ktah.gamestate.monsters);
       },
       error: function (jqXHR, textStatus, errorThrown) {
         console.log(jqXHR);
@@ -522,7 +528,9 @@ $(function() {
   
 //Generate a certain amount of zombies.
   generateMonsters = function(sceneNode, amount) {
-    var monsterArray = [];
+    var monsterArray = [];    
+    ktah.gamestate.monsters = [];
+    console.log("generate here! " + ktah.gamestate.monsters);
     for (var i = 0; i < amount; i++) {
       monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500, lastZombie: (i === amount - 1)}
         ,{gameId: gameId, sceneNode: sceneNode});
