@@ -35,5 +35,6 @@
   a(href="/lobby") Back to Lobby
 input(type='hidden', id='userName', data="#{userName}")
 input(type='hidden', id='gameId', data="#{gameId}")
-script(type='text/javascript', src='../js/modules/chat/client.js')
-script(type='text/javascript', src='../js/display/game-room-display.js')
+div(id="alert-popup", class="dialog", title="K'Tah")
+script(src='../js/modules/chat/client.js')
+script(src='../js/display/game-room-display.js')

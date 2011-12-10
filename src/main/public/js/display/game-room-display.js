@@ -16,6 +16,19 @@ $(function () {
         kickOptions = "",
         inGame = false,
         
+        alert = function (message, onclose) {
+          $("#alert-popup")
+            .text(message)
+            .dialog("close")
+            .dialog({
+              width: 400,
+              resizable: false,
+              modal: true,
+              close: onclose || function () {},
+              buttons: { "Ok": function() { $(this).dialog("close"); } }
+            });
+        },
+        
         // function to grab the game state
         getGamestate = function () {
           $.ajax({
@@ -28,8 +41,10 @@ $(function () {
             },
             success: function (data) {
               if (!data) {
-                alert("Game-room closed. Redirecting to Lobby.");
-                window.location = '../../lobby';
+                alert("Game-room closed. Redirecting to Lobby.", function () {
+                  window.location = '../../lobby';
+                });
+                return;
               }
               newNumber = data.players.length;
               if (data.environment.readyState) {
@@ -83,8 +98,10 @@ $(function () {
                 }
                 
                 if (!inGame) {
-                  alert("You cannot join games by URL. Use the lobby functions!");
-                  window.location = '../../lobby';
+                  alert("You cannot join games by URL. Use the lobby functions!", function () {
+                    window.location = '../../lobby';
+                  });
+                  return;
                 }
                 
                 oldNumber = newNumber;
