@@ -94,11 +94,11 @@ $(function () {
     // Hunt down the closest node in array, and return its Pos    
     findClosest: function (array) {
       var closest = array[0].sceneNode.Pos,
-      closestDist = this.sceneNode.Pos.getDistanceTo(array[0].sceneNode.Pos);
+          closestDist = this.sceneNode.Pos.getDistanceTo(array[0].sceneNode.Pos);
       for (var i = 0; i < array.length; i++) {
         if (array[i] && array[i].sceneNode) {
           var newDist = this.sceneNode.Pos.getDistanceTo(array[i].sceneNode.Pos);
-          if (newDist < closestDist) {
+          if (newDist < closestDist && array[i].isAlive) {
             closest = array[i].sceneNode.Pos;
             closestDist = newDist;
           }

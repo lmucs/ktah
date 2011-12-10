@@ -19,14 +19,16 @@ $(function () {
         //test:
         console.log("players: " + JSON.stringify(players));
         console.log("monsterArray: " + JSON.stringify(monsterArray));
-      var closestDistance = null;
-      var target;
-      var targetPoint;
-      var closestPlayer;
-      var closestMonster;
+      var closestDistance = null,
+          target,
+          targetPoint,
+          closestPlayer,
+          closestMonster,
+          closestCondition;
           //players = ktah.gamestate.players;
       for(var i = 0; i < players.length; i++) {
-        if (closestDistance === null || closestDistance > this.sceneNode.Pos.getDistanceTo(new CL3D.Vect3d(players[i].posX, 1.3, players[i].posZ))) {
+        closestCondition = closestDistance === null || closestDistance > this.sceneNode.Pos.getDistanceTo(new CL3D.Vect3d(players[i].posX, 1.3, players[i].posZ));
+        if (closestCondition) {
           closestDistance = this.sceneNode.Pos.getDistanceTo(new CL3D.Vect3d(players[i].posX, 1.3, players[i].posZ));
           //this.target = i;
           target = i;
