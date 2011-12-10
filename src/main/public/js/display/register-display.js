@@ -1,14 +1,14 @@
 /**
  * register-display.js
  * 
- * Script for dealing with display elements in the
- * register screen.
+ * Manages display elements on the Register view.
  */
 
 $(function () {
-    // Set the focus on the register input
-    $("#user").focus();
+	
+  // Set the focus on the register input
+  $('#user').focus();
     
-    // Buttonize the register... button
-    $("#registerButton").button();
+  // Buttonize the register... button
+  $('#registerButton').button();
 });

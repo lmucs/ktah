@@ -1,8 +1,7 @@
 /**
  * score-screen-display.js
  * 
- * Script for dealing with display elements in the
- * score screen.
+ * Manages display elements on the Score Screen view.
  */
 
 $(function () {

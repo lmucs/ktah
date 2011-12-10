@@ -1,12 +1,12 @@
 /**
  * main-display.js
  * 
- * Script for dealing with display elements on the
- * main menu.
+ * Manages display elements on the main view.
  */
 
 $(function () {
-  // Set up jquery-ui logout plus its click event
+
+  // Configure the logout button
   $("#logout-button")
     .button()
     .click(function () {
@@ -14,7 +14,7 @@ $(function () {
         type: 'POST',
         url: '/main',
         success: function () {
-          window.location = "../";
+          window.location = '../';
         },
         error: function (jqXHR, textStatus, errorThrown) {
           console.log(jqXHR);
@@ -24,23 +24,22 @@ $(function () {
       });
   });
   
-  // Set up the lobby, account, and about buttons using jquery-ui
+  // Configure the lobby, account, and about buttons
   $("#lobby-button")
     .button()
     .click(function () {
-      window.location = "../lobby";
+      window.location = '../lobby';
     });
     
   $("#account-button")
     .button()
     .click(function () {
-      window.location = "../account";
+      window.location = '../account';
     });
     
   $("#about-button")
     .button()
     .click(function () {
-      window.location = "../about";
+      window.location = '../about';
     });
-  
 });

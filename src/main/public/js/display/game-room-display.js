@@ -1,8 +1,7 @@
 /**
  * game-room-display.js
  * 
- * Script for dealing with display elements in the
- * game room screen.
+ * Manages display elements on the Game Room view.
  */
 
 $(function () {

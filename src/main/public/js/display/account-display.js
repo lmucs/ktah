@@ -1,12 +1,12 @@
 /**
  * account-display.js
  * 
- * Script for dealing with display elements on the
- * account menu.
+ * Manages display elements on the Account view.
  */
 
 $(function () {
-  // Set up jquery-ui logout plus its click event
+	
+  // Configure the logout button
   $("#logout-button")
     .button()
     .click(function () {
@@ -14,7 +14,7 @@ $(function () {
         type: 'POST',
         url: '/main',
         success: function () {
-          window.location = "../";
+          window.location = '../';
         },
         error: function (jqXHR, textStatus, errorThrown) {
           console.log(jqXHR);
@@ -24,17 +24,16 @@ $(function () {
       });
   });
   
-  // Set up the lobby, account, and about buttons using jquery-ui
+  // Configure the main menu button
   $("#main-menu-button")
     .button()
     .click(function () {
-      window.location = "../main";
+      window.location = '../main';
     });
     
-  // Set up the account tabs
+  // Configure the tabs
   $("#tabs")
     .tabs({ 
       fx: { opacity: 'toggle' } 
     });
-    
 });
