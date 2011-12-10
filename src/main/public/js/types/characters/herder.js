@@ -16,7 +16,8 @@ $(function () {
       // do what we need to do whenever we create an Architect
       this.resources = {
         zombieFlesh: 0,
-        atomicWaste: 0
+        atomicWaste: 0,
+        expertise: 0
       }
       
       this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());

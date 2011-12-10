@@ -76,7 +76,8 @@ $(function() {
       // called once at beginning and every time a player leaves / joins
       updateUserInterface = function () {
         var currentPlayer = "",
-            nametagAccent = "";
+            nametagAccent = "",
+            classIcon = "";
         
         // Setup round timer and points
         $("#health-display")
@@ -89,8 +90,7 @@ $(function() {
         
         for (var i = 0; i < playerCount; i++) {
           currentPlayer = ktah.gamestate.players[i];
-          nametagAccent = "",
-          classIcon = "";
+          nametagAccent = "";
           
           // Accent the nametag of the local player
           if (i === playerNumber) {

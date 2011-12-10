@@ -1,5 +1,7 @@
 /* TODO: Do we want to use a CSS reset to deal with stupid 
    cross browser differences? */
+  
+/* GENERAL */
 #main {
   width: 800px;
   margin: 150px auto 0 auto;
@@ -24,16 +26,6 @@
   margin-left: 10px;
 }
 
-#welcome {
-  font-size: 20px;
-  text-align: center;
-}
-
-#news {
-  margin-top: 30px;
-  text-align: center;
-}
-
 #chat {
   margin: 0px 10px 5px 10px;
   padding: 5px;
@@ -50,235 +42,8 @@
   margin-right: 10px;
 }
 
-#toolbar {
-  margin: 0px 10px 5px 10px;
-}
-
-#lobby-players {
-  border: 2px solid green;
-  width: 220px;
-  height: 200px;
-  padding: 5px;
-  float: right;
-}
-
-#gameChat {
-    width: 980px;
-    margin: 0 auto;
-}
-
 .dialog {
   display: none;
-}
-
-.lobby-game {
-    margin: 5px;
-    padding: 5px;
-    background-color: #FFEECB;
-    height: 20px;
-}
-
-.lobby-playerCount {
-    float: right;
-}
-
-.lobby-classPreview {
-    float: right;
-    margin-right: 50px;
-}
-
-.lobby-class-thumbnail {
-    height: 25px;
-    width: 25px;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.lobby-gameName {
-    float: left;
-    display: inline;
-    margin-right: 150px;
-}
-
-.lobby-noGames {
-    color: red;
-    font-size: large;
-    text-align: center;
-    margin-top: 100px;
-}
-
-.lobby-game-mouseOver {
-    box-shadow: 5px 5px 2px #888;
-}
-
-/* Used as a jquery selector */
-.game {
-    
-}
-
-#game-list {
-  border: 2px solid red;
-  padding: 5px;
-  height: 300px;
-  margin-bottom: 10px;
-  cursor: default;
-}
-
-.loadingScreen {
-  font-size: 30px;
-  background-color: white;
-  position: fixed;
-  z-index: 5000;
-  padding-top: 50px;
-  text-align: center;
-  margin: 0;
-  height: 100%;
-  width: 100%;
-}
-
-#loading-screen-error {
-  color: red;
-  text-align: center;
-  display: none;
-}
-  
-#ktahCanvas {
-  border: 1px solid black;
-}
-  
-#canvasWrapper {
-  text-align: center;
-  margin: 0 auto;
-  cursor: crosshair;
-  position: relative;
-}
-
-.ingame-noselect {
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -o-user-select: none;
-}
-
-.top-display {
-    width: 940px;
-    margin: 0 auto;
-}
-
-#game-display {
-    height: 20px;
-    padding-left: 20px;
-    margin-bottom: 10px;
-    color: gray;
-    font-size: 20px;
-}
-
-#character-items {
-    width: 960px;
-    height: 110px;
-    margin: 0 auto;
-}
-
-.character-resource {
-    display: inline-block;
-    margin-top: 5px;
-    margin-left: 10px;
-    height: 30px;
-    width: 180px;
-}
-
-.character-resource-icon {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    background-color: red;
-}
-
-.character-resource-bar {
-    display: inline-block;
-    margin-left: 5px;
-    width: 100px;
-    background-color: black;
-}
-
-.character-resource-text {
-    display: inline-block;
-    margin-left: 5px;
-}
-
-.character-ability {
-    text-align: center;
-    border: 1px solid black;
-    display: inline-block;
-    margin-top: 10px;
-    margin-left: 110px;
-    padding: 5px;
-    width: 50px;
-    height: 50px;
-    overflow: hidden;
-}
-
-#notifications {
-    position: absolute;
-    width: 200px;
-    background-color: red;
-    color: white;
-    text-align: center;
-    border: 1px solid black;
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    display: none;
-    left: 50%;
-    margin-left: -100px;
-    top: 425px;
-    z-index: 1000;
-}
-
-#health-display {
-    height: 40px;
-    padding: 10px;
-}
-
-.player-stats {
-    display: inline-block;
-    width: 150px;
-    margin-left: 10px;
-    margin-right: 10px;
-}
-
-.player-health-num-box {
-    border: 1px solid black;
-}
-
-.player-healthNum {
-    margin-left: 10px;
-}
-
-.player-health-bar {
-    background-color: green;
-    position: absolute;
-    z-index: -1;
-    display: inline;
-}
-
-.player-class {
-    height: 35px;
-    width: 35px;
-    float: right;
-    margin-top: 15px;
-    margin-right: -10px;
-}
-
-#round-info {
-    border: 2px ridge black;
-    float: right;
-    margin-right: 5px;
-    margin-top: 5px;
-    padding: 5px;
-}
-
-.round-info-space {
-    margin-right: 15px;
 }
 
 #testbutton {
@@ -288,6 +53,49 @@
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
+
+#button-upper-right {
+  float: right;
+  margin: 15px 15px 0px 0px;
+}
+
+.framePadding {
+  padding: 10px;
+}
+
+#navbar {
+  text-align: center;
+  background-color: #D8D8D8;
+  border: 1px double black;
+}
+
+.navItem {
+  padding: 5px 10px 5px 10px;
+  display: inline-block;
+}
+
+.topMargin {
+  margin-top: 10px;
+}
+
+.topLeftMargin {
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+#links {
+  width: 760px;
+  padding: 20px;
+  margin: 150px auto 0 auto;
+  border: 1px solid black;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  text-align: center;
+  margin: 0px auto 0 auto;
+  background-color: #D8D8D8;
+}
+
+/* LOGIN / REGISTER */
 
 .loginFrame {
   width: 400px;
@@ -330,113 +138,346 @@
   background-color: red;
 }
 
-#button-upper-right {
-    float: right;
-    margin: 15px 15px 0px 0px;
+/* MAIN */
+
+#welcome {
+  font-size: 20px;
+  text-align: center;
 }
 
-.framePadding {
-    padding: 10px;
+#news {
+  margin-top: 30px;
+  text-align: center;
 }
 
-#navbar {
-    text-align: center;
-    background-color: #D8D8D8;
-    border: 1px double black;
+#toolbar {
+  margin: 0px 10px 5px 10px;
 }
 
-.navItem {
-    padding: 5px 10px 5px 10px;
-    display: inline-block;
+.news-story {
+  background: -moz-linear-gradient(top, rgba(196,196,196,1) 0%, rgba(196,196,196,0.43) 57%, rgba(229,229,229,0) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(196,196,196,1)), color-stop(57%,rgba(196,196,196,0.43)), color-stop(100%,rgba(229,229,229,0))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(196,196,196,1) 0%,rgba(196,196,196,0.43) 57%,rgba(229,229,229,0) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(196,196,196,1) 0%,rgba(196,196,196,0.43) 57%,rgba(229,229,229,0) 100%); /* Opera 11.10+ */
+  padding: 10px;
+  height: 250px;
+  text-align: left;
 }
+
+.news-story-content {
+  margin-left: 260px;
+}
+
+.news-story-title {
+  font-size: 30px;
+}
+
+.news-story-picture {
+  width: 250px;
+  height: 250px;
+  display: inline-block;
+  float: left;
+}
+
+.news-story.body {
+  
+}
+
+/* LOBBY */
+
+#lobby-players {
+  border: 2px solid green;
+  width: 220px;
+  height: 200px;
+  padding: 5px;
+  float: right;
+}
+
+.lobby-game {
+  margin: 5px;
+  padding: 5px;
+  background-color: #FFEECB;
+  height: 20px;
+}
+
+.lobby-playerCount {
+  float: right;
+}
+
+.lobby-classPreview {
+  float: right;
+  margin-right: 50px;
+}
+
+.lobby-class-thumbnail {
+  height: 25px;
+  width: 25px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.lobby-gameName {
+  float: left;
+  display: inline;
+  margin-right: 150px;
+}
+
+.lobby-noGames {
+  color: red;
+  font-size: large;
+  text-align: center;
+  margin-top: 100px;
+}
+
+.lobby-game-mouseOver {
+  box-shadow: 5px 5px 2px #888;
+}
+
+#game-list {
+  border: 2px solid red;
+  padding: 5px;
+  height: 300px;
+  margin-bottom: 10px;
+  cursor: default;
+}
+
+/* GAME ROOM */
 
 #room-options {
-    margin: 10px 10px 0px 10px;
-    background-color: #D8D8D8;
-}
-
-.class-selection {
-    float: right;
-}
-
-.class-icon {
-    height: 50px;
-    width: 50px;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.class-option-holder {
-    text-align: center;
-}
-
-#class-options {
-    text-align: center;
-    margin: 5px 10% 0 10%;
-    background-color: #D8D8D8;
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-}
-
-.class-thumbnail {
-    display: inline-block;
-    width: 120px;
-    cursor: default;
-}
-
-.class-selected {
-    background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(246,255,89,0.78) 48%, rgba(246,255,89,1) 100%); /* FF3.6+ */
-    background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(246,255,89,0.78) 48%,rgba(246,255,89,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(246,255,89,0.78) 48%,rgba(246,255,89,1) 100%); /* Opera 11.10+ */
-}
-
-.class-text {
-    float: right;
-    margin-right: 10px;
-    margin-top: 15px;
-    color: yellow;
-}
-
-.room-player-list {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    font-size: 20px;
-    background-color: #0C0874;
-    color: white;
-    padding: 5px;
-    height: 50px;
-}
-
-.room-player-ready {
-    background-color: green;
-}
-
-.topMargin {
-    margin-top: 10px;
-}
-
-.topLeftMargin {
-    margin-left: 10px;
-    margin-top: 10px;
-}
-
-#links {
-  width: 760px;
-  padding: 20px;
-  margin: 150px auto 0 auto;
-  border: 1px solid black;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  text-align: center;
-  margin: 0px auto 0 auto;
+  margin: 10px 10px 0px 10px;
   background-color: #D8D8D8;
 }
 
+.class-selection {
+  float: right;
+}
+
+.class-icon {
+  height: 50px;
+  width: 50px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.class-option-holder {
+  text-align: center;
+}
+
+#class-options {
+  text-align: center;
+  margin: 5px 10% 0 10%;
+  background-color: #D8D8D8;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+}
+
+.class-thumbnail {
+  display: inline-block;
+  width: 120px;
+  cursor: default;
+}
+
+.class-selected {
+  background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(246,255,89,0.78) 48%, rgba(246,255,89,1) 100%); /* FF3.6+ */
+  background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(246,255,89,0.78) 48%,rgba(246,255,89,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(246,255,89,0.78) 48%,rgba(246,255,89,1) 100%); /* Opera 11.10+ */
+}
+
+.class-text {
+  float: right;
+  margin-right: 10px;
+  margin-top: 15px;
+  color: yellow;
+}
+
+.room-player-list {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 20px;
+  background-color: #0C0874;
+  color: white;
+  padding: 5px;
+  height: 50px;
+}
+
+.room-player-ready {
+  background-color: green;
+}
+
+/* GAME */
+
+#gameChat {
+  width: 980px;
+  margin: 0 auto;
+}
+
+/* Used as a jquery selector */
+.game {
+    
+}
+
+.loadingScreen {
+  font-size: 30px;
+  background-color: white;
+  position: fixed;
+  z-index: 5000;
+  padding-top: 50px;
+  text-align: center;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#loading-screen-error {
+  color: red;
+  text-align: center;
+  display: none;
+}
+  
+#ktahCanvas {
+  border: 1px solid black;
+}
+  
+#canvasWrapper {
+  text-align: center;
+  margin: 0 auto;
+  cursor: crosshair;
+  position: relative;
+}
+
+.ingame-noselect {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+}
+
+.top-display {
+  width: 940px;
+  margin: 0 auto;
+}
+
+#game-display {
+  height: 20px;
+  padding-left: 20px;
+  margin-bottom: 10px;
+  color: gray;
+  font-size: 20px;
+}
+
+#character-items {
+  width: 960px;
+  height: 110px;
+  margin: 0 auto;
+}
+
+.character-resource {
+  display: inline-block;
+  margin-top: 5px;
+  margin-left: 10px;
+  height: 30px;
+  width: 180px;
+}
+
+.character-resource-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+}
+
+.character-resource-bar {
+  display: inline-block;
+  margin-left: 5px;
+  width: 100px;
+  background-color: black;
+}
+
+.character-resource-text {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.character-ability {
+  text-align: center;
+  border: 1px solid black;
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 110px;
+  padding: 5px;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+}
+
+#notifications {
+  position: absolute;
+  width: 200px;
+  background-color: red;
+  color: white;
+  text-align: center;
+  border: 1px solid black;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  display: none;
+  left: 50%;
+  margin-left: -100px;
+  top: 425px;
+  z-index: 1000;
+}
+
+#health-display {
+  height: 40px;
+  padding: 10px;
+}
+
+.player-stats {
+  display: inline-block;
+  width: 150px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.player-health-num-box {
+  border: 1px solid black;
+}
+
+.player-healthNum {
+  margin-left: 10px;
+}
+
+.player-health-bar {
+  background-color: green;
+  position: absolute;
+  z-index: -1;
+  display: inline;
+}
+
+.player-class {
+  height: 35px;
+  width: 35px;
+  float: right;
+  margin-top: 15px;
+  margin-right: -10px;
+}
+
+#round-info {
+  border: 2px ridge black;
+  float: right;
+  margin-right: 5px;
+  margin-top: 5px;
+  padding: 5px;
+}
+
+.round-info-space {
+  margin-right: 15px;
+}
+
 .currentPlayer {
-    color: yellow;
+  color: yellow;
 }
 
 .currentPlayerNametag {
-    font-weight: bold;
-    color: #FFC000;
+  font-weight: bold;
+  color: #FFC000;
 }

@@ -16,7 +16,8 @@ $(function () {
       this.resources = {
         wood: 0,
         water: 0,
-        learningExp: 0
+        learningExp: 0,
+        expertise: 0
       }
       
       this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());

@@ -17,9 +17,9 @@ $(function () {
       this.resources = {
         stone: 0,
         wood: 0,
-        water: 0,
         zombieFlesh: 0,
-        atomicWaste: 0
+        atomicWaste: 0,
+        expertise: 0
       }
       
       this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());
