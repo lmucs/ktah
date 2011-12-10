@@ -196,8 +196,15 @@
 .lobby-game {
   margin: 5px;
   padding: 5px;
-  background-color: #FFEECB;
   height: 20px;
+  background: -moz-linear-gradient(top, rgba(231,234,46,1) 0%, rgba(247,227,46,1) 50%, rgba(242,221,38,1) 51%, rgba(239,212,9,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(231,234,46,1)), color-stop(50%,rgba(247,227,46,1)), color-stop(51%,rgba(242,221,38,1)), color-stop(100%,rgba(239,212,9,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(231,234,46,1) 0%,rgba(247,227,46,1) 50%,rgba(242,221,38,1) 51%,rgba(239,212,9,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(231,234,46,1) 0%,rgba(247,227,46,1) 50%,rgba(242,221,38,1) 51%,rgba(239,212,9,1) 100%); /* Opera 11.10+ */
+}
+
+.lobby-game-mouseOver {
+  box-shadow: 5px 5px 2px #888;
 }
 
 .lobby-playerCount {
@@ -229,23 +236,22 @@
   margin-top: 100px;
 }
 
-.lobby-game-mouseOver {
-  box-shadow: 5px 5px 2px #888;
-}
-
 #game-list {
   border: 2px solid red;
   padding: 5px;
   height: 300px;
   margin-bottom: 10px;
   cursor: default;
+  background: -moz-linear-gradient(top, rgba(255,211,211,1) 0%, rgba(255,211,211,0) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,211,211,1)), color-stop(100%,rgba(255,211,211,0))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(255,211,211,1) 0%,rgba(255,211,211,0) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(255,211,211,1) 0%,rgba(255,211,211,0) 100%); /* Opera 11.10+ */
 }
 
 /* GAME ROOM */
 
 #room-options {
   margin: 10px 10px 0px 10px;
-  background-color: #D8D8D8;
 }
 
 .class-selection {
@@ -266,9 +272,12 @@
 #class-options {
   text-align: center;
   margin: 5px 10% 0 10%;
-  background-color: #D8D8D8;
   -moz-border-radius: 10px;
   border-radius: 10px;
+  background: -moz-linear-gradient(top, rgba(216,216,216,1) 0%, rgba(244,244,244,0.61) 49%, rgba(216,216,216,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(216,216,216,1)), color-stop(49%,rgba(244,244,244,0.61)), color-stop(100%,rgba(216,216,216,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(216,216,216,1) 0%,rgba(244,244,244,0.61) 49%,rgba(216,216,216,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(216,216,216,1) 0%,rgba(244,244,244,0.61) 49%,rgba(216,216,216,1) 100%); /* Opera 11.10+ */
 }
 
 .class-thumbnail {
@@ -294,14 +303,22 @@
   margin-top: 5px;
   margin-bottom: 5px;
   font-size: 20px;
-  background-color: #0C0874;
   color: white;
   padding: 5px;
   height: 50px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  background: -moz-linear-gradient(top, rgba(30,87,153,1) 0%, rgba(41,137,216,1) 50%, rgba(32,124,202,1) 51%, rgba(125,185,232,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(30,87,153,1)), color-stop(50%,rgba(41,137,216,1)), color-stop(51%,rgba(32,124,202,1)), color-stop(100%,rgba(125,185,232,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(30,87,153,1) 0%,rgba(41,137,216,1) 50%,rgba(32,124,202,1) 51%,rgba(125,185,232,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(30,87,153,1) 0%,rgba(41,137,216,1) 50%,rgba(32,124,202,1) 51%,rgba(125,185,232,1) 100%); /* Opera 11.10+ */
 }
 
 .room-player-ready {
-  background-color: green;
+  background: -moz-linear-gradient(top, rgba(27,135,43,1) 0%, rgba(35,193,46,1) 50%, rgba(28,178,41,1) 51%, rgba(90,226,97,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(27,135,43,1)), color-stop(50%,rgba(35,193,46,1)), color-stop(51%,rgba(28,178,41,1)), color-stop(100%,rgba(90,226,97,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(27,135,43,1) 0%,rgba(35,193,46,1) 50%,rgba(28,178,41,1) 51%,rgba(90,226,97,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(27,135,43,1) 0%,rgba(35,193,46,1) 50%,rgba(28,178,41,1) 51%,rgba(90,226,97,1) 100%); /* Opera 11.10+ */
 }
 
 /* GAME */
@@ -388,14 +405,38 @@
 
 .character-resource-bar {
   display: inline-block;
+  margin-bottom: -5px;
   margin-left: 5px;
   width: 100px;
-  background-color: black;
+  height: 20px !important;
 }
 
 .character-resource-text {
   display: inline-block;
   margin-left: 5px;
+}
+
+.character-expertise {
+  display: inline-block;
+  float: right;
+  margin-top: 5px;
+  height: 30px;
+  width: 200px;
+}
+
+.character-expertise-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: blue;
+}
+
+.character-expertise-bar {
+  display: inline-block;
+  margin-bottom: -5px;
+  margin-left: 5px;
+  width: 120px;
+  height: 20px !important;
 }
 
 .character-ability {

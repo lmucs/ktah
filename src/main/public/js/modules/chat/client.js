@@ -194,8 +194,6 @@ util = {
 //used to keep the most recent messages visible
 function scrollDown () {
   $('#log').parent().scrollTop( $('#log').height() );
-  $("#entry").focus();
-  //TODO: decide whether we want to focus whenever we receive a message
   
   //Fix for in-game chat:
   if ($('#gameChat'))
@@ -352,7 +350,6 @@ function showLoad () {
 //transition the page to the main chat view, putting the cursor in the textfield
 function showChat (nick) {
   $("#toolbar").show();
-  $("#entry").focus();
 
   $("#connect").hide();
   $("#loading").hide();

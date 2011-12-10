@@ -139,6 +139,7 @@ $(function() {
             }
             
             ktah.characterArray[i].playerName = ktah.gamestate.players[i].name;
+            ktah.characterArray[i].isAlive = true;
             ktah.characterArray[i].playing = true;
             ktah.characterArray[i].isZombie = false;
             ktah.characterArray[i].walkSpeed = 1.85;
@@ -154,13 +155,24 @@ $(function() {
               
               // For the current player, set up the class-specific UI
               for (var currentResource in ktah.characterArray[i].resources) {
+                var resourceType = "resource";
+                if (currentResource === "expertise") {
+                  resourceType = "expertise";
+                }
                 $("#character-resources").append(
-                  '<span class="character-resource">'
-                  + '<div class="character-resource-icon">&nbsp</div>'
-                  + '<div class="character-resource-bar">&nbsp</div>'
+                  '<span class="character-' + resourceType + '" value="' + currentResource + '">'
+                  + '<div class="character-' + resourceType + '-icon">&nbsp</div>'
+                  + '<div class="character-' + resourceType + '-bar"></div>'
                   + '<div class="character-resource-text">0 / 3</div></span>'
                 );
               }
+              
+              // jQuery-UI-ize the resource bars
+              $(".character-resource-bar").each(function () {
+                $(this).progressbar();
+              });
+              
+              $(".character-expertise-bar").progressbar();
               
               // Set up the player abilities
               // TODO: Change iterators based on abilities available
@@ -195,6 +207,9 @@ $(function() {
                 updatedCharacters.push(ktah.characterArray[j]);
                 updatedCharacters[updatedCharacters.length - 1].playerName = ktah.characterArray[j].playerName;
                 updatedCharacters[updatedCharacters.length - 1].playing = ktah.characterArray[j].playing = true;
+                updatedCharacters[updatedCharacters.length - 1].isAlive = ktah.gamestate.players[i].status;
+                updatedCharacters[updatedCharacters.length - 1].isZombie = false;
+                updatedCharacters[updatedCharacters.length - 1].walkSpeed = characterArray[j].walkSpeed;
               }
             }
           }
@@ -205,7 +220,7 @@ $(function() {
           // Nuke the "zombie" scene node (pun intended, just nuke the node the player left)
           for (var k = 0; k < ktah.characterArray.length; k++) {
             if (!ktah.characterArray[k].playing) {
-              scene.getRootSceneNode().removeChild(ktah.characterArray[k]);
+              scene.getRootSceneNode().removeChild(ktah.characterArray[k].sceneNode);
             }
           }
           // Now, set the ktah.characterArray to its updated form
@@ -601,6 +616,7 @@ $(function() {
           
           // Set death animation
           if (currentPlayer.status === "dead") {
+            ktah.characterArray[i].isAlive = false;
             ktah.characterArray[i].sceneNode.Rot.X = -80;
           }
           
@@ -631,9 +647,6 @@ $(function() {
             
             if (ktah.characterArray[i].sceneNode.Pos.Y < -300 || resetKey) {
               currentPlayer.health = currentPlayer.health - 25;
-              addPoints(-10);
-              resetZombiePosition(i);
-              currentPlayer.resetGoal();
               resetArrow();
               camFollow(cam, ktah.characterArray[i].sceneNode);
             }
