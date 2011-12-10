@@ -2,6 +2,15 @@
    cross browser differences? */
   
 /* GENERAL */
+
+body {
+  font-family: "Blackmoor LET", "Chalkduster", "Cracked", "Futura", "Georgia", "Skia", Helvetica, serif;
+}
+
+hr {
+  margin-top: 30px;	
+}
+
 #main {
   width: 800px;
   margin: 150px auto 0 auto;
@@ -117,8 +126,9 @@
 }
 
 #registerButton {
+  width: 150px;
   margin-top: 20px;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 #flashMessage {
@@ -240,7 +250,7 @@
   border: 2px solid red;
   padding: 5px;
   height: 300px;
-  margin-bottom: 10px;
+  margin: 10px;
   cursor: default;
   background: -moz-linear-gradient(top, rgba(255,211,211,1) 0%, rgba(255,211,211,0) 100%); /* FF3.6+ */
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,211,211,1)), color-stop(100%,rgba(255,211,211,0))); /* Chrome,Safari4+ */
@@ -271,7 +281,7 @@
 
 #class-options {
   text-align: center;
-  margin: 5px 10% 0 10%;
+  margin: 5px 10px 0 10px;
   -moz-border-radius: 10px;
   border-radius: 10px;
   background: -moz-linear-gradient(top, rgba(216,216,216,1) 0%, rgba(244,244,244,0.61) 49%, rgba(216,216,216,1) 100%); /* FF3.6+ */
