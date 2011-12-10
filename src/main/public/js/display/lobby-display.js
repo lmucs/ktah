@@ -1,5 +1,5 @@
 /**
- * lobby.js
+ * lobby-display.js
  *
  * Handles game creation and joining
  */
