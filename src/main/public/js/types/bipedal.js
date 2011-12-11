@@ -15,7 +15,8 @@ $(function () {
 		  standState: false,
 		  arrowVisible: false,
 		  isZombie: false,
-		  walkSpeed: 1.0
+		  walkSpeed: 1.0,
+		  moved: false
     },
     
     // Update with a new goal, can be used for zombie's target system
@@ -114,6 +115,9 @@ $(function () {
     },
     
     move: function (newAngle) {
+      var oldX = this.sceneNode.Pos.X;
+      var oldZ = this.sceneNode.Pos.Z;
+      
       // Then see if there's a new angle being given for directional movement (not goal movement)
       if (newAngle) { this.angle = (270 - newAngle + 45) / 180 * Math.PI; }
       
@@ -132,6 +136,9 @@ $(function () {
       } else if (this.arrowVisible) {
         this.arrowVisible = false;
       }
+      
+      // Keep track of if your X or Z has changed in this move
+      this.moved = this.standState && ((this.sceneNode.Pos.X !== oldX) || (this.sceneNode.Pos.Z !== oldZ));
     },
     
     moveOnAngle: function (newAngle) {
@@ -147,6 +154,22 @@ $(function () {
       } else {
         this.arrowVisible = false;
       }
+    },
+    
+    dontMove: function () {
+      this.moved = false;
+    },
+    
+    didMove: function () {
+      return this.moved;
+    },
+    
+    die: function() {
+      this.dontMove();
+      
+      // Death animation
+      this.isAlive = false;
+      this.sceneNode.Rot.X = -80;
     },
     
     versionNumber: function() {
