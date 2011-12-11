@@ -209,8 +209,9 @@ $(function () {
                       monsters: [],
                       environment: {
                         game: gameId,
-                        readyState : false,
-                        abilityQueue: {}
+                        readyState: false,
+                        abilityQueue: {},
+                        round: 1
                       },
                       players: [
                         // automatically add in the game creators player object

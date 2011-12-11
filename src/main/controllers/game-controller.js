@@ -265,10 +265,6 @@ module.exports = function (app) {
   app.get('/monsters/:gameId', function (req, res) {
     var currentGame = GameController.games[req.params.gameId];
     res.contentType('application/json');
-    console.log();
-    console.log(currentGame.monsters);
-    console.log(JSON.stringify(currentGame.monsters));
-    console.log();
     res.send(currentGame.monsters);
   });
   
