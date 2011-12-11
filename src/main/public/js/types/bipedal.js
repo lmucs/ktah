@@ -16,7 +16,10 @@ $(function () {
 		  arrowVisible: false,
 		  isZombie: false,
 		  walkSpeed: 1.0,
-		  moved: false
+		  moved: false,
+		  closest: null,
+		  closestNum: null,
+		  closestDist: null
     },
     
     // Update with a new goal, can be used for zombie's target system
@@ -95,22 +98,27 @@ $(function () {
     // Hunt down the closest node in array, and return its Pos    
     findClosest: function (array) {
       var closest = array[0].sceneNode.Pos,
+          closestNum = 0,
           closestDist = this.sceneNode.Pos.getDistanceTo(array[0].sceneNode.Pos);
       for (var i = 0; i < array.length; i++) {
         if (array[i] && array[i].sceneNode) {
           var newDist = this.sceneNode.Pos.getDistanceTo(array[i].sceneNode.Pos);
           if (newDist < closestDist && array[i].isAlive) {
             closest = array[i].sceneNode.Pos;
+            closestNum = i;
             closestDist = newDist;
           }
         }
       }
-      return closest;
+      this.closest = closest;
+      this.closestNum = closestNum;
+      this.closestDist = closestDist;
     },
     
     // Find closest and set as target
     huntClosest: function (array) {
-      this.setGoal(this.findClosest(array));
+      this.findClosest(array)
+      this.setGoal(this.closest);
       this.moveToGoal();
     },
     
@@ -138,7 +146,11 @@ $(function () {
       }
       
       // Keep track of if your X or Z has changed in this move
-      this.moved = this.standState && ((this.sceneNode.Pos.X !== oldX) || (this.sceneNode.Pos.Z !== oldZ));
+      if (this.standState === true || this.standState === false) { // because sometimes standState is undefined now?
+        this.moved = !this.standState && ((this.sceneNode.Pos.X !== oldX) || (this.sceneNode.Pos.Z !== oldZ));
+      } else {
+        this.moved = ((this.sceneNode.Pos.X !== oldX) || (this.sceneNode.Pos.Z !== oldZ));
+      }
     },
     
     moveOnAngle: function (newAngle) {

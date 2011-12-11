@@ -60,6 +60,14 @@ $(function () {
     navigate: function () {//List of obstacles: scene.getRootSceneNode.getChildren
         //test, for now:
         return target;
+    },
+    
+    // Override of bipedal's huntTarget, as to update monster's target
+    huntClosest: function (array) {
+      this.findClosest(array)
+      this.target = this.closestNum; // the single new line!
+      this.setGoal(this.closest);
+      this.moveToGoal();
     }
     
   });

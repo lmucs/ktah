@@ -474,7 +474,7 @@ $(function() {
         currentMonster.setLoopMode(animation !== "attack");
         if (currentMonster.currentAnimation !== "attack") {
           currentMonster.currentAnimation = animation;
-          currentMonster.setAnimation(animation); // so why does this set it to "look" as animation?
+          currentMonster.setAnimation(animation);
         }
       }
       if (animation === "attack") {
@@ -652,9 +652,7 @@ $(function() {
             } else {
               // Make sure the "to" and "from" exist, and the "to" has enough room for all "from"s
               if (ktah.gamestate.monsters && ktah.monsterArray && ktah.monsterArray.length >= ktah.gamestate.monsters.length) {
-              console.log("At least I'm trying to position the zombies!");
                 for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
-                  console.log("Doin it once...");
                   ktah.monsterArray[j].sceneNode.Pos.X = ktah.gamestate.monsters[j].posX;
                   ktah.monsterArray[j].sceneNode.Pos.Z = ktah.gamestate.monsters[j].posZ;
                   ktah.monsterArray[j].sceneNode.Rot.Y = ktah.gamestate.monsters[j].rotY;
