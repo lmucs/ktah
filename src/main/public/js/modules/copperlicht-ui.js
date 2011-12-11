@@ -209,7 +209,7 @@ $(function() {
                 updatedCharacters[updatedCharacters.length - 1].playing = ktah.characterArray[j].playing = true;
                 updatedCharacters[updatedCharacters.length - 1].isAlive = ktah.gamestate.players[i].status;
                 updatedCharacters[updatedCharacters.length - 1].isZombie = false;
-                updatedCharacters[updatedCharacters.length - 1].walkSpeed = characterArray[j].walkSpeed;
+                updatedCharacters[updatedCharacters.length - 1].walkSpeed = ktah.characterArray[j].walkSpeed;
               }
             }
           }
@@ -220,7 +220,7 @@ $(function() {
           // Nuke the "zombie" scene node (pun intended, just nuke the node the player left)
           for (var k = 0; k < ktah.characterArray.length; k++) {
             if (!ktah.characterArray[k].playing) {
-              scene.getRootSceneNode().removeChild(ktah.characterArray[k].sceneNode);
+              ktah.scene.getRootSceneNode().removeChild(ktah.characterArray[k].sceneNode);
             }
           }
           // Now, set the ktah.characterArray to its updated form
@@ -284,7 +284,7 @@ $(function() {
       scene.setActiveCamera(cam);
       
       // Start up the round mechanics by letting the module know that everything's ready
-      ktah.util.initializeRoundMechanics(playerNumber);
+      ktah.util.initializeRoundMechanics(playerNumber, playerSlidingSpeed, playerCollisionRadius);
       
       // Make host add collision detection for zombies:
       setMonsterCollision();
@@ -634,6 +634,8 @@ $(function() {
               // Make sure the "to" and "from" exist, and the "to" has enough room for all "from"s
               if (ktah.gamestate.monsters && ktah.monsterArray && ktah.monsterArray.length >= ktah.gamestate.monsters.length) {
                 for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
+                  console.log("Doin it once...");
+                  // TODO: Make these set target rather than position
                   ktah.monsterArray[j].sceneNode.Pos.X = ktah.gamestate.monsters[j].posX;
                   ktah.monsterArray[j].sceneNode.Pos.Z = ktah.gamestate.monsters[j].posZ;
                   ktah.monsterArray[j].sceneNode.Rot.Y = ktah.gamestate.monsters[j].rotY;
@@ -696,15 +698,15 @@ $(function() {
   
   // Function that periodically checks for players coming or going
   updatePlayers = function (data) {
-    updateGamestate(data);
-    if (typeof(data) === "undefined") {
-      bootMiscreants("You've lost connection with the server!");
-      return;
-    }
-    
     // Update the players if any have come or gone
     if (playerCount !== data.players.length) {
       updateCharacterArray(playerCount, false);
+    } else {
+      updateGamestate(data);
+    }
+    if (typeof(data) === "undefined") {
+      bootMiscreants("You've lost connection with the server!");
+      return;
     }
   },
   
