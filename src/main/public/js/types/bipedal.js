@@ -202,6 +202,10 @@ $(function () {
       return this.moved;
     },
     
+    setMoved: function (newMoved) {
+      this.moved = newMoved;
+    },
+    
     die: function() {
       this.dontMove();
       

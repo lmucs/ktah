@@ -546,13 +546,13 @@ $(function() {
             animateCharacter(i, "stand");
           }
           
-            // Make sure the "to" and "from" exist, and the "to" has enough room for all "from"s
-            if (ktah.gamestate.monsters && ktah.monsterArray && ktah.monsterArray.length >= ktah.gamestate.monsters.length) {
-              for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
-                // Zombies animated here if they move, regardless if host/client
-                animateMonster(j, ktah.monsterArray[j].didMove() ? "walk" : "look");
-              }
+          // Make sure the "to" and "from" exist, and the "to" has enough room for all "from"s
+          if (ktah.gamestate.monsters && ktah.monsterArray && ktah.monsterArray.length >= ktah.gamestate.monsters.length) {
+            for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
+              // Zombies animated here if they move, regardless if host/client
+              animateMonster(j, ktah.monsterArray[j].didMove() ? "walk" : "look");
             }
+          }
           
           // Set death animation
           if (currentPlayer.status === "dead") {
@@ -634,7 +634,8 @@ $(function() {
               // Make sure the "to" and "from" exist, and the "to" has enough room for all "from"s
               if (ktah.gamestate.monsters && ktah.monsterArray && ktah.monsterArray.length >= ktah.gamestate.monsters.length) {
                 for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
-                  console.log("Doin it once...");
+                  ktah.monsterArray[j].setMoved(ktah.monsterArray[j].sceneNode.Pos.X !== ktah.gamestate.monsters[j].posX ||
+                    ktah.monsterArray[j].sceneNode.Pos.Z !== ktah.gamestate.monsters[j].posZ);
                   // TODO: Make these set target rather than position
                   ktah.monsterArray[j].sceneNode.Pos.X = ktah.gamestate.monsters[j].posX;
                   ktah.monsterArray[j].sceneNode.Pos.Z = ktah.gamestate.monsters[j].posZ;
@@ -816,23 +817,26 @@ $(function() {
       var currentBeing = ktah.characterArray[playerNumber], //ktah.gamestate.players[playerNumber].character;
         monsters = ktah.gamestate.monsters;
       
-      // Update the monsters targets, then move the monsters.
-      // This is the "host loop"
-      if (playerNumber === 0 && monsters) {
+      if (monsters) {
         for (var i = 0; i < ktah.monsterArray.length; i++) {
+          // Update the monsters targets, then move the monsters.
+          // This is the "host loop"
+          if (playerNumber === 0) {
+
+            ktah.monsterArray[i].updateCatchupRate(catchupRate);
+            ktah.monsterArray[i].huntClosest(ktah.characterArray);
           
-          // Brian Handy here, doing the same using my system...
-          ktah.monsterArray[i].updateCatchupRate(catchupRate);
-          ktah.monsterArray[i].huntClosest(ktah.characterArray);
+            // Update gamestate to reflect zombie movement
+            monsters[i].posX = ktah.monsterArray[i].sceneNode.Pos.X;
+            monsters[i].posZ = ktah.monsterArray[i].sceneNode.Pos.Z;          
+            monsters[i].rotY = ktah.monsterArray[i].sceneNode.Rot.Y;
+            ktah.gamestate.monsters = monsters;
           
-          // Update gamestate to reflect zombie movement
-          monsters[i].posX = ktah.monsterArray[i].sceneNode.Pos.X;
-          monsters[i].posZ = ktah.monsterArray[i].sceneNode.Pos.Z;          
-          monsters[i].rotY = ktah.monsterArray[i].sceneNode.Rot.Y;
-          ktah.gamestate.monsters = monsters;
+            // Check collision for zombie collision and player collision
+            ktah.monsterArray[i].checkCollision(ktah.monsterArray, 8, 1/9);
+          }
           
-          // Check collision for zombie collision and player collision
-          ktah.monsterArray[i].checkCollision(ktah.monsterArray, 8, 1/9);
+          // Then see if any players are getting hit
           if (ktah.monsterArray[i].checkCollision(ktah.characterArray[playerNumber], 4, 1/9)) {
             beingAttacked = true;
             // Since moved, update the camera
