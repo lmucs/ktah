@@ -3,8 +3,20 @@
   
 /* GENERAL */
 
+/* This one looks best for big stuff */
+@font-face {
+    font-family: "MS-Scratch";
+    src: url(../assets/fonts/MS-Scratch.ttf);
+}
+/* This one looks best for small stuff */
+@font-face { 
+    font-family: "Sketchy";
+    src: url(../assets/fonts/Sketchy.ttf);
+}
+
 body {
-  font-family: "Blackmoor LET", "Chalkduster", "Cracked", "Futura", "Georgia", "Skia", Helvetica, serif;
+  /* for consistency, only using one font at a time */
+  font-family: "Sketchy", "MS-Scratch", "Chalkduster", "Cracked", "Futura", "Georgia", "Skia", Helvetica, serif;
 }
 
 hr {
