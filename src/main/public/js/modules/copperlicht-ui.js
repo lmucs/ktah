@@ -291,7 +291,7 @@ $(function() {
       scene.setActiveCamera(cam);
       
       // Start up the round mechanics by letting the module know that everything's ready
-      ktah.util.initializeRoundMechanics(playerNumber);
+      ktah.util.initializeRoundMechanics(playerNumber, playerSlidingSpeed, playerCollisionRadius);
       
       // Make host add collision detection for zombies:
       if (playerNumber === 0) {
