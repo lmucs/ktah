@@ -477,13 +477,13 @@ $(function() {
     if (monsterIndex < ktah.monsterArray.length) {
       var currentMonster = ktah.monsterArray[monsterIndex].sceneNode;
       if (currentMonster.currentAnimation !== animation) {
-        currentMonster.setLoopMode(animation !== "look");
-        if (currentMonster.currentAnimation !== "look") {
+        currentMonster.setLoopMode(animation !== "attack");
+        if (currentMonster.currentAnimation !== "attack") {
           currentMonster.currentAnimation = animation;
-          currentMonster.setAnimation(animation);
+          currentMonster.setAnimation(animation); // so why does this set it to "look" as animation?
         }
       }
-      if (animation === "look") {
+      if (animation === "attack") {
         setTimeout(function () {
           currentMonster.currentAnimation = "walk";
           animateMonster(currentMonster, "walk");
@@ -614,10 +614,17 @@ $(function() {
             animateCharacter(i, "stand");
           }
           
+            // Make sure the "to" and "from" exist, and the "to" has enough room for all "from"s
+            if (ktah.gamestate.monsters && ktah.monsterArray && ktah.monsterArray.length >= ktah.gamestate.monsters.length) {
+              for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
+                // Zombies animated here if they move, regardless if host/client
+                animateMonster(j, ktah.monsterArray[j].didMove() ? "walk" : "look");
+              }
+            }
+          
           // Set death animation
           if (currentPlayer.status === "dead") {
-            ktah.characterArray[i].isAlive = false;
-            ktah.characterArray[i].sceneNode.Rot.X = -80;
+            ktah.characterArray[i].die();
           }
           
           if (i === playerNumber) {
@@ -674,17 +681,6 @@ $(function() {
               contentType: 'application/json'
             });
             
-            // Make sure the "to" and "from" exist, and the "to" has enough room for all "from"s
-            if (ktah.gamestate.monsters && ktah.monsterArray && ktah.monsterArray.length >= ktah.gamestate.monsters.length) {
-              for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
-                // Zombies animated here if they move, regardless if host/client
-                if ((ktah.monsterArray[j].sceneNode.Pos.X != ktah.gamestate.monsters[j].posX) || (ktah.monsterArray[j].sceneNode.Pos.Z != ktah.gamestate.monsters[j].posZ)) {
-                  animateMonster(j, "walk");
-                } else {
-                  animateMonster(j, "look");
-                }
-              }
-            }
             // Meaning they're the host...
             if (playerNumber === 0) {
               // *** testing to see if the monsters are being correctly updated.
@@ -742,6 +738,8 @@ $(function() {
     }
     // Otherwise, everyone's dead! End the game...
     gameOver = true;
+    //stop all zombies
+    for (z in ktah.monsterArray) { ktah.monsterArray[z].updateStandState(true); }
     $("#end-dialog")
       .dialog({
         title: "Loading score...",
@@ -839,6 +837,28 @@ $(function() {
   timeLoop = function() {
     currentTime = (new Date()).getTime();
 	//setTimeout(mainLoop, timeLoopLength);
+  },
+  
+  // Can be called if Zombies ever need their collision animators reset
+  collisionCheck = function() {
+    // Make host add collision detection for zombies:
+      if (playerNumber === 0) {
+        for (var i = 0; i < ktah.monsterArray.length; i++) {
+          var monsterCollisionAnimator = new CL3D.AnimatorCollisionResponse(
+            new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
+            new CL3D.Vect3d(0,0,0), // no gravity!
+            new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
+            scene.getCollisionGeometry(),
+            playerSlidingSpeed
+          );
+          var numAnimators = ktah.monsterArray[i].sceneNode.getAnimators().length;
+          if (numAnimators > 1) {
+            ktah.monsterArray[i].sceneNode.removeAnimator(numAnimators - 1);
+          }
+          ktah.monsterArray[i].sceneNode.addAnimator(monsterCollisionAnimator);
+        }
+        
+      }
   },
   
   mainLoop = function() {
@@ -993,7 +1013,7 @@ $(function() {
   // Pass keydown to keyStateChange
   document.onkeydown = function(event) {
     key = String.fromCharCode(event.keyCode);
-    keyStateChange(key, true);
+    keyStateChange(key, true); 
   };
   // Pass keyup to keyStateChange
   document.onkeyup = function(event) {
