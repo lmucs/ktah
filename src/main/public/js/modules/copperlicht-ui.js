@@ -290,14 +290,8 @@ $(function() {
       scene.getRootSceneNode().addChild(cam);
       scene.setActiveCamera(cam);
       
-      var protoGhoul = scene.getSceneNodeFromName('ghoul');
-      
-      if (playerNumber === 0) {
-        ktah.monsterArray = generateMonsters(protoGhoul, 20);
-        //ktah.monsterArray = generateMonsters(protoGhoul, 1);
-      } else {
-        synchronizeMonsters(protoGhoul);
-      }
+      // Start up the round mechanics by letting the module know that everything's ready
+      ktah.util.initializeRoundMechanics(playerNumber);
       
       // Make host add collision detection for zombies:
       if (playerNumber === 0) {
@@ -525,49 +519,6 @@ $(function() {
         }
         updateGamestate(data);
         console.log("initialize here! " + ktah.gamestate.monsters);
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown);
-      },
-      dataType: 'json',
-      contentType: 'application/json'
-    });
-  },
-  
-//Generate a certain amount of zombies.
-  generateMonsters = function(sceneNode, amount) {
-    var monsterArray = [];    
-    ktah.gamestate.monsters = [];
-    console.log("generate here! " + ktah.gamestate.monsters);
-    for (var i = 0; i < amount; i++) {
-      monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500, lastZombie: (i === amount - 1)}
-        ,{gameId: gameId, sceneNode: sceneNode});
-      monsterArray[i].isZombie = true;
-      monsterArray[i].walkSpeed = 1.0;
-      // Want to add zombie collision with world here, but way too memory intensive right now or something
-      // makes grass texture disappear and collision for player stop working
-      //monsterArray[i].sceneNode.addAnimator(playerCollisionAnimator);
-    }
-    return monsterArray;
-  },
-  
-  synchronizeMonsters = function(sceneNode) {
-    $.ajax({
-      type: 'GET',
-      url: '/monsters/' + gameId,
-      success: function (data) {
-        var monsterArray = [];
-        if(!data || (data && !data[data.length - 1].lastZombie)) {
-          console.warn("in the TRUE!");
-          setTimeout(function() {synchronizeMonsters(sceneNode);}, 200);
-        } else {
-          for (var i = 0; i < data.length; i++) {
-            monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id},{gameId: gameId, sceneNode: sceneNode});
-          }
-          ktah.monsterArray = monsterArray;
-        }
       },
       error: function (jqXHR, textStatus, errorThrown) {
         console.log(jqXHR);

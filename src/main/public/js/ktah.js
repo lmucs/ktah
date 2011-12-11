@@ -10,7 +10,8 @@ var ktah = {
   gamestate: {},
   characterArray: [],
   monsterArray: [],
-  abilities: {}
+  abilities: {},
+  util: {}
 
 };
 
@@ -50,6 +51,7 @@ include.includeInit([
   '/js/types/resources/zombie-flesh.js',
   
   /***** MODULES *****/
+  '/js/modules/round-mechanics.js',
   '/js/modules/copperlicht-ui.js',
   '/js/modules/abilities.js'
 ]);
