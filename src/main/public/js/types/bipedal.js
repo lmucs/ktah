@@ -168,6 +168,32 @@ $(function () {
       }
     },
     
+    // Expects an array full of sceneNodes
+    checkCollision: function(array, dist, bounceRatio) {
+      // Make sure catchup exists
+      if (!this.catchup) {this.catchup = 1;}
+      if (!bounceRatio) { bounceRatio = 1/9; }
+      
+      // Make sure it's in array form
+      if (array.constructor.toString().indexOf("Array") === -1) { array = [array]; }
+      
+      // Return value
+      var hitSomething = false;
+      
+      // Collision Detection between self and anything in the array
+      for (var j = 0; j < array.length; j++) {
+        if (array[j].sceneNode.Pos.getDistanceTo(this.sceneNode.Pos) < dist) {
+          // Classic X/Z movement system
+          array[j].sceneNode.Pos.X += (array[j].sceneNode.Pos.X - this.sceneNode.Pos.X)*bounceRatio*this.catchup;
+          array[j].sceneNode.Pos.Z += (array[j].sceneNode.Pos.Z - this.sceneNode.Pos.Z)*bounceRatio*this.catchup;
+          this.sceneNode.Pos.X -= (array[j].sceneNode.Pos.X - this.sceneNode.Pos.X)*bounceRatio*this.catchup;
+          this.sceneNode.Pos.Z -= (array[j].sceneNode.Pos.Z - this.sceneNode.Pos.Z)*bounceRatio*this.catchup;
+          hitSomething = true;
+        }
+      }
+      return hitSomething;
+    },
+    
     dontMove: function () {
       this.moved = false;
     },

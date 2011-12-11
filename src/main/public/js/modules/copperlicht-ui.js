@@ -248,14 +248,7 @@ $(function() {
         // Add the players to the character array
         updateCharacterArray(ktah.gamestate.players.length, true);
         // Collision for player set when scene loaded
-        playerCollisionAnimator = new CL3D.AnimatorCollisionResponse(
-          new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
-          new CL3D.Vect3d(0,0,0), // no gravity!
-          new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
-          scene.getCollisionGeometry(),
-          playerSlidingSpeed
-        );
-        playerSceneNode.addAnimator(playerCollisionAnimator);
+        setPlayerCollision();
         
         if (enableLighting) {
           // And add a light to the player
@@ -294,19 +287,7 @@ $(function() {
       ktah.util.initializeRoundMechanics(playerNumber);
       
       // Make host add collision detection for zombies:
-      if (playerNumber === 0) {
-        for (var i = 0; i < ktah.monsterArray.length; i++) {
-          var monsterCollisionAnimator = new CL3D.AnimatorCollisionResponse(
-            new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
-            new CL3D.Vect3d(0,0,0), // no gravity!
-            new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
-            scene.getCollisionGeometry(),
-            playerSlidingSpeed
-          );
-          ktah.monsterArray[i].sceneNode.addAnimator(monsterCollisionAnimator);
-        }
-        
-      }
+      setMonsterCollision();
       
       // Begin the server pinging and end-condition checking
       setInterval(updateTeam, 50);
@@ -788,26 +769,42 @@ $(function() {
 	//setTimeout(mainLoop, timeLoopLength);
   },
   
-  // Can be called if Zombies ever need their collision animators reset
-  collisionCheck = function() {
+  // Can be called if everyone ever need their collision animators reset
+  updateCollisionAnimators = function() {
+    setPlayerCollision();
+    setMonsterCollision();
+  },
+  
+  // set player collision at start of game
+  setPlayerCollision = function() {
+    playerCollisionAnimator = getCollisionAnimator();
+    playerSceneNode.addAnimator(playerCollisionAnimator);
+  },
+  
+  // set zombie collision / monster collision at start of game
+  setMonsterCollision = function() {
     // Make host add collision detection for zombies:
-      if (playerNumber === 0) {
-        for (var i = 0; i < ktah.monsterArray.length; i++) {
-          var monsterCollisionAnimator = new CL3D.AnimatorCollisionResponse(
-            new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
-            new CL3D.Vect3d(0,0,0), // no gravity!
-            new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
-            scene.getCollisionGeometry(),
-            playerSlidingSpeed
-          );
-          var numAnimators = ktah.monsterArray[i].sceneNode.getAnimators().length;
-          if (numAnimators > 1) {
-            ktah.monsterArray[i].sceneNode.removeAnimator(numAnimators - 1);
-          }
-          ktah.monsterArray[i].sceneNode.addAnimator(monsterCollisionAnimator);
+    if (playerNumber === 0) {
+      for (var i = 0; i < ktah.monsterArray.length; i++) {
+        var monsterCollisionAnimator = getCollisionAnimator();
+        var numAnimators = ktah.monsterArray[i].sceneNode.getAnimators().length;
+        if (numAnimators > 1) {
+          ktah.monsterArray[i].sceneNode.removeAnimator(numAnimators - 1);
         }
-        
-      }
+        ktah.monsterArray[i].sceneNode.addAnimator(monsterCollisionAnimator);
+      }    
+    }
+  },
+  
+  // returns a collision animator based on current scene
+  getCollisionAnimator = function() {
+    return new CL3D.AnimatorCollisionResponse(
+      new CL3D.Vect3d(playerCollisionRadius,1,playerCollisionRadius), // y value 1 since not checking grav
+      new CL3D.Vect3d(0,0,0), // no gravity!
+      new CL3D.Vect3d(0,-10,0), // collision box way above head to make sure no problems with ground
+      scene.getCollisionGeometry(),
+      playerSlidingSpeed
+    );
   },
   
   mainLoop = function() {
@@ -832,23 +829,12 @@ $(function() {
           monsters[i].rotY = ktah.monsterArray[i].sceneNode.Rot.Y;
           ktah.gamestate.monsters = monsters;
           
-          // Collision Detection between AI / zombie and AI / zombie
-          for (var j = i+1; j < ktah.monsterArray.length; j++) {
-            if (ktah.monsterArray[j].sceneNode.Pos.getDistanceTo(ktah.monsterArray[i].sceneNode.Pos) < 8) {
-              // Classic X/Z movement system
-              ktah.monsterArray[j].sceneNode.Pos.X += (ktah.monsterArray[j].sceneNode.Pos.X - ktah.monsterArray[i].sceneNode.Pos.X)*1/9*catchupRate;
-              ktah.monsterArray[j].sceneNode.Pos.Z += (ktah.monsterArray[j].sceneNode.Pos.Z - ktah.monsterArray[i].sceneNode.Pos.Z)*1/9*catchupRate;
-            }
-          }
-          // Then check to see if you successfully have hit and pushed back the player
-          if (ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(ktah.monsterArray[i].sceneNode.Pos) < 4) {
-            // Classic X/Z movement system
-            playerSceneNode.Pos.X += (playerSceneNode.Pos.X - ktah.monsterArray[i].sceneNode.Pos.X)*3/3;
-            playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.monsterArray[i].sceneNode.Pos.Z)*3/3;
+          // Check collision for zombie collision and player collision
+          ktah.monsterArray[i].checkCollision(ktah.monsterArray, 8, 1/9);
+          if (ktah.monsterArray[i].checkCollision(ktah.characterArray[playerNumber], 4, 1/9)) {
             beingAttacked = true;
             // Since moved, update the camera
             camFollow(cam, playerSceneNode);
-            // TODO: Zombie attack animation (use animator method in place)
           }
         }
       }
@@ -936,14 +922,15 @@ $(function() {
       if (aKey || wKey || dKey || sKey || currentBeing.getGoal()) {
         /* Still need to put in a system here to reset goal if player gets stuck */
        
-        // Collision Detection between players
-        for (var i = 0; i < playerCount; i++) {
+        // Collision Detection between players, or player collision
+        ktah.characterArray[playerNumber].checkCollision(ktah.characterArray, 4, 1/2);
+        /*for (var i = 0; i < playerCount; i++) {
           if (i !== playerNumber && ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(ktah.characterArray[i].sceneNode.Pos) < 4) {
             // Classic X/Z movement system
             playerSceneNode.Pos.X += (playerSceneNode.Pos.X - ktah.characterArray[i].sceneNode.Pos.X)/2;
             playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.characterArray[i].sceneNode.Pos.Z)/2;
           }
-        }
+        }*/
         
         // Finally, update Camera for new positions
         camFollow(cam, playerSceneNode);
