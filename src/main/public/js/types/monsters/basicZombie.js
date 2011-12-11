@@ -15,6 +15,7 @@ $(function () {
       this.sceneNode.Pos.Y = 1.3;
       this.sceneNode.Pos.X = attributes.posX;
       this.sceneNode.Pos.Z = attributes.posZ;
+      this.walkSpeed = attributes.walkSpeed;
       
       var that = this;
       

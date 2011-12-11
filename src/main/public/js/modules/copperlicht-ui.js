@@ -209,7 +209,7 @@ $(function() {
                 updatedCharacters[updatedCharacters.length - 1].playing = ktah.characterArray[j].playing = true;
                 updatedCharacters[updatedCharacters.length - 1].isAlive = ktah.gamestate.players[i].status;
                 updatedCharacters[updatedCharacters.length - 1].isZombie = false;
-                updatedCharacters[updatedCharacters.length - 1].walkSpeed = characterArray[j].walkSpeed;
+                updatedCharacters[updatedCharacters.length - 1].walkSpeed = ktah.characterArray[j].walkSpeed;
               }
             }
           }
@@ -220,7 +220,7 @@ $(function() {
           // Nuke the "zombie" scene node (pun intended, just nuke the node the player left)
           for (var k = 0; k < ktah.characterArray.length; k++) {
             if (!ktah.characterArray[k].playing) {
-              scene.getRootSceneNode().removeChild(ktah.characterArray[k].sceneNode);
+              ktah.scene.getRootSceneNode().removeChild(ktah.characterArray[k].sceneNode);
             }
           }
           // Now, set the ktah.characterArray to its updated form
@@ -717,15 +717,15 @@ $(function() {
   
   // Function that periodically checks for players coming or going
   updatePlayers = function (data) {
-    updateGamestate(data);
-    if (typeof(data) === "undefined") {
-      bootMiscreants("You've lost connection with the server!");
-      return;
-    }
-    
     // Update the players if any have come or gone
     if (playerCount !== data.players.length) {
       updateCharacterArray(playerCount, false);
+    } else {
+      updateGamestate(data);
+    }
+    if (typeof(data) === "undefined") {
+      bootMiscreants("You've lost connection with the server!");
+      return;
     }
   },
   

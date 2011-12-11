@@ -242,15 +242,19 @@ module.exports = function (app) {
    */
   app.post('/monsters/:gameId', function (req, res) {
 	  
-  	var currentGame = GameController.games[req.params.gameId];
+  	var currentGame = GameController.games[req.params.gameId],
+  	    monsterCollector = [];
   	
   	// If the game doesn't exist, ABORT!
   	if (!currentGame) {
   	  return;
   	}
-	
+  	
   	// Update current monster array
-  	currentGame.monsters = req.body;
+  	for (var monster in req.body) {
+  	  monsterCollector.push(req.body[monster]);
+  	}
+  	currentGame.monsters = monsterCollector.slice(0);
   	res.send({"success": true});
   });
   
@@ -261,7 +265,11 @@ module.exports = function (app) {
   app.get('/monsters/:gameId', function (req, res) {
     var currentGame = GameController.games[req.params.gameId];
     res.contentType('application/json');
-    res.send(JSON.stringify(currentGame.monsters));
+    console.log();
+    console.log(currentGame.monsters);
+    console.log(JSON.stringify(currentGame.monsters));
+    console.log();
+    res.send(currentGame.monsters);
   });
   
   /*

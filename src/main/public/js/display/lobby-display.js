@@ -206,6 +206,7 @@ $(function () {
                 // If the game already exists, don't create it
                 if (!data) {
                     var gamestate = {
+                      monsters: [],
                       environment: {
                         game: gameId,
                         readyState : false,

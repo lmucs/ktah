@@ -20,8 +20,9 @@ $(function () {
     var monsterArray = [];    
     ktah.gamestate.monsters = [];
     for (var i = 0; i < amount; i++) {
-      monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500, lastZombie: (i === amount - 1)}
-        ,{gameId: gameId, sceneNode: sceneNode});
+      monsterArray[i] = new ktah.types.BasicZombie({posX: (Math.random() * 1000) - 500, posZ: (Math.random() * 1000) - 500, 
+        walkSpeed: zombieWalkSpeed, lastZombie: (i === amount - 1)},
+        {gameId: gameId, sceneNode: sceneNode});
       monsterArray[i].isZombie = true;
       monsterArray[i].walkSpeed = zombieWalkSpeed;
       // Want to add zombie collision with world here, but way too memory intensive right now or something
@@ -38,11 +39,12 @@ $(function () {
       url: '/monsters/' + gameId,
       success: function (data) {
         var monsterArray = [];
-        if(!data || (data && !data[data.length - 1].lastZombie)) {
-          setTimeout(function() {ktah.util.synchronizeMonsters(sceneNode);}, 200);
+        if(!data || (data && (!data.length || !data[data.length - 1].lastZombie))) {
+          setTimeout(function() {ktah.util.synchronizeMonsters(sceneNode);}, 100);
         } else {
           for (var i = 0; i < data.length; i++) {
-            monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id},{gameId: gameId, sceneNode: sceneNode});
+            monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id, walkSpeed: zombieWalkSpeed},
+              {gameId: gameId, sceneNode: sceneNode});
           }
           ktah.monsterArray = monsterArray;
         }
@@ -78,7 +80,10 @@ $(function () {
   ktah.util.initializeRoundMechanics = function (playerNumber) {
     sceneNode = ktah.scene.getSceneNodeFromName('ghoul');
     gameId = ktah.gamestate.environment.game;
-    ktah.util.beginRound(playerNumber);
+    // Let players set up first and join
+    setTimeout(function () {
+      ktah.util.beginRound(playerNumber);
+    }, 10000);
   }
   
 });
