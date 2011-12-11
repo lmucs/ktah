@@ -4,23 +4,33 @@
  * It all starts here. This is the script to run under node.  It configures 
  * and initializes the application, and starts the server.
  * 
- * To run the application set the environment variables
+ * To run the application, set the environment variables:
  * 
+ *   KTAH_DB_HOST
+ *   KTAH_DB_DATABASE
  *   KTAH_DB_USER
  *   KTAH_DB_PASS
  * 
- * and invoke the usual
+ * then invoke as usual:
  * 
  *   node app.js
+ */
+
+['HOST', 'DATABASE', 'USER', 'PASS'].forEach(function (suffix) {
+	var variable = 'KTAH_DB_' + suffix;
+	if (! process.env[variable]) {
+		console.error('Missing environment variable: ' + variable);
+		process.exit(1);
+	}
+});
+
+/*
+ * EXPRESS SERVER CONFIGURATION
  */
 
 var express = require('express');
 
 var app = module.exports = express.createServer();
-
-/*
- * EXPRESS SERVER CONFIGURATION
- */
 
 app.configure(function () {
   app.set('views', __dirname + '/views');
@@ -64,19 +74,13 @@ var mysql = require('mysql');
 
 var client = mysql.createClient({
   ACCOUNTS_TABLE : 'ktah_accounts',
-  host : 'mysql.cs.lmu.edu',
-  database : 'aforney2'
+  host : process.env.KTAH_DB_HOST,
+  database : process.env.KTAH_DB_DATABASE,
+  user : process.env.KTAH_DB_USER,
+  password : process.env.KTAH_DB_PASS
 });
 
-// Configure database only if the environment variables have been set
-if (process.env.KTAH_DB_USER && process.env.KTAH_DB_PASS) {
-  client.user = process.env.KTAH_DB_USER;
-  client.password = process.env.KTAH_DB_PASS;
-  require('./public/js/modules/db-config.js')(client);
-} else {
-  console.error('Database user and/or password not found in environment.');
-  console.error('No database will be available to this process.');
-}
+require('./public/js/modules/db-config.js')(client);
 
 /*
  * CONTROLLERS
