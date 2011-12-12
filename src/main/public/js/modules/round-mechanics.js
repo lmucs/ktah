@@ -8,12 +8,15 @@
 $(function () {
   
   // Variables to handle the round statistics and difficulties
-  var amount = 20,
+  var BASE_AMOUNT = 17,
+      BASE_SPEED = 0.95,
+      BASE_LENGTH = 25,
+      amount, // amount, walk speed, and round length make up the "difficulty"
+      zombieWalkSpeed,
+      roundLength = 30, // Time of round
+      roundBreak = 10, // Time between rounds
       sceneNode,
-      zombieWalkSpeed = 1.0,
       gameId,
-      roundNumber = 1,
-      roundLength = 30,
       playerCollisionRadius,
       playerSlidingSpeed;
       
@@ -39,7 +42,6 @@ $(function () {
         walkSpeed: zombieWalkSpeed, lastZombie: (i === amount - 1)},
         {gameId: gameId, sceneNode: sceneNode});
       monsterArray[i].isZombie = true;
-      monsterArray[i].walkSpeed = zombieWalkSpeed;
       ktah.util.addCollision(monsterArray[i].sceneNode);
       // Want to add zombie collision with world here, but way too memory intensive right now or something
       // makes grass texture disappear and collision for player stop working
@@ -64,6 +66,7 @@ $(function () {
               ktah.util.addCollision(monsterArray[i].sceneNode);
           }
           ktah.monsterArray = monsterArray;
+          // Set new round time here
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
@@ -78,19 +81,50 @@ $(function () {
   
   // Starts a game round by creating the zombies
   ktah.util.beginRound = function (playerNumber) {
+    var currentRound = ktah.gamestate.environment.round;
+    amount = BASE_AMOUNT + (3 * currentRound);
+    zombieWalkSpeed = BASE_SPEED + (0.05 * currentRound);
+    roundLength = BASE_LENGTH + (5 * currentRound);
     if (playerNumber === 0) {
       ktah.monsterArray = ktah.util.generateMonsters(sceneNode);
       setTimeout(function () {
-        ktah.util.endRound();
+        ktah.util.reportEndRound();
       }, roundLength * 1000);
     } else {
       ktah.util.synchronizeMonsters(sceneNode);
     }
+    // Next, do the proper updates and reporting
+    $("#round-display")
+      .fadeOut(2000, function () {$(this).html("Round: " + currentRound)})
+      .fadeIn(2000);
+  }
+  
+  // Cleans up scene nodes and the timer from a round
+  ktah.util.resolveRound = function (playerNumber) {
+    var sceneRoot = ktah.scene.getRootSceneNode();
+    // Begin by clearing the monster array
+    for (var i = 0; i < ktah.monsterArray.length; i++) {
+      sceneRoot.removeChild(ktah.monsterArray[i].sceneNode);
+    }
+    ktah.monsterArray = [];
   }
   
   // Ends a game round by destroying all zombies, then doing next round stuff
-  ktah.util.endRound = function () {
-    console.warn("Round ended!");
+  ktah.util.reportEndRound = function () {
+    $.ajax({
+      type: 'POST',
+      url: '/round/' + gameId,
+      data: JSON.stringify({"roundLength": roundLength, "waitTime": roundBreak}),
+      success: function (data) {
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+      },
+      dataType: 'json',
+      contentType: 'application/json'
+    });
   }
   
   // Begins the round mechanics for the game
@@ -100,9 +134,9 @@ $(function () {
     playerSlidingSpeed = playerSlide;
     playerCollisionRadius = playerCollisionSize; 
     // Let players set up first and join
-    setTimeout(function () {
-      ktah.util.beginRound(playerNumber);
-    }, 10000);
+    if (playerNumber === 0) {
+      ktah.util.reportEndRound();
+    }
   }
   
 });

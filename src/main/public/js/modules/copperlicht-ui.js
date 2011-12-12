@@ -511,7 +511,8 @@ $(function() {
     });
   },
   
-  // Updates the positions of other players
+  // Performs the core get / post functions and updates of team,
+  // monsters, and environmental stuff
   updateTeam = function () {
     // First, grab the gamestate
     $.ajax({
@@ -521,6 +522,16 @@ $(function() {
         player : userName
       },
       success: function (data) {
+        var roundActive = ktah.gamestate.environment.roundActive;
+        // Check on the round state before updating the gamestate
+        if (roundActive && !data.environment.roundActive) {
+          // If here, we know a round just ended, so clean up
+          ktah.util.resolveRound();
+        }
+        if (!roundActive && data.environment.roundActive) {
+          // If here, we know a round just started
+          ktah.util.beginRound(playerNumber);
+        }
         updatePlayers(data);
         
         // Update points
@@ -614,7 +625,7 @@ $(function() {
             });
             
             // Meaning they're the host...
-            if (playerNumber === 0) {
+            if (playerNumber === 0 && roundActive) {
               // *** testing to see if the monsters are being correctly updated.
               // console.warn("posx: " + ktah.gamestate.monsters[0].posX + "posz: " + ktah.gamestate.monsters[0].posX);
         	    $.ajax({

@@ -242,20 +242,20 @@ module.exports = function (app) {
    */
   app.post('/monsters/:gameId', function (req, res) {
 	  
-  	var currentGame = GameController.games[req.params.gameId],
-  	    monsterCollector = [];
-  	
-  	// If the game doesn't exist, ABORT!
-  	if (!currentGame) {
-  	  return;
-  	}
-  	
-  	// Update current monster array
-  	for (var monster in req.body) {
-  	  monsterCollector.push(req.body[monster]);
-  	}
-  	currentGame.monsters = monsterCollector.slice(0);
-  	res.send({"success": true});
+    var currentGame = GameController.games[req.params.gameId],
+        monsterCollector = [];
+
+    // If the game doesn't exist, ABORT!
+    if (!currentGame) {
+      return;
+    }
+
+    // Update current monster array
+    for (var monster in req.body) {
+      monsterCollector.push(req.body[monster]);
+    }
+    currentGame.monsters = monsterCollector.slice(0);
+    res.send({"success": true});
   });
   
   /*
@@ -295,6 +295,24 @@ module.exports = function (app) {
         currentGame.environment.abilityQueue[currentName].splice(0, abilityCount);
       }
     }
+    res.send({"success": true});
+  });
+  
+  /*
+   * POST /round/:gameId
+   *   Updates round stats from the hose
+   */
+  app.post('/round/:gameId', function (req, res) {
+    var currentGame = GameController.games[req.params.gameId];
+    
+    GameController.games[req.params.gameId].environment.round += 1;
+    GameController.games[req.params.gameId].environment.roundActive = false;
+    GameController.games[req.params.gameId].monsters = [];
+    setTimeout(function() {
+      if (GameController.games[req.params.gameId]) {
+        GameController.games[req.params.gameId].environment.roundActive = true;
+      }
+    }, req.body.waitTime * 1000);
     res.send({"success": true});
   });
 }

@@ -211,7 +211,8 @@ $(function () {
                         game: gameId,
                         readyState: false,
                         abilityQueue: {},
-                        round: 1
+                        round: 0,
+                        roundActive: false
                       },
                       players: [
                         // automatically add in the game creators player object
