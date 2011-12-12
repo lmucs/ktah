@@ -625,7 +625,7 @@ $(function() {
             });
             
             // Meaning they're the host...
-            if (playerNumber === 0 && roundActive) {
+            if (playerNumber === 0) {
               // *** testing to see if the monsters are being correctly updated.
               // console.warn("posx: " + ktah.gamestate.monsters[0].posX + "posz: " + ktah.gamestate.monsters[0].posX);
         	    $.ajax({
