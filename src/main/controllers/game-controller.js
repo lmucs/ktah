@@ -300,19 +300,21 @@ module.exports = function (app) {
   
   /*
    * POST /round/:gameId
-   *   Updates round stats from the hose
+   *   Ends a round from the host
    */
   app.post('/round/:gameId', function (req, res) {
     var currentGame = GameController.games[req.params.gameId];
     
-    GameController.games[req.params.gameId].environment.round += 1;
-    GameController.games[req.params.gameId].environment.roundActive = false;
-    GameController.games[req.params.gameId].monsters = [];
-    setTimeout(function() {
-      if (GameController.games[req.params.gameId]) {
-        GameController.games[req.params.gameId].environment.roundActive = true;
-      }
-    }, req.body.waitTime * 1000);
+    if (GameController.games[req.params.gameId].environment) {
+      GameController.games[req.params.gameId].environment.round += 1;
+      GameController.games[req.params.gameId].environment.roundActive = false;
+      GameController.games[req.params.gameId].monsters = [];
+      setTimeout(function() {
+        if (GameController.games[req.params.gameId]) {
+          GameController.games[req.params.gameId].environment.roundActive = true;
+        }
+      }, req.body.waitTime * 1000);
+    }
     res.send({"success": true});
   });
 }

@@ -83,7 +83,7 @@ $(function() {
         $("#health-display")
         .html("")
         .append(
-          "<div id='round-info'><span id='round-time'>Time: <span id='time-remaining' class='round-info-space'>0:00</span></span>"
+          "<div id='round-info'>"
           + "<span id='points'>Points: <span id='points-remaining' class='currentPlayerNametag'>"
           + ktah.gamestate.players[playerNumber].pointsRemaining + "</span></span></div>"
         );
@@ -293,6 +293,8 @@ $(function() {
       setInterval(updateTeam, 50);
       setInterval(gameEndCheck, 5000);
       
+      $("#round-timer").progressbar();
+      
       // Remove the loading screen
       $("#loadingScreen").fadeOut(3000);
       
@@ -338,7 +340,7 @@ $(function() {
   notify = function (message, messageColor) {
     if (!notificationReporting) {
       notificationReporting = true;
-      $("#notifications")
+      $("#ability-note")
         .html(message)
         .css("background-color", messageColor)
         .fadeIn(750)
@@ -526,7 +528,7 @@ $(function() {
         // Check on the round state before updating the gamestate
         if (roundActive && !data.environment.roundActive) {
           // If here, we know a round just ended, so clean up
-          ktah.util.resolveRound();
+          ktah.util.resolveRound(playerNumber);
         }
         if (!roundActive && data.environment.roundActive) {
           // If here, we know a round just started
@@ -535,7 +537,10 @@ $(function() {
         updatePlayers(data);
         
         // Update points
+        ktah.gamestate.players[playerNumber].pointsEarned += ktah.util.queuedPoints;
+        ktah.gamestate.players[playerNumber].pointsRemaining += ktah.util.queuedPoints;
         $("#points-remaining").text(ktah.gamestate.players[playerNumber].pointsRemaining);
+        ktah.util.queuedPoints = 0;
         
         // Update player positions based on the gamestate
         for (var i = 0; i < playerCount; i++) {
@@ -730,13 +735,6 @@ $(function() {
   
   resetArrow = function() {
     if (arrow) { arrow.Pos.Y = -1 * arrowHeight; } // hide arrow when reset
-  },
-  
-  // Helper function for adding points
-  addPoints = function (points) {
-    var currentPlayer = ktah.gamestate.players[playerNumber];
-    currentPlayer.pointsRemaining += points;
-    currentPlayer.pointsEarned += points;
   },
   
   // Update catchupRate based on time passed

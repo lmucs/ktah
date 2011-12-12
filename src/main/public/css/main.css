@@ -474,20 +474,33 @@ body {
   overflow: hidden;
 }
 
-#notifications {
+.notification {
   position: absolute;
-  width: 200px;
-  background-color: red;
   color: white;
   text-align: center;
-  border: 1px solid black;
   -moz-border-radius: 10px;
   border-radius: 10px;
   display: none;
   left: 50%;
-  margin-left: -100px;
-  top: 425px;
   z-index: 1000;
+}
+
+#ability-note {
+  border: 1px solid black;
+  background-color: red;
+  top: 425px;
+  width: 200px;
+  margin-left: -100px;
+}
+
+#round-note {
+  font-size: 20px;
+  background-color: black;
+  font-weight: bold;
+  padding: 5px;
+  top: 50px;
+  width: 400px;
+  margin-left: -200px;
 }
 
 #health-display {
@@ -511,7 +524,10 @@ body {
 }
 
 .player-health-bar {
-  background-color: green;
+  background: -moz-linear-gradient(top, rgba(49,91,54,1) 0%, rgba(39,206,55,1) 14%, rgba(30,188,72,1) 86%, rgba(27,99,19,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(49,91,54,1)), color-stop(14%,rgba(39,206,55,1)), color-stop(86%,rgba(30,188,72,1)), color-stop(100%,rgba(27,99,19,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, rgba(49,91,54,1) 0%,rgba(39,206,55,1) 14%,rgba(30,188,72,1) 86%,rgba(27,99,19,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, rgba(49,91,54,1) 0%,rgba(39,206,55,1) 14%,rgba(30,188,72,1) 86%,rgba(27,99,19,1) 100%); /* Opera 11.10+ */
   position: absolute;
   z-index: -1;
   display: inline;
@@ -526,11 +542,18 @@ body {
 }
 
 #round-info {
-  border: 2px ridge black;
+  font-size: 24px;
   float: right;
   margin-right: 5px;
   margin-top: 5px;
   padding: 5px;
+}
+
+#round-timer {
+  float: right;
+  width: 300px;
+  height: 20px;
+  margin-left: 10px;
 }
 
 .round-info-space {

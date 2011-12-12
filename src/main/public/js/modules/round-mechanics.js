@@ -19,6 +19,8 @@ $(function () {
       gameId,
       playerCollisionRadius,
       playerSlidingSpeed;
+  
+  ktah.util.queuedPoints = 0;
       
   // Sets / resets collision detection for a given monster
   ktah.util.addCollision = function (monsterNode) {
@@ -79,12 +81,26 @@ $(function () {
     });
   }
   
+  // Updates the round timer on the UI
+  ktah.util.tickTimer = function (timeRemaining) {
+    $("#round-timer")
+      .progressbar("value", (timeRemaining / roundLength) * 100);
+    if (timeRemaining) {
+      setTimeout(function() {
+        ktah.util.tickTimer(timeRemaining - 1);
+      }, 1000);
+    }
+  }
+  
   // Starts a game round by creating the zombies
   ktah.util.beginRound = function (playerNumber) {
+    // Update the difficulty based on the round
     var currentRound = ktah.gamestate.environment.round;
     amount = BASE_AMOUNT + (3 * currentRound);
     zombieWalkSpeed = BASE_SPEED + (0.05 * currentRound);
     roundLength = BASE_LENGTH + (5 * currentRound);
+    
+    // Have the host create monsters, and clients synchronize
     if (playerNumber === 0) {
       ktah.monsterArray = ktah.util.generateMonsters(sceneNode);
       setTimeout(function () {
@@ -93,20 +109,30 @@ $(function () {
     } else {
       ktah.util.synchronizeMonsters(sceneNode);
     }
+    
     // Next, do the proper updates and reporting
     $("#round-display")
       .fadeOut(2000, function () {$(this).html("Round: " + currentRound)})
       .fadeIn(2000);
+      
+    ktah.util.tickTimer(roundLength - 1);
   }
   
   // Cleans up scene nodes and the timer from a round
   ktah.util.resolveRound = function (playerNumber) {
-    var sceneRoot = ktah.scene.getRootSceneNode();
+    var sceneRoot = ktah.scene.getRootSceneNode(),
+        pointsGained = ktah.gamestate.environment.round * 20;
     // Begin by clearing the monster array
     for (var i = 0; i < ktah.monsterArray.length; i++) {
       sceneRoot.removeChild(ktah.monsterArray[i].sceneNode);
     }
     ktah.monsterArray = [];
+    
+    // Tell the players how awesome they are
+    $("#round-note")
+      .fadeIn(2000)
+      .fadeOut(2000);
+    ktah.util.queuedPoints += ktah.gamestate.environment.round * 20;
   }
   
   // Ends a game round by destroying all zombies, then doing next round stuff
