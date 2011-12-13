@@ -138,6 +138,13 @@ $(function() {
               ktah.characterArray[i] = new ktah.types.Tinkerer({},{sceneNode: protoSoldier});
             }
             
+            // DELETEME just here to test spawning of effects / effect spawn
+            ktah.effects = [];
+            ktah.effectsMax = 20;
+            ktah.effectsCurrent = 0;
+            useEffect("start", new CL3D.Vect3d(0,0,0));
+            //ktah.effects[0] = ;//null;//new ktah.types.Effect({type: "architect", pos: ktah.characterArray[i].Pos});
+            
             ktah.characterArray[i].playerName = ktah.gamestate.players[i].name;
             ktah.characterArray[i].isAlive = true;
             ktah.characterArray[i].playing = true;
@@ -431,6 +438,36 @@ $(function() {
       }
   	}
   },
+  
+  // Takes in an effect and adds it to ktah effects array, need to abstract this out of copperlicht ui
+  addEffect = function (effect) {
+    if (!ktah.effectsMax) { ktah.effectsMax = 20;}
+    ktah.effects[ktah.effectsCurrent] = effect;
+    if (ktah.effectsCurrent < ktah.effectsMax - 1) {
+      ktah.effectsCurrent++;
+    } else {
+      ktah.effectsCurrent = 0;
+    } 
+  }
+  
+  // Takes an effect name and adds an effect for it
+  useEffect = function (name, pos) {
+    // make sure some position exists
+    if (!pos) { pos = new CL3D.Vect3d(0,0,0);}
+    
+    // then make effect based on name
+    switch(name){
+      case "pow":
+        addEffect(new ktah.types.Pow({},{Pos: pos}));
+        break;
+      case "start":
+        addEffect(new ktah.types.Start({},{Pos: pos}));
+        break;
+      default:
+        addEffect(new ktah.types.Effect());
+        break;
+    } 
+  }
 
   // Helper function for animation display
   animateCharacter = function (characterIndex, animation) {
@@ -529,8 +566,7 @@ $(function() {
         if (roundActive && !data.environment.roundActive) {
           // If here, we know a round just ended, so clean up
           ktah.util.resolveRound(playerNumber);
-        }
-        if (!roundActive && data.environment.roundActive) {
+        } else if (!roundActive && data.environment.roundActive) {
           // If here, we know a round just started
           ktah.util.beginRound(playerNumber);
         }
@@ -821,13 +857,13 @@ $(function() {
   
   mainLoop = function() {
 	    
-  	// Only check angle and movement if player exists and player is not dead
-    if (playerSceneNode && (ktah.gamestate.players[playerNumber].health >= 1)) {
-      var currentBeing = ktah.characterArray[playerNumber], //ktah.gamestate.players[playerNumber].character;
-        monsters = ktah.gamestate.monsters;
+	  // Regardless of player health, effects still play!
+	  // Update all effects (throwing this in first, since new effects may be added later, and don't want to skip frame 1)
+    for (i in ktah.effects) { ktah.effects[i].step(catchupRate); }
+     var monsters = ktah.gamestate.monsters;
       
       if (monsters) {
-        for (var i = 0; i < ktah.monsterArray.length; i++) {
+        for (i in ktah.monsterArray) {
           // Update the monsters targets, then move the monsters.
           // This is the "host loop"
           if (playerNumber === 0) {
@@ -841,16 +877,25 @@ $(function() {
             monsters[i].rotY = ktah.monsterArray[i].sceneNode.Rot.Y;
             ktah.gamestate.monsters = monsters;
           
-            // Check collision for zombie collision and player collision
+            // Check collision for zombie collision and player collision, and make an effect if hit
             ktah.monsterArray[i].checkCollision(ktah.monsterArray, 8, 1/9);
           }
           
-          // Then see if any players are getting hit
-          if (ktah.monsterArray[i].checkCollision(ktah.characterArray[playerNumber], 4, 1/9)) {
-            beingAttacked = true;
-            // Since moved, update the camera
-            camFollow(cam, playerSceneNode);
-          }
+        }
+      }
+      
+  	// Only check angle and movement if player exists and player is not dead
+    if (playerSceneNode && (ktah.gamestate.players[playerNumber].health >= 1)) {
+      var currentBeing = ktah.characterArray[playerNumber]; //ktah.gamestate.players[playerNumber].character;
+       
+      // Then check if player got his by zombies already
+      for (i in ktah.monsterArray) {      
+        // Then see if any players are getting hit
+        if (ktah.monsterArray[i].checkCollision(ktah.characterArray[playerNumber], 4, 1/9)) {
+          beingAttacked = true;
+          useEffect("pow", ktah.characterArray[playerNumber].sceneNode.Pos);
+          // Since moved, update the camera
+          camFollow(cam, playerSceneNode);
         }
       }
 
@@ -862,6 +907,7 @@ $(function() {
         timeLoopCurrent=0;
       }
       updateCatchupRate(currentTime);//currentTime);
+      
       
       // Check to make sure mouse is held down, not just clicked
       if (mouseIsDown) {

@@ -50,6 +50,12 @@ include.includeInit([
   '/js/types/resources/wood.js',
   '/js/types/resources/zombie-flesh.js',
   
+  // Effects
+  '/js/types/effects/effect.js',
+  '/js/types/effects/start.js',
+  '/js/types/effects/pow.js',
+  
+  
   /***** MODULES *****/
   '/js/modules/round-mechanics.js',
   '/js/modules/copperlicht-ui.js',
