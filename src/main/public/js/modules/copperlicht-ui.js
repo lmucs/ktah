@@ -529,8 +529,7 @@ $(function() {
         if (roundActive && !data.environment.roundActive) {
           // If here, we know a round just ended, so clean up
           ktah.util.resolveRound(playerNumber);
-        }
-        if (!roundActive && data.environment.roundActive) {
+        } else if (!roundActive && data.environment.roundActive) {
           // If here, we know a round just started
           ktah.util.beginRound(playerNumber);
         }

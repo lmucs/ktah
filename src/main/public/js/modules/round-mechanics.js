@@ -68,7 +68,6 @@ $(function () {
               ktah.util.addCollision(monsterArray[i].sceneNode);
           }
           ktah.monsterArray = monsterArray;
-          // Set new round time here
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
@@ -96,8 +95,8 @@ $(function () {
   ktah.util.beginRound = function (playerNumber) {
     // Update the difficulty based on the round
     var currentRound = ktah.gamestate.environment.round;
-    amount = BASE_AMOUNT + (3 * currentRound);
-    zombieWalkSpeed = BASE_SPEED + (0.05 * currentRound);
+    amount = BASE_AMOUNT + (1 * currentRound);
+    zombieWalkSpeed = BASE_SPEED + (0.07 * currentRound);
     roundLength = BASE_LENGTH + (5 * currentRound);
     
     // Have the host create monsters, and clients synchronize
@@ -115,16 +114,29 @@ $(function () {
       .fadeOut(2000, function () {$(this).html("Round: " + currentRound)})
       .fadeIn(2000);
       
-    ktah.util.tickTimer(roundLength - 1);
+    ktah.util.tickTimer(roundLength - ktah.gamestate.environment.round);
+  }
+  
+  // Removes a monster from the game and shows it being killed off!
+  ktah.util.killMonster = function (monsterNode) {
+    var sceneRoot = ktah.scene.getRootSceneNode();
+    // Make more natural death animations
+    setTimeout(function() {
+      monsterNode.setLoopMode(false);
+      monsterNode.setAnimation("die");
+      // REMOVE ZEE BODIES
+      setTimeout(function() {
+        sceneRoot.removeChild(monsterNode);
+      }, 1250);
+    }, Math.random() * 1500);
   }
   
   // Cleans up scene nodes and the timer from a round
   ktah.util.resolveRound = function (playerNumber) {
-    var sceneRoot = ktah.scene.getRootSceneNode(),
-        pointsGained = ktah.gamestate.environment.round * 20;
+    var pointsGained = ktah.gamestate.environment.round * 20;
     // Begin by clearing the monster array
     for (var i = 0; i < ktah.monsterArray.length; i++) {
-      sceneRoot.removeChild(ktah.monsterArray[i].sceneNode);
+      ktah.util.killMonster(ktah.monsterArray[i].sceneNode);
     }
     ktah.monsterArray = [];
     
