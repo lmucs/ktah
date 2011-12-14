@@ -113,13 +113,12 @@ $(function() {
       // Updates the character array and the player's position within it
       // Set initialization to true for first time setup and population of characters
       updateCharacterArray = function (currentNumber, initialization) {
-        var updatedCharacters = [],
-            currentCharacter = "";
+        var currentCharacter = "";
         playerCount = ktah.gamestate.players.length;
         // Setup player information
-        for (var i = 0; i < playerCount; i++) {
-          // If it's the first setup, populate the array
-          if (initialization) {
+        // If it's the first setup, populate the array
+        if (initialization) {
+          for (var i = 0; i < playerCount; i++) {
             var protoSoldier = scene.getSceneNodeFromName('soldier');
             currentCharacter = ktah.gamestate.players[i].character;
             
@@ -148,6 +147,7 @@ $(function() {
             ktah.characterArray[i].walkSpeed = 1.85;
             ktah.characterArray[i].sceneNode.Pos.Z += i * 15;
             ktah.characterArray[i].sceneNode.Pos.Y = 1.3;
+            ktah.characterArray[i].id = i;
             
             // Load textures onto classes here
             ktah.characterArray[i].texturization();
@@ -194,7 +194,10 @@ $(function() {
                   });
               });
             }
-            
+          }
+          // Grab the character that the player is controlling
+          playerSceneNode = ktah.characterArray[playerNumber].sceneNode;
+          updateUserInterface();
           // Otherwise, it's an update
           } else {
             // Reset all the "playing" tags of the scene nodes so that the ones that
@@ -203,42 +206,19 @@ $(function() {
               ktah.characterArray[k].playing = false;
             }
             
-            for (var j = 0; j < ktah.characterArray.length; j++) {
-              // This lamely removes the player that left by adding the active ones
-              // to a new, updated character array
-              if (ktah.gamestate.players[i].name === ktah.characterArray[j].playerName) {
-                updatedCharacters.push(ktah.characterArray[j]);
-                updatedCharacters[updatedCharacters.length - 1].playerName = ktah.characterArray[j].playerName;
-                updatedCharacters[updatedCharacters.length - 1].playing = ktah.characterArray[j].playing = true;
-                updatedCharacters[updatedCharacters.length - 1].isAlive = ktah.gamestate.players[i].status;
-                updatedCharacters[updatedCharacters.length - 1].isZombie = false;
-                updatedCharacters[updatedCharacters.length - 1].walkSpeed = ktah.characterArray[j].walkSpeed;
+            // Check for players that are still present
+            for (var i = 0; i < ktah.gamestate.players.length; i++) {
+              for (var j = 0; j < ktah.characterArray.length; j++) {
+                if (ktah.gamestate.players[i].name === ktah.characterArray[j].playerName) {
+                  ktah.characterArray[j].playing = true;
+                }
               }
             }
-          }
-        }
-        
-        // If this was a mid-game update, set the players back up
-        if (!initialization) {
-          // Nuke the "zombie" scene node (pun intended, just nuke the node the player left)
-          for (var k = 0; k < ktah.characterArray.length; k++) {
-            if (!ktah.characterArray[k].playing) {
-              ktah.scene.getRootSceneNode().removeChild(ktah.characterArray[k].sceneNode);
+            // If the host left, boot all the things!
+            if (!ktah.characterArray[0].playing) {
+              gameEndExecution("Lost connection to the host! Loading score...");
             }
           }
-          // Now, set the ktah.characterArray to its updated form
-          ktah.characterArray = updatedCharacters;
-          // Now we have to reset the player numbers in the new array
-          for (var i = 0; i < ktah.characterArray.length; i++) {
-            if (updatedCharacters[i].playerName === userName) {
-              playerNumber = i;
-            }
-          }
-        }
-        
-        // Grab the character that the player is controlling
-        playerSceneNode = ktah.characterArray[playerNumber].sceneNode;
-        updateUserInterface();
       };
   
   // Called when loading the 3d scene has finished (from the coppercube file)
@@ -618,8 +598,6 @@ $(function() {
             
             // Meaning they're the host...
             if (playerNumber === 0) {
-              // *** testing to see if the monsters are being correctly updated.
-              // console.warn("posx: " + ktah.gamestate.monsters[0].posX + "posz: " + ktah.gamestate.monsters[0].posX);
         	    $.ajax({
                 type: 'POST',
                 url: '/monsters/' + gameId,
@@ -664,19 +642,13 @@ $(function() {
     });
   },
   
-  // Function to check if everyone's DEAD... periodically
-  gameEndCheck = function () {
-    for (var i = 0; i < ktah.gamestate.players.length; i++) {
-      var currentPlayer = ktah.gamestate.players[i];
-      if (currentPlayer && currentPlayer.status === "alive") {
-        return;
-      }
-    }
-    // Otherwise, everyone's dead! End the game...
+  // Used the end the game in the event of everyone dead / host left
+  gameEndExecution = function (message) {
     gameOver = true;
     //stop all zombies
     for (z in ktah.monsterArray) { ktah.monsterArray[z].updateStandState(true); }
     $("#end-dialog")
+      .html(message)
       .dialog({
         title: "Loading score...",
         width: 400,
@@ -698,6 +670,17 @@ $(function() {
       });
       window.location = "../../score/" + gameId;
     }, 6000);
+  },
+  
+  // Function to check if everyone's DEAD... periodically
+  gameEndCheck = function () {
+    for (var i = 0; i < ktah.gamestate.players.length; i++) {
+      var currentPlayer = ktah.gamestate.players[i];
+      if (currentPlayer && currentPlayer.status === "alive") {
+        return;
+      }
+    }
+    gameEndExecution("K'tah has claimed yet another victim...");
   },
   
   // Function that periodically checks for players coming or going
@@ -809,7 +792,14 @@ $(function() {
           if (playerNumber === 0) {
 
             ktah.monsterArray[i].updateCatchupRate(catchupRate);
-            ktah.monsterArray[i].huntClosest(ktah.characterArray);
+            // If the monster is taunted, set the goal to their current target,
+            // if not, have them just go after the closest player.
+            if (ktah.monsterArray[i].status === "taunted") {
+              ktah.monsterArray[i].setGoal(ktah.characterArray[ktah.monsterArray[i].target].sceneNode.Pos);
+              ktah.monsterArray[i].moveToGoal();
+            } else {
+              ktah.monsterArray[i].huntClosest(ktah.characterArray);
+            }            
           
             // Update gamestate to reflect zombie movement
             monsters[i].posX = ktah.monsterArray[i].sceneNode.Pos.X;

@@ -65,6 +65,7 @@ $(function () {
           for (var i = 0; i < data.length; i++) {
             monsterArray[i] = new ktah.types.BasicZombie({posX: data[i].posX, posZ: data[i].posZ, id: data[i].id, walkSpeed: zombieWalkSpeed},
               {gameId: gameId, sceneNode: sceneNode});
+            monsterArray[i].isZombie = true;
               ktah.util.addCollision(monsterArray[i].sceneNode);
           }
           ktah.monsterArray = monsterArray;
@@ -140,6 +141,7 @@ $(function () {
       ktah.util.killMonster(ktah.monsterArray[i]);
     }
     ktah.monsterArray = [];
+    ktah.gamestate.monsters = [];
     
     // Tell the players how awesome they are
     $("#round-note")

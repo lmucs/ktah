@@ -10,13 +10,14 @@ $(function () {
   
   // Informs the host of the use of an ability, who then
   // reports it to the other players on their respective "gets"
-  ktah.abilities.postAbilityUse = function (ability, posX, posY, posZ, angle, cd) {
+  ktah.abilities.postAbilityUse = function (ability, caster, posX, posY, posZ, angle, cd) {
     $.ajax({
       type: 'POST',
       url: '/abilities/' + ktah.gamestate.environment.game,
       data: JSON.stringify(
         {
           "name": ability,
+          "caster": caster,
           "x": posX,
           "y": posY,
           "z": posZ,
@@ -38,7 +39,7 @@ $(function () {
   ktah.abilities.renderAbilities = function (abilityQueue) {
     for (var i = 0; i < abilityQueue.length; i++) {
       var currentAbility = abilityQueue[i];
-      abilityMap[currentAbility.name](currentAbility.x, currentAbility.y, currentAbility.z, currentAbility.theta, currentAbility.cooldown);
+      abilityMap[currentAbility.name](currentAbility.caster, currentAbility.x, currentAbility.y, currentAbility.z, currentAbility.theta, currentAbility.cooldown);
     }
   };
   
@@ -81,9 +82,11 @@ $(function () {
         break;
     } 
   };
-
+/*
+ * ARCHITECT SKILLS	
+*/
   // Renders an architect's wall via copperlicht scene node
-  ktah.abilities.buildWall = function (x, y, z, theta, cooldown) {
+  ktah.abilities.buildWall = function (caster, x, y, z, theta, cooldown) {
     var wall = ktah.scene.getSceneNodeFromName('wall').createClone(ktah.scene.getRootSceneNode());
     // TODO: Fix the maffs on the wall building
     wall.Rot.Y = theta + 270;
@@ -97,14 +100,38 @@ $(function () {
     }, cooldown * 1000);
   };
   
+  // Architect's Mud, or "Churn the Earth"
+  ktah.abilities.churnTheEarth = function (caster, x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("mud", new CL3D.Vect3d(x,y,z));
+  };
+
+/*
+ * PIONEER SKILLS 
+*/
+
   // Pioneer's Path
-  ktah.abilities.makePath = function (x, y, z, theta, cooldown) {
+  ktah.abilities.makePath = function (caster, x, y, z, theta, cooldown) {
     ktah.abilities.useEffect("path", new CL3D.Vect3d(x,y,z));
   };
+
+/*
+ * HERDER SKILLS 
+*/
   
-  // Architect's Mud, or "Churn the Earth"
-  ktah.abilities.churnTheEarth = function (x, y, z, theta, cooldown) {
-    ktah.abilities.useEffect("mud", new CL3D.Vect3d(x,y,z));
+  // taunts the surrounding zombies
+  ktah.abilities.taunt = function (caster, x, y, z, theta, cooldown) {
+    if (ktah.monsterArray) {
+      var monsters = ktah.monsterArray;
+        for (i in monsters) {
+          monsters[i].target = caster;
+          monsters[i].status = "taunted";
+        }
+      setTimeout(function () {
+        for (i in monsters) {      
+          monsters[i].status = null;
+        }  
+      }, cooldown * 1000);
+    }
   };
   
   // Scientist's Chemical, or "Throw Chemical"
@@ -117,6 +144,7 @@ $(function () {
       "simpleWall": ktah.abilities.buildWall,
       "path": ktah.abilities.makePath,
       "mud": ktah.abilities.churnTheEarth,
+      "taunt": ktah.abilities.taunt,
       "chemical": ktah.abilities.throwChemical
     };
   

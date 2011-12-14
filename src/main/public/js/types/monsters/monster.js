@@ -10,6 +10,7 @@ $(function () {
       type: 'monster',
       id: null,
       health: 100,
+      status: null,
       target: 0 //not sure if we need this here, since target is a result of
                 //current position and positions of other zombies and
                 //humans, which are very dynamic
