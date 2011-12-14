@@ -51,6 +51,20 @@ $(function () {
         function () {
         }
       ];
+      
+      this.cooldowns = [0, 0, 0, 0, 0];
+      
+      this.tickCooldown = function (cooldownNumber) {
+        var currentCooldown = that.cooldowns[cooldownNumber];
+        if (currentCooldown > 0) {
+          setTimeout(function () {
+            that.cooldowns[cooldownNumber]--;
+            that.tickCooldown(cooldownNumber);
+            }, 1000);
+        } else {
+          that.cooldowns[cooldownNumber] = 0;
+        }
+      }
     }
   });
 });
