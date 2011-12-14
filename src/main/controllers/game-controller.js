@@ -71,14 +71,14 @@ module.exports = function (app) {
       gameList = [];
       for (var game in GameController.games) {
         var gamePlayers = GameController.games[game].players,
-          playerClasses = [];
+            playerClasses = [];
         for (var j = 0; j < gamePlayers.length; j++) {
           // If the difference between the server time and the player's last
           // checkin is greater than 10.5 seconds (a little more than 2 ajax calls)
           // then chuck them, as they've left the game
           if ((gamePlayers[j].timeOut)
            && (Math.abs(gamePlayers[j].timeOut - (new Date).getTime()) > 10500)) {
-            gamePlayers.splice(j, 1);
+            GameController.games[game].players.splice(j, 1);
           }
           if (gamePlayers[j]) {
             playerClasses.push(gamePlayers[j].character);
