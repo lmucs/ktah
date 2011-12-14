@@ -95,9 +95,9 @@ module.exports = function (app) {
         if (typeof(GameController.games[game]) !== "undefined") {
           gameList[i] = {
             name: game,
-            playerCount : GameController.games[game].players.length,
-            playerClasses : playerClasses,
-            begun : GameController.games[game].environment.readyState
+            playerCount: GameController.games[game].players.length,
+            playerClasses: playerClasses,
+            begun: GameController.games[game].environment.readyState
           };
         }
         i++;

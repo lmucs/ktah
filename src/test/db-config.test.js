@@ -12,7 +12,7 @@ config({
 });
 
 exports.testConfigQuery = function (beforeExit, assert) {
-	assert.match(mainQuery, /^create table/i);
-	assert.match(mainQuery, /if not exists users\(/i);
+  assert.match(mainQuery, /^create table/i);
+  assert.match(mainQuery, /if not exists users\(/i);
 };
 

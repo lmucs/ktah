@@ -13,8 +13,8 @@ module.exports = function (app) {
   app.get('/lobby', function (req, res) {
     if (req.session.is_logged_in) {
       res.render('lobby', {
-        layout : true,
-        userName : req.session.userInfo.accountName
+        layout: true,
+        userName: req.session.userInfo.accountName
       });
     } else {
       res.redirect('/');

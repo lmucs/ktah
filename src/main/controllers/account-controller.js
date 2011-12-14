@@ -26,8 +26,8 @@ module.exports = function (app, client) {
       res.redirect('/main');
     } else {
       res.render('index', {
-        layout : true,
-        loginFlash : req.session.loginFlash
+        layout: true,
+        loginFlash: req.session.loginFlash
       });
       req.session.loginFlash = undefined;
     }
@@ -47,8 +47,8 @@ module.exports = function (app, client) {
     if (sanitizeAuthentication(user) || sanitizeAuthentication(pass)) {
       req.loginBadFlash = "Errors found in username / password; try again...";
       res.render('index', {
-        layout : true,
-        loginBadFlash : req.loginBadFlash
+        layout: true,
+        loginBadFlash: req.loginBadFlash
       });
     } else {
       // Perform database check for authentication
@@ -74,8 +74,8 @@ module.exports = function (app, client) {
           
           // Return to the index with any error messages
           res.render('index', {
-            layout : true,
-            loginBadFlash : req.loginBadFlash
+            layout: true,
+            loginBadFlash: req.loginBadFlash
           });
         }
       );
@@ -113,7 +113,7 @@ module.exports = function (app, client) {
    */
   app.get('/register', function (req, res) {
     res.render('register', {
-      layout : true
+      layout: true
     });
   });
 
@@ -134,8 +134,8 @@ module.exports = function (app, client) {
      || sanitizeAuthentication(pass2) || sanitizeAuthentication(email)) {
       req.registerFlash = "Errors found in registration fields; try again...";
       res.render('register', {
-        layout : true,
-        registerFlash : req.registerFlash
+        layout: true,
+        registerFlash: req.registerFlash
       });
     } else {
       // Perform database checking for duplicates
@@ -189,11 +189,11 @@ module.exports = function (app, client) {
           // If there are errors, return to the register page with messages
           if (req.registerFlash || req.registerUserFlash || req.registerEmailFlash || req.registerPassFlash) {
             res.render('register', {
-              registerFlash : req.registerFlash,
-              registerUserFlash : req.registerUserFlash,
-              registerEmailFlash : req.registerEmailFlash,
-              registerPassFlash : req.registerPassFlash,
-              layout : true
+              registerFlash: req.registerFlash,
+              registerUserFlash: req.registerUserFlash,
+              registerEmailFlash: req.registerEmailFlash,
+              registerPassFlash: req.registerPassFlash,
+              layout: true
             });
           } else { 
           	// Otherwise, no errors, return to the login page with a success after adding to DB

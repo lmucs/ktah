@@ -17,11 +17,11 @@
  */
 
 ['HOST', 'DATABASE', 'USER', 'PASS'].forEach(function (suffix) {
-	var variable = 'KTAH_DB_' + suffix;
-	if (! process.env[variable]) {
-		console.error('Missing environment variable: ' + variable);
-		process.exit(1);
-	}
+  var variable = 'KTAH_DB_' + suffix;
+  if (! process.env[variable]) {
+    console.error('Missing environment variable: ' + variable);
+    process.exit(1);
+  }
 });
 
 /*
@@ -73,11 +73,11 @@ app.configure('production', function () {
 var mysql = require('mysql');
 
 var client = mysql.createClient({
-  ACCOUNTS_TABLE : 'ktah_accounts',
-  host : process.env.KTAH_DB_HOST,
-  database : process.env.KTAH_DB_DATABASE,
-  user : process.env.KTAH_DB_USER,
-  password : process.env.KTAH_DB_PASS
+  ACCOUNTS_TABLE: 'ktah_accounts',
+  host: process.env.KTAH_DB_HOST,
+  database: process.env.KTAH_DB_DATABASE,
+  user: process.env.KTAH_DB_USER,
+  password: process.env.KTAH_DB_PASS
 });
 
 require('./conf/db-config.js')(client);
