@@ -20,13 +20,22 @@ body {
 }
 
 #main {
-  width: 800px;
   margin: 150px auto 0 auto;
-  border: 1px solid black;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
   overflow: auto;
+  padding: 10px 40px;
+  text-align: center;
+  background: url(../assets/site-accents/ktah_paper_mid.png) top left repeat-y;
+  /*
+    Need to work in the following:
+    url(../assets/site-accents/ktah_paper_top.png) top left repeat-y;
+    url(../assets/site-accents/ktah_paper_bottom.png) top left repeat-y;
+  */
+  background-size: 100%;
+  background-clip: padding-box;
+}
+
+.main-frame {
+	width: 800px;
 }
 
 .title-spacing {
@@ -114,19 +123,8 @@ body {
 
 /* LOGIN / REGISTER */
 
-.loginFrame {
+.login-frame, .register-frame {
   width: 400px;
-  padding: 20px;
-  margin: 150px auto 0 auto;
-  border: 1px solid black;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.registerFrame {
-  margin: 0px auto 0 auto;
-  background-color: #D8D8D8;
 }
 
 .login-page-button {
