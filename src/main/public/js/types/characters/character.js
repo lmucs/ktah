@@ -47,7 +47,6 @@ $(function () {
       // Collision Detection between self and anything in the array
       for (var j = 0; j < array.length; j++) {
         if (array[j].hasCharacterCollision() && Math.abs(array[j].sceneNode.Pos.X - this.sceneNode.Pos.X) + Math.abs(array[j].sceneNode.Pos.Z - this.sceneNode.Pos.Z) < array[j].getCollisionDist()) {
-          console.log("True!");
           // Classic X/Z movement system
           this.hitEffect(array[j]);
           hitSomething = true;
