@@ -152,14 +152,20 @@ module.exports = function (app) {
    *   otherwise redirect to login page.
    */
   app.get('/game/:gameId', function (req, res) {
-    if (req.session.is_logged_in) {
-      res.render('game', {
-        gameId: req.params.gameId,
-        userName: req.session.userInfo.accountName
-      });
-    } else {
-      res.redirect('/');
+    if (req.session.is_logged_in && GameController.games[req.params.gameId]) {
+      // Make sure a miscreant is not attempting to join
+      var currentPlayers = GameController.games[req.params.gameId].players;
+      for (var i = 0; i < currentPlayers.length; i++) {
+        if (currentPlayers[i].name === req.session.userInfo.accountName) {
+          res.render('game', {
+            gameId: req.params.gameId,
+            userName: req.session.userInfo.accountName
+          });
+          return;
+        }
+      }
     }
+    res.redirect('/lobby');
   });
   
   /*
@@ -275,6 +281,10 @@ module.exports = function (app) {
   app.post('/abilities/:gameId', function (req, res) {
     var abilityUsed = req.body,
         currentGame = GameController.games[req.params.gameId];
+    if (!currentGame) {
+      return;
+    }
+    
     for (var i = 0; i < currentGame.players.length; i++) {
       var currentName = currentGame.players[i].name;
       currentGame.environment.abilityQueue[currentName].push(req.body);
@@ -305,7 +315,7 @@ module.exports = function (app) {
   app.post('/round/:gameId', function (req, res) {
     var currentGame = GameController.games[req.params.gameId];
     
-    if (GameController.games[req.params.gameId].environment) {
+    if (currentGame && currentGame.environment) {
       GameController.games[req.params.gameId].environment.round += 1;
       GameController.games[req.params.gameId].environment.roundActive = false;
       GameController.games[req.params.gameId].monsters = [];
