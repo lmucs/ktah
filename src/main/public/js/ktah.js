@@ -11,7 +11,8 @@ var ktah = {
   characterArray: [],
   monsterArray: [],
   abilities: {},
-  util: {}
+  util: {},
+  effects: []
 
 };
 
@@ -54,6 +55,7 @@ include.includeInit([
   '/js/types/effects/effect.js',
   '/js/types/effects/start.js',
   '/js/types/effects/pow.js',
+  '/js/types/effects/path.js',
   
   
   /***** MODULES *****/

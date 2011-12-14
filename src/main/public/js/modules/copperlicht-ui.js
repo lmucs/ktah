@@ -142,7 +142,7 @@ $(function() {
             ktah.effects = [];
             ktah.effectsMax = 20;
             ktah.effectsCurrent = 0;
-            useEffect("start", new CL3D.Vect3d(0,0,0));
+            ktah.abilities.useEffect("start", new CL3D.Vect3d(0,0,0));
             //ktah.effects[0] = ;//null;//new ktah.types.Effect({type: "architect", pos: ktah.characterArray[i].Pos});
             
             ktah.characterArray[i].playerName = ktah.gamestate.players[i].name;
@@ -439,36 +439,6 @@ $(function() {
   	}
   },
   
-  // Takes in an effect and adds it to ktah effects array, need to abstract this out of copperlicht ui
-  addEffect = function (effect) {
-    if (!ktah.effectsMax) { ktah.effectsMax = 20;}
-    ktah.effects[ktah.effectsCurrent] = effect;
-    if (ktah.effectsCurrent < ktah.effectsMax - 1) {
-      ktah.effectsCurrent++;
-    } else {
-      ktah.effectsCurrent = 0;
-    } 
-  }
-  
-  // Takes an effect name and adds an effect for it
-  useEffect = function (name, pos) {
-    // make sure some position exists
-    if (!pos) { pos = new CL3D.Vect3d(0,0,0);}
-    
-    // then make effect based on name
-    switch(name){
-      case "pow":
-        addEffect(new ktah.types.Pow({},{Pos: pos}));
-        break;
-      case "start":
-        addEffect(new ktah.types.Start({},{Pos: pos}));
-        break;
-      default:
-        addEffect(new ktah.types.Effect());
-        break;
-    } 
-  }
-
   // Helper function for animation display
   animateCharacter = function (characterIndex, animation) {
     var currentChar = ktah.characterArray[characterIndex].sceneNode;
@@ -859,7 +829,7 @@ $(function() {
 	    
 	  // Regardless of player health, effects still play!
 	  // Update all effects (throwing this in first, since new effects may be added later, and don't want to skip frame 1)
-    for (i in ktah.effects) { ktah.effects[i].step(catchupRate); }
+	  for (i in ktah.effects) { ktah.effects[i].step(catchupRate); }
      var monsters = ktah.gamestate.monsters;
       
       if (monsters) {
@@ -879,6 +849,9 @@ $(function() {
           
             // Check collision for zombie collision and player collision, and make an effect if hit
             ktah.monsterArray[i].checkCollision(ktah.monsterArray, 8, 1/9);
+            
+            // Check collision for zombie and effects
+            ktah.monsterArray[i].checkEffectCollision(ktah.effects, 8, 1/9);
           }
           
         }
@@ -893,7 +866,7 @@ $(function() {
         // Then see if any players are getting hit
         if (ktah.monsterArray[i].checkCollision(ktah.characterArray[playerNumber], 4, 1/9)) {
           beingAttacked = true;
-          useEffect("pow", ktah.characterArray[playerNumber].sceneNode.Pos);
+          ktah.abilities.useEffect("pow", ktah.characterArray[playerNumber].sceneNode.Pos);
           // Since moved, update the camera
           camFollow(cam, playerSceneNode);
         }
@@ -985,6 +958,10 @@ $(function() {
        
         // Collision Detection between players, or player collision
         ktah.characterArray[playerNumber].checkCollision(ktah.characterArray, 4, 1/2);
+        
+        // Collision Detection for players and effects
+        ktah.characterArray[playerNumber].checkEffectCollision(ktah.effects, 4, 1/2);
+        
         /*for (var i = 0; i < playerCount; i++) {
           if (i !== playerNumber && ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(ktah.characterArray[i].sceneNode.Pos) < 4) {
             // Classic X/Z movement system

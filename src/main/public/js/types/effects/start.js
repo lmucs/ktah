@@ -25,6 +25,8 @@ $(function () {
     
     // Runs each iteration of main loop
     step: function (catchup) {
+      if (!catchup) { catchup = 1;}
+      if (!this.moveRate) { this.moveRate = 1;}
       // float upwards
       this.sceneNode.Pos.Y += catchup*this.moveRate;
       this.defaultStep(catchup);

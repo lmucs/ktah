@@ -16,6 +16,7 @@ $(function () {
 		  arrowVisible: false,
 		  isZombie: false,
 		  walkSpeed: 1.0,
+		  currentSpeed: 1.0,
 		  moved: false,
 		  closest: null,
 		  closestNum: null,
@@ -123,6 +124,9 @@ $(function () {
     },
     
     move: function (newAngle) {
+      // in case it doesn't exist
+      if (!this.currentSpeed) { this.currentSpeed = this.walkSpeed;}
+      
       var oldX = this.sceneNode.Pos.X;
       var oldZ = this.sceneNode.Pos.Z;
       
@@ -139,8 +143,8 @@ $(function () {
       
       // Finally, only move if not trying to stand still AND you're not too close
       if ((!this.standState) && (!this.withinRange())) {
-        this.sceneNode.Pos.X += Math.cos(this.angle) * this.walkSpeed * this.catchup;
-        this.sceneNode.Pos.Z += Math.sin(this.angle) * this.walkSpeed * this.catchup;
+        this.sceneNode.Pos.X += Math.cos(this.angle) * this.currentSpeed * this.catchup;
+        this.sceneNode.Pos.Z += Math.sin(this.angle) * this.currentSpeed * this.catchup;
       } else if (this.arrowVisible) {
         this.arrowVisible = false;
       }
@@ -151,6 +155,9 @@ $(function () {
       } else {
         this.moved = ((this.sceneNode.Pos.X !== oldX) || (this.sceneNode.Pos.Z !== oldZ));
       }
+      
+      // Reset currentSpeed at end of every movement, expecting movements only after collision with effect checks
+      this.currentSpeed = this.walkSpeed;
     },
     
     moveOnAngle: function (newAngle) {
@@ -192,6 +199,21 @@ $(function () {
         }
       }
       return hitSomething;
+    },
+    
+    hitEffect: function (effect) {
+      this.defaultHitEffect(effect);
+    },
+
+    // regardless of character/monster, what usually happens when you hit an effect    
+    defaultHitEffect: function (effect) {
+      switch(effect.getName()){ // returns in single quotation marks
+        case 'path':
+          this.currentSpeed = this.walkSpeed * 2;
+          break;
+        default:
+          break;
+      }
     },
     
     dontMove: function () {

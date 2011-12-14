@@ -15,7 +15,10 @@ $(function () {
       id: null,
       timeLeft: 100,
       dying: true, 
-      moveRate: 1
+      moveRate: 1,
+      characterCollision: false,
+      monsterCollision: false,
+      collisionDist: 5
     },
     
     initialize: function (attributes, options) { //basis) {
@@ -31,6 +34,8 @@ $(function () {
       this.sceneNode = this.getSceneNode();
       ktah.scene.getRootSceneNode().addChild(this.sceneNode);
       this.sceneNode.Pos = new CL3D.Vect3d(0,30,0);//basis.pos;
+      this.characterCollision = false;
+      this.monsterCollision = false;
     },
     
     // designed to be called every iteration of main loop
@@ -67,6 +72,18 @@ $(function () {
       return billboard;
     },
     
+    hasCharacterCollision: function () {
+      return this.characterCollision;
+    },
+    hasMonsterCollision: function () {
+      return this.monsterCollision;
+    },
+    
+    // What happens if obj collides with it. Obj should have a sceneNode
+    collision: function (obj) {
+      // nothing is the default
+    },
+    
     // Kills off the self, removes from scene
     die: function () {
       this.defaultDie();
@@ -75,6 +92,14 @@ $(function () {
     // used in place of a super.die()
     defaultDie: function () {
       ktah.scene.getRootSceneNode().removeChild(this.sceneNode);
+    },
+    
+    getName: function () {
+      return this.type;
+    },
+    
+    getCollisionDist: function () {
+      return this.collisionDist;
     }
     
   });

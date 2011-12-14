@@ -42,6 +42,40 @@ $(function () {
     }
   };
   
+  // Takes in an effect after ability is used, and adds it to ktah effects array
+  ktah.abilities.addEffect = function (effect) {
+    if (!ktah.effectsMax) { ktah.effectsMax = 20;}
+    if (ktah.effects[ktah.effectsCurrent]) { ktah.effects[ktah.effectsCurrent].die()}
+    ktah.effects[ktah.effectsCurrent] = effect;
+    if (ktah.effectsCurrent < ktah.effectsMax - 1) {
+      ktah.effectsCurrent++;
+    } else {
+      ktah.effectsCurrent = 0;
+    } 
+  };
+  
+  // Takes an effect name and adds an effect for it
+  ktah.abilities.useEffect = function (name, pos) {
+    // make sure some position exists
+    if (!pos) { pos = new CL3D.Vect3d(0,0,0);}
+    
+    // then make effect based on name
+    switch(name){
+      case "path":
+        ktah.abilities.addEffect(new ktah.types.Path({},{Pos: pos}));
+        break;
+      case "pow":
+        ktah.abilities.addEffect(new ktah.types.Pow({},{Pos: pos}));
+        break;
+      case "start":
+        ktah.abilities.addEffect(new ktah.types.Start({},{Pos: pos}));
+        break;
+      default:
+        ktah.abilities.addEffect(new ktah.types.Effect());
+        break;
+    } 
+  };
+
   // Renders an architect's wall via copperlicht scene node
   ktah.abilities.buildWall = function (x, y, z, theta, cooldown) {
     var wall = ktah.scene.getSceneNodeFromName('wall').createClone(ktah.scene.getRootSceneNode());
@@ -57,9 +91,15 @@ $(function () {
     }, cooldown * 1000);
   };
   
+  // Renders an architect's wall via copperlicht scene node
+  ktah.abilities.makePath = function (x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("path", new CL3D.Vect3d(x,y,z));
+  };
+  
   var abilityMap = 
     {
-      "simpleWall": ktah.abilities.buildWall
+      "simpleWall": ktah.abilities.buildWall,
+      "path": ktah.abilities.makePath
     };
   
 });

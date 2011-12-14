@@ -31,20 +31,34 @@ $(function () {
         // Ability 1: Build Wall
         function () {
           var playerPosition = that.sceneNode.Pos,
+              abilityNumber = 0,
               cooldown = 10;
-          if (!that.cooldowns[0]) {
+          if (!that.cooldowns[abilityNumber]) {
             ktah.abilities.postAbilityUse("simpleWall", playerPosition.X, playerPosition.Y, playerPosition.Z, that.sceneNode.Rot.Y, cooldown);
-            that.cooldowns[0] = cooldown;
-            that.fadeAbilities(0, cooldown);
-            that.tickCooldown(0);
+            that.cooldowns[abilityNumber] = cooldown;
+            that.fadeAbilities(abilityNumber, cooldown);
+            that.tickCooldown(abilityNumber);
             // Ability point bonus
             ktah.util.queuedPoints += 10;
             return -1;
           }
-          return that.cooldowns[0];
+          return that.cooldowns[abilityNumber];
         },
         
         function () {
+          var playerPosition = that.sceneNode.Pos,
+              abilityNumber = 1,
+              cooldown = 10;
+          if (!that.cooldowns[abilityNumber]) {
+            ktah.abilities.postAbilityUse("path", playerPosition.X, playerPosition.Y, playerPosition.Z, that.sceneNode.Rot.Y, cooldown);
+            that.cooldowns[abilityNumber] = 0.1;//quick cooldown, almost none! cooldown;
+            that.fadeAbilities(abilityNumber, cooldown);
+            that.tickCooldown(abilityNumber);
+            // Ability point bonus
+            ktah.util.queuedPoints += 1;
+            return -1;
+          }
+          return that.cooldowns[abilityNumber];
         },
         
         function () {
