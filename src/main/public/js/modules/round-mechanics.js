@@ -133,6 +133,14 @@ $(function () {
     }, Math.random() * 1500);
   }
   
+  ktah.util.roundMessage = function (message, color) {
+    $("#round-note")
+      .css("background-color", color)
+      .html(message)
+      .fadeIn(2000)
+      .fadeOut(2000);
+  }
+  
   // Cleans up scene nodes and the timer from a round
   ktah.util.resolveRound = function (playerNumber) {
     var pointsGained = ktah.gamestate.environment.round * 20;
@@ -144,9 +152,7 @@ $(function () {
     ktah.gamestate.monsters = [];
     
     // Tell the players how awesome they are
-    $("#round-note")
-      .fadeIn(2000)
-      .fadeOut(2000);
+    ktah.util.roundMessage("K'tah sleeps... for now...", "black");
     ktah.util.queuedPoints += ktah.gamestate.environment.round * 20;
   }
   

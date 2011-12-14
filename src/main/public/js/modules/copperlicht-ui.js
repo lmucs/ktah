@@ -114,10 +114,10 @@ $(function() {
       // Set initialization to true for first time setup and population of characters
       updateCharacterArray = function (currentNumber, initialization) {
         var currentCharacter = "";
-        playerCount = ktah.gamestate.players.length;
         // Setup player information
         // If it's the first setup, populate the array
         if (initialization) {
+          playerCount = ktah.gamestate.players.length;
           for (var i = 0; i < playerCount; i++) {
             var protoSoldier = scene.getSceneNodeFromName('soldier');
             currentCharacter = ktah.gamestate.players[i].character;
@@ -208,9 +208,9 @@ $(function() {
             }
             
             // Check for players that are still present
-            for (var i = 0; i < ktah.gamestate.players.length; i++) {
+            for (var i = 0; i < playerCount; i++) {
               for (var j = 0; j < ktah.characterArray.length; j++) {
-                if (ktah.gamestate.players[i].name === ktah.characterArray[j].playerName) {
+                if (ktah.gamestate.players[i] && ktah.gamestate.players[i].name === ktah.characterArray[j].playerName) {
                   ktah.characterArray[j].playing = true;
                 }
               }
@@ -218,6 +218,20 @@ $(function() {
             // If the host left, boot all the things!
             if (!ktah.characterArray[0].playing) {
               gameEndExecution("Lost connection to the host! Loading score...");
+            }
+            // Clean up the character array stuff
+            for (var m = 0; m < playerCount; m++) {
+              currentCharacter = ktah.characterArray[m];
+              if (!currentCharacter.playing) {
+                ktah.scene.getRootSceneNode().removeChild(currentCharacter.sceneNode);
+                ktah.characterArray[m].isAlive = false;
+                // Report that the player has DC'd
+                // Update health bars
+                $("#" + currentCharacter.playerName + "-health-num-box")
+                  .children(":nth-child(2)")
+                  .text("DISCONNECTED!");
+                ktah.util.roundMessage(currentCharacter.playerName + " has disconnected!", "orange");
+              }
             }
           }
       };
@@ -513,11 +527,20 @@ $(function() {
         // Update player positions based on the gamestate
         for (var i = 0; i < playerCount; i++) {
           var currentPlayer = ktah.gamestate.players[i],
-              healthBarWidth = (currentPlayer.health / 100) * 148 + "px",
-              currentAbilityQueue = ktah.gamestate.environment.abilityQueue[currentPlayer.name];
+              healthBarWidth,
+              currentAbilityQueue;
               
+          // Skip the player if they've left the game
+          if (!currentPlayer) {
+            continue;
+          }
+          
+          healthBarWidth = (currentPlayer.health / 100) * 148 + "px";
+          currentAbilityQueue = ktah.gamestate.environment.abilityQueue[currentPlayer.name];
+          
           // Update health bars
-          $("#" + currentPlayer.name + "-health-num-box").children(":nth-child(2)")
+          $("#" + currentPlayer.name + "-health-num-box")
+            .children(":nth-child(2)")
             .text(currentPlayer.health + " / 100");
             
           $("#" + currentPlayer.name + "-health-bar")
@@ -676,7 +699,7 @@ $(function() {
   
   // Function to check if everyone's DEAD... periodically
   gameEndCheck = function () {
-    for (var i = 0; i < ktah.gamestate.players.length; i++) {
+    for (var i = 0; i < playerCount; i++) {
       var currentPlayer = ktah.gamestate.players[i];
       if (currentPlayer && currentPlayer.status === "alive") {
         return;
@@ -688,11 +711,11 @@ $(function() {
   // Function that periodically checks for players coming or going
   updatePlayers = function (data) {
     // Update the players if any have come or gone
-    if (playerCount !== data.players.length) {
+    if (ktah.gamestate.players.length !== data.players.length) {
       updateCharacterArray(playerCount, false);
-    } else {
-      updateGamestate(data);
+      console.warn("here!");
     }
+    updateGamestate(data);
     if (typeof(data) === "undefined") {
       bootMiscreants("You've lost connection with the server!");
       return;
