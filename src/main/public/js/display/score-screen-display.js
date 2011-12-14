@@ -20,7 +20,7 @@ $(function () {
   // Add the round that the team got to
   scoreList.append(
     '<div class="room-player-list round-report">You survived through '
-    + $("#round").attr("data") + ' round' + pluralAttachment + '!</div>'
+    + $("#round").attr("data") + ' round' + pluralAttachment + '...</div>'
   );
   
   // Next, populate the scores
