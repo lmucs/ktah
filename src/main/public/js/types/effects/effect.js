@@ -18,7 +18,8 @@ $(function () {
       moveRate: 1,
       characterCollision: false,
       monsterCollision: false,
-      collisionDist: 5
+      collisionDist: 5,
+      active: false
     },
     
     initialize: function (attributes, options) { //basis) {
@@ -28,6 +29,7 @@ $(function () {
     // used in place of a super.initialize()
     defaultInitialize: function ()  {      
       //this.type = basis.type;
+      this.active = true;
       this.dying = true;
       this.timeLeft = 20;
       this.moveRate = 0;
@@ -45,6 +47,7 @@ $(function () {
     
     // used in place of a super.step()
     defaultStep: function (catchup) {
+      if (!this.active) { return; }
     // Catchup is for anti-lag, but if not present, default to one
       if (!catchup) { catchup = 1; }
       
@@ -92,6 +95,7 @@ $(function () {
     // used in place of a super.die()
     defaultDie: function () {
       ktah.scene.getRootSceneNode().removeChild(this.sceneNode);
+      this.active = false;
     },
     
     getName: function () {
@@ -100,6 +104,10 @@ $(function () {
     
     getCollisionDist: function () {
       return this.collisionDist;
+    },
+    
+    getActive: function () {
+      return this.active;
     }
     
   });

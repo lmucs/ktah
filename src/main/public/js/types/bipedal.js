@@ -212,7 +212,9 @@ $(function () {
     },
     
     hitEffect: function (effect) {
-      this.defaultHitEffect(effect);
+      if (effect.getActive()){
+        this.defaultHitEffect(effect);
+      }
     },
 
     // regardless of character/monster, what usually happens when you hit an effect    
@@ -254,11 +256,14 @@ $(function () {
       this.dontMove();
       
       // Death animation
-      this.sceneNode.setLoopMode(false);
-      this.sceneNode.setAnimation("die");
+      if (this.isZombie) {
+        this.sceneNode.setLoopMode(false);
+        this.sceneNode.setAnimation("die");
+      } else {
+        this.sceneNode.Rot.X = -80;
+      }
       
       this.isAlive = false;
-      //this.sceneNode.Rot.X = -80;
     },
     
     versionNumber: function() {
