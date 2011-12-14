@@ -56,6 +56,7 @@ include.includeInit([
   '/js/types/effects/start.js',
   '/js/types/effects/pow.js',
   '/js/types/effects/path.js',
+  '/js/types/effects/mud.js',
   
   
   /***** MODULES *****/

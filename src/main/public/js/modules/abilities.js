@@ -62,6 +62,9 @@ $(function () {
     
     // then make effect based on name
     switch(name){
+      case "mud":
+        ktah.abilities.addEffect(new ktah.types.Mud({},{Pos: pos}));
+        break;
       case "path":
         ktah.abilities.addEffect(new ktah.types.Path({},{Pos: pos}));
         break;
@@ -93,12 +96,17 @@ $(function () {
       ktah.scene.getRootSceneNode().removeChild(wall);
     }, cooldown * 1000);
   };
+  
+  // Architect's Mud, or "Churn the Earth"
+  ktah.abilities.churnTheEarth = function (caster, x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("mud", new CL3D.Vect3d(x,y,z));
+  };
 
 /*
  * PIONEER SKILLS 
 */
-  
-  // Renders a pioneers's path
+
+  // Pioneer's Path
   ktah.abilities.makePath = function (caster, x, y, z, theta, cooldown) {
     ktah.abilities.useEffect("path", new CL3D.Vect3d(x,y,z));
   };
@@ -127,7 +135,8 @@ $(function () {
     {
       "simpleWall": ktah.abilities.buildWall,
       "path": ktah.abilities.makePath,
-      "taunt": ktah.abilities.taunt
+      "taunt": ktah.abilities.taunt,
+      "mud": ktah.abilities.churnTheEarth
     };
   
 });

@@ -211,6 +211,9 @@ $(function () {
         case 'path':
           this.currentSpeed = this.walkSpeed * 2;
           break;
+        case 'mud':
+          this.currentSpeed = this.walkSpeed / 2;
+          break;
         default:
           break;
       }

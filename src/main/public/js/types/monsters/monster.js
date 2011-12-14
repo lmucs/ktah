@@ -85,8 +85,10 @@ $(function () {
       
       // Collision Detection between self and anything in the array
       for (var j = 0; j < array.length; j++) {
-        if (array[j].hasMonsterCollision() && array[j].sceneNode.Pos.getDistanceTo(this.sceneNode.Pos) < dist) {
+          console.log("Trying " + j + " fer zombies!");
+        if (array[j].hasMonsterCollision() && Math.abs(array[j].sceneNode.Pos.X - this.sceneNode.Pos.X) + Math.abs(array[j].sceneNode.Pos.Z - this.sceneNode.Pos.Z) < array[j].getCollisionDist()) {
           // Classic X/Z movement system
+          console.log("Got here fer zombies!");
           this.hitEffect(array[j]);
           hitSomething = true;
         }
