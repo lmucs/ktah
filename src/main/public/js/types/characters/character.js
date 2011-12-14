@@ -13,8 +13,8 @@ $(function () {
       name: "",
       characterClass: null,
       id: null,
-      level: 0,
-      health: 100 // TODO: Arbitrary placeholder
+      level: 0//,
+      //health: 100 // TODO: Arbitrary placeholder
     },
     
     texturization: function () {

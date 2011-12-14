@@ -1,8 +1,7 @@
 /**
- * path.js
+ * mud.js
  *
- * Makes people run faster when on it.
- * stays for a while (and listens! Not really...)
+ * Slows zombies down!
  */
 
 $(function () {
@@ -25,7 +24,7 @@ $(function () {
       this.collisionDist = 50;
       this.sceneNode.Pos.X = options.Pos.X;
       this.sceneNode.Pos.Z = options.Pos.Z;
-      this.sceneNode.Pos.Y = 0;
+      this.sceneNode.Pos.Y = 1;
     },
     
     // Runs each iteration of main loop
@@ -36,7 +35,7 @@ $(function () {
     // Returns the type of scene node it should be
     getSceneNode: function () {
       var billboard = new CL3D.CubeSceneNode(50);
-      billboard.Scale.Y = 0.01;
+      billboard.Scale.Y = 0.0;
       billboard.Pos.Y = 30;
       billboard.getMaterial(0).Tex1 = ktah.engine.getTextureManager().getTexture("../assets/effects/architect/mud.jpg", true);
       billboard.getMaterial(0).Type = CL3D.Material.EMT_TRANSPARENT_ALPHA_CHANNEL;

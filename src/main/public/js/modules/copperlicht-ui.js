@@ -141,6 +141,7 @@ $(function() {
             ktah.effectsCurrent = 0;
             
             ktah.characterArray[i].playerName = ktah.gamestate.players[i].name;
+            ktah.characterArray[i].health = ktah.gamestate.players[i].health;
             ktah.characterArray[i].isAlive = true;
             ktah.characterArray[i].playing = true;
             ktah.characterArray[i].isZombie = false;
@@ -434,6 +435,7 @@ $(function() {
     animateBipedal(characterIndex, animation, ktah.monsterArray, "attack", "walk");
   },
   animateBipedal = function(index, animation, array, attackAnim, moveAnim) {
+    if (!array[index].getAliveness()) { return; }
     var currentChar = array[index].sceneNode;
     if (currentChar.currentAnimation !== animation) {
       currentChar.setLoopMode(animation !== attackAnim);
@@ -596,9 +598,10 @@ $(function() {
             }
             
             if (beingAttacked) {
-              currentPlayer.health -= Math.ceil(1 * catchupRate);
+              ktah.characterArray[i].health -= Math.ceil(1 * catchupRate);
               beingAttacked = false;
             }
+            currentPlayer.health = ktah.characterArray[i].health;
             
             if (currentPlayer.health <= 0) {
               currentPlayer.health = 0;
@@ -834,6 +837,9 @@ $(function() {
             
             // Check collision for zombie and effects
             ktah.monsterArray[i].checkEffectCollision(ktah.effects, 8, 1/9);
+            
+            // Check that still alive
+            ktah.monsterArray[i].checkLife();
           }
           
         }
@@ -942,6 +948,9 @@ $(function() {
         
         // Collision Detection for players and effects
         ktah.characterArray[playerNumber].checkEffectCollision(ktah.effects, 4, 1/2);
+        
+        // Check that still alive
+        ktah.characterArray[playerNumber].checkLife();
         
         // Finally, update Camera for new positions
         camFollow(cam, playerSceneNode);

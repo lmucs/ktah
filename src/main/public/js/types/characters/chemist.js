@@ -36,7 +36,21 @@ $(function () {
       // TODO: Class abilities added based on a person's experience
       var that = this;
       this.abilities = [
+        // Ability 1: Build Wall
         function () {
+          var playerPosition = that.sceneNode.Pos,
+              abilityNumber = 0,
+              cooldown = 10;
+          if (!that.cooldowns[abilityNumber]) {
+            ktah.abilities.postAbilityUse("chemical", playerPosition.X, playerPosition.Y, playerPosition.Z, that.sceneNode.Rot.Y, cooldown);
+            that.cooldowns[abilityNumber] = cooldown;
+            that.fadeAbilities(abilityNumber, cooldown);
+            that.tickCooldown(abilityNumber);
+            // Ability point bonus
+            ktah.util.queuedPoints += 10;
+            return -1;
+          }
+          return that.cooldowns[abilityNumber];
         },
         
         function () {
