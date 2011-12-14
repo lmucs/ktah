@@ -228,7 +228,7 @@ $(function () {
           this.currentSpeed = this.walkSpeed / 2;
           break;
         case 'chemical':
-          this.health -= 10;//Math.random(1)*20;
+          this.health -= Math.ceil(1 * this.catchup);//Math.random(1)*20;
           break;
         default:
           break;
@@ -260,6 +260,7 @@ $(function () {
         this.sceneNode.setLoopMode(false);
         this.sceneNode.setAnimation("die");
       } else {
+        this.sceneNode.setAnimation("stand");
         this.sceneNode.Rot.X = -80;
       }
       

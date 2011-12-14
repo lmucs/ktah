@@ -141,6 +141,7 @@ $(function() {
             ktah.effectsCurrent = 0;
             
             ktah.characterArray[i].playerName = ktah.gamestate.players[i].name;
+            ktah.characterArray[i].health = ktah.gamestate.players[i].health;
             ktah.characterArray[i].isAlive = true;
             ktah.characterArray[i].playing = true;
             ktah.characterArray[i].isZombie = false;
@@ -574,9 +575,10 @@ $(function() {
             }
             
             if (beingAttacked) {
-              currentPlayer.health -= Math.ceil(1 * catchupRate);
+              ktah.characterArray[i].health -= Math.ceil(1 * catchupRate);
               beingAttacked = false;
             }
+            currentPlayer.health = ktah.characterArray[i].health;
             
             if (currentPlayer.health <= 0) {
               currentPlayer.health = 0;
