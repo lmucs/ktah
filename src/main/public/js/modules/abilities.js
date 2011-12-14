@@ -62,6 +62,9 @@ $(function () {
     
     // then make effect based on name
     switch(name){
+      case "kpow":
+        ktah.abilities.addEffect(new ktah.types.Kpow({},{Pos: pos}));
+        break;
       case "chemical":
         ktah.abilities.addEffect(new ktah.types.Chemical({},{Pos: pos}));
         break;
@@ -134,18 +137,34 @@ $(function () {
     }
   };
   
+/*
+ * SCIENTIST SKILLS 
+*/
+
   // Scientist's Chemical, or "Throw Chemical"
-  ktah.abilities.throwChemical = function (x, y, z, theta, cooldown) {
+  ktah.abilities.throwChemical = function (caster, x, y, z, theta, cooldown) {
+    console.log(x + ", " + y + ", " + z);
     ktah.abilities.useEffect("chemical", new CL3D.Vect3d(x,y,z));
   };
   
+/*
+ * TINKERER SKILLS 
+*/
+
+  // Tinkerer's K'Pow!, or "Tinkerer Tinkers..."
+  ktah.abilities.tinkerKpow = function (caster, x, y, z, theta, cooldown) {
+    console.log(x + ", " + y + ", " + z);
+    ktah.abilities.useEffect("kpow", new CL3D.Vect3d(x,y,z));
+  };
+
   var abilityMap = 
     {
       "simpleWall": ktah.abilities.buildWall,
       "path": ktah.abilities.makePath,
       "mud": ktah.abilities.churnTheEarth,
       "taunt": ktah.abilities.taunt,
-      "chemical": ktah.abilities.throwChemical
+      "chemical": ktah.abilities.throwChemical,
+      "kpow": ktah.abilities.tinkerKpow
     };
   
 });

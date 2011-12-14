@@ -22,7 +22,7 @@ $(function () {
       this.timeLeft = 1000;
       this.characterCollision = true;
       this.monsterCollision = true;
-      this.collisionDist = 50;
+      this.collisionDist = 40;
       this.sceneNode.Pos.X = options.Pos.X;
       this.sceneNode.Pos.Z = options.Pos.Z;
       this.sceneNode.Pos.Y = 1;
