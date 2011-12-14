@@ -42,7 +42,7 @@ $(function () {
               abilityNumber = 0,
               cooldown = 10;
           if (!that.cooldowns[abilityNumber]) {
-            ktah.abilities.postAbilityUse("chemical", playerPosition.X, playerPosition.Y, playerPosition.Z, that.sceneNode.Rot.Y, cooldown);
+            ktah.abilities.postAbilityUse("chemical", that.id, playerPosition.X, playerPosition.Y, playerPosition.Z, that.sceneNode.Rot.Y, cooldown);
             that.cooldowns[abilityNumber] = cooldown;
             that.fadeAbilities(abilityNumber, cooldown);
             that.tickCooldown(abilityNumber);

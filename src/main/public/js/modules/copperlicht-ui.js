@@ -923,12 +923,6 @@ $(function() {
         // Collision Detection between players, or player collision
         ktah.characterArray[playerNumber].checkCollision(ktah.characterArray, 4, 1/2);
         
-        // Collision Detection for players and effects
-        ktah.characterArray[playerNumber].checkEffectCollision(ktah.effects, 4, 1/2);
-        
-        // Check that still alive
-        ktah.characterArray[playerNumber].checkLife();
-        
         // Finally, update Camera for new positions
         camFollow(cam, playerSceneNode);
         
@@ -937,6 +931,14 @@ $(function() {
           arrow.Pos.Y = -1 * arrowHeight;
         }
       }
+      
+      /* EVEN WITHOUT MOVEMENT */
+     
+      // Collision Detection for players and effects
+      ktah.characterArray[playerNumber].checkEffectCollision(ktah.effects, 4, 1/2);
+      
+      // Check that still alive
+      ktah.characterArray[playerNumber].checkLife();
       
     }
     

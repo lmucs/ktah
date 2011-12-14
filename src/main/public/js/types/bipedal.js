@@ -230,6 +230,9 @@ $(function () {
         case 'chemical':
           this.health -= Math.ceil(1 * this.catchup);//Math.random(1)*20;
           break;
+        case 'kpow':
+          this.health -= Math.ceil(effect.getDamage() * this.catchup);
+          break;
         default:
           break;
       }
