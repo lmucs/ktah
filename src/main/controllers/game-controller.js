@@ -201,6 +201,7 @@ module.exports = function (app) {
         }
       }
       req.session.gameScore = currentGame.players;
+      req.session.round = req.body.round;
       res.send({"success": true});
     }
   });
@@ -214,11 +215,12 @@ module.exports = function (app) {
     if (req.session.gameScore) {
       res.render('score', {
         layout: true,
+        round: req.session.round,
         score: req.session.gameScore,
         userName: req.session.userInfo.accountName,
         gameId: req.params.gameId
       });
-      req.session.gameScore = undefined;
+      req.session.gameScore = req.session.round = undefined;
     } else {
       res.redirect('/lobby');
     }

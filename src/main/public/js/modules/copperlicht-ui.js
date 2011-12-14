@@ -685,6 +685,7 @@ $(function() {
       $.ajax({
         type: 'POST',
         url: '/score/' + gameId,
+        data: JSON.stringify({round: ktah.gamestate.environment.round}),
         error: function (jqXHR, textStatus, errorThrown) {
           console.log(jqXHR);
           console.log(textStatus);
