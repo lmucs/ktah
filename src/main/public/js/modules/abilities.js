@@ -124,14 +124,17 @@ $(function () {
   // taunts the surrounding zombies
   ktah.abilities.taunt = function (caster, x, y, z, theta, cooldown) {
     if (ktah.monsterArray) {
-      var monsters = ktah.monsterArray;
+      var monsters = ktah.monsterArray,
+          previouslyTaunted = false;
         for (i in monsters) {
           monsters[i].target = caster;
           monsters[i].status = "taunted";
         }
       setTimeout(function () {
-        for (i in monsters) {      
-          monsters[i].status = null;
+        for (i in monsters) {
+          if (monsters[i].target === caster) {
+            monsters[i].status = null;
+          }
         }  
       }, cooldown * 1000);
     }
