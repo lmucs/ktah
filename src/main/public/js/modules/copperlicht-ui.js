@@ -209,20 +209,26 @@ $(function() {
             
             // Check for players that are still present
             for (var i = 0; i < playerCount; i++) {
-              for (var j = 0; j < ktah.characterArray.length; j++) {
+              for (var j = 0; j < playerCount; j++) {
+                // console.warn("ktah.gamestate.players[i].name " + ktah.gamestate.players[i].name);
+                // console.warn("ktah.characterArray[j].playerName " + ktah.characterArray[j].playerName);
                 if (ktah.gamestate.players[i] && ktah.gamestate.players[i].name === ktah.characterArray[j].playerName) {
                   ktah.characterArray[j].playing = true;
                 }
               }
+              // console.warn("ktah.characterArray[j].name " + ktah.characterArray[j].playerName);
+              // console.warn("ktah.characterArray[j].playing " + ktah.characterArray[j].playing);
             }
             // If the host left, boot all the things!
             if (!ktah.characterArray[0].playing) {
               gameEndExecution("Lost connection to the host! Loading score...");
             }
+            
             // Clean up the character array stuff
             for (var m = 0; m < playerCount; m++) {
               currentCharacter = ktah.characterArray[m];
               if (!currentCharacter.playing) {
+                console.warn("I should be removing shit!");
                 ktah.scene.getRootSceneNode().removeChild(currentCharacter.sceneNode);
                 ktah.characterArray[m].isAlive = false;
                 // Report that the player has DC'd
