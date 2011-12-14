@@ -80,7 +80,7 @@ var client = mysql.createClient({
   password : process.env.KTAH_DB_PASS
 });
 
-require('./public/js/modules/db-config.js')(client);
+require('./conf/db-config.js')(client);
 
 /*
  * CONTROLLERS
