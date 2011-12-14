@@ -9,6 +9,7 @@ $(function () {
 	  defaults: {
 		  goal: null, // where to travel to
 		  original: null, // where we once were
+		  health: 100,
 		  sceneNode: null,
 		  angle: 0,
 		  catchup: 0,
@@ -124,6 +125,7 @@ $(function () {
     },
     
     move: function (newAngle) {
+      if (!this.isAlive) { return; }
       // in case it doesn't exist
       if (!this.currentSpeed) { this.currentSpeed = this.walkSpeed;}
       
@@ -201,11 +203,20 @@ $(function () {
       return hitSomething;
     },
     
+    checkLife: function() {
+      if (this.health <= 0) {
+        this.die();
+      } else if (!this.isAlive) {
+        this.isAlive = true;
+      }
+    },
+    
     hitEffect: function (effect) {
       this.defaultHitEffect(effect);
     },
 
     // regardless of character/monster, what usually happens when you hit an effect    
+    // tried to abstract this to each effect, but had trouble passing "this"
     defaultHitEffect: function (effect) {
       switch(effect.getName()){ // returns in single quotation marks
         case 'path':
@@ -213,6 +224,9 @@ $(function () {
           break;
         case 'mud':
           this.currentSpeed = this.walkSpeed / 2;
+          break;
+        case 'chemical':
+          this.health -= 10;//Math.random(1)*20;
           break;
         default:
           break;
@@ -231,12 +245,20 @@ $(function () {
       this.moved = newMoved;
     },
     
+    getAliveness: function () {
+      return this.isAlive;
+    },
+    
     die: function() {
+      if (!this.isAlive) { return; }
       this.dontMove();
       
       // Death animation
+      this.sceneNode.setLoopMode(false);
+      this.sceneNode.setAnimation("die");
+      
       this.isAlive = false;
-      this.sceneNode.Rot.X = -80;
+      //this.sceneNode.Rot.X = -80;
     },
     
     versionNumber: function() {

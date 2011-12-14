@@ -118,15 +118,16 @@ $(function () {
   }
   
   // Removes a monster from the game and shows it being killed off!
-  ktah.util.killMonster = function (monsterNode) {
+  ktah.util.killMonster = function (monster) {
     var sceneRoot = ktah.scene.getRootSceneNode();
     // Make more natural death animations
     setTimeout(function() {
-      monsterNode.setLoopMode(false);
-      monsterNode.setAnimation("die");
+      monster.die();
+      //monsterNode.setLoopMode(false);
+      //monsterNode.setAnimation("die");
       // REMOVE ZEE BODIES
       setTimeout(function() {
-        sceneRoot.removeChild(monsterNode);
+        sceneRoot.removeChild(monster.sceneNode);
       }, 1250);
     }, Math.random() * 1500);
   }
@@ -136,7 +137,7 @@ $(function () {
     var pointsGained = ktah.gamestate.environment.round * 20;
     // Begin by clearing the monster array
     for (var i = 0; i < ktah.monsterArray.length; i++) {
-      ktah.util.killMonster(ktah.monsterArray[i].sceneNode);
+      ktah.util.killMonster(ktah.monsterArray[i]);
     }
     ktah.monsterArray = [];
     

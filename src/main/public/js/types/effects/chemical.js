@@ -1,14 +1,14 @@
 /**
- * path.js
+ * chemical.js
  *
- * Makes people run faster when on it.
- * stays for a while (and listens! Not really...)
+ * Does things to your health if you touch it!
+ * Stays a while.
  */
 
 $(function () {
-  ktah.types.Path = ktah.types.Effect.extend({
+  ktah.types.Chemical = ktah.types.Effect.extend({
     defaults: {
-      type: 'path',
+      type: 'chemical',
       characterClass: null,
       sceneNode: null,
       id: null,
@@ -18,10 +18,10 @@ $(function () {
     
     initialize: function (attributes, options) {
       this.defaultInitialize();
-      this.type = 'path'
+      this.type = 'chemical'
       this.timeLeft = 1000;
       this.characterCollision = true;
-      this.monsterCollision = false;
+      this.monsterCollision = true;
       this.collisionDist = 50;
       this.sceneNode.Pos.X = options.Pos.X;
       this.sceneNode.Pos.Z = options.Pos.Z;
@@ -37,12 +37,8 @@ $(function () {
     getSceneNode: function () {
       var billboard = new CL3D.CubeSceneNode(50);
       billboard.Scale.Y = 0.0;
-      /*
-      var billboard = new CL3D.BillboardSceneNode();
-      billboard.setSize(20,20);
-      */
       billboard.Pos.Y = 30;
-      billboard.getMaterial(0).Tex1 = ktah.engine.getTextureManager().getTexture("../assets/effects/pioneer/path.jpg", true);
+      billboard.getMaterial(0).Tex1 = ktah.engine.getTextureManager().getTexture("../assets/effects/scientist/goo.png", true);
       billboard.getMaterial(0).Type = CL3D.Material.EMT_TRANSPARENT_ALPHA_CHANNEL;
       return billboard;
     }

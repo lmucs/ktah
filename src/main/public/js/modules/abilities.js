@@ -61,6 +61,9 @@ $(function () {
     
     // then make effect based on name
     switch(name){
+      case "chemical":
+        ktah.abilities.addEffect(new ktah.types.Chemical({},{Pos: pos}));
+        break;
       case "mud":
         ktah.abilities.addEffect(new ktah.types.Mud({},{Pos: pos}));
         break;
@@ -104,11 +107,17 @@ $(function () {
     ktah.abilities.useEffect("mud", new CL3D.Vect3d(x,y,z));
   };
   
+  // Scientist's Chemical, or "Throw Chemical"
+  ktah.abilities.throwChemical = function (x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("chemical", new CL3D.Vect3d(x,y,z));
+  };
+  
   var abilityMap = 
     {
       "simpleWall": ktah.abilities.buildWall,
       "path": ktah.abilities.makePath,
-      "mud": ktah.abilities.churnTheEarth
+      "mud": ktah.abilities.churnTheEarth,
+      "chemical": ktah.abilities.throwChemical
     };
   
 });
