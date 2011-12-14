@@ -13,7 +13,7 @@ $(function () {
       name: "",
       characterClass: null,
       id: null,
-      level: 1,
+      level: 0,
       health: 100 // TODO: Arbitrary placeholder
     },
     

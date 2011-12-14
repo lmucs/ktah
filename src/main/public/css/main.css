@@ -23,7 +23,6 @@ body {
   margin: 150px auto 0 auto;
   overflow: auto;
   padding: 10px 40px;
-  text-align: center;
   background: url(../assets/site-accents/ktah_paper_mid.png) top left repeat-y;
   /*
     Need to work in the following:
@@ -125,6 +124,7 @@ body {
 
 .login-frame, .register-frame {
   width: 400px;
+  text-align: center;
 }
 
 .login-page-button {
