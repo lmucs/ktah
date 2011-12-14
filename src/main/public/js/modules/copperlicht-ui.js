@@ -22,9 +22,7 @@ $(function() {
   timeDiffs = [], timeDiffsCurrent = 0, timeDiffsTotal = 10, timeDiffsStartingUp = true, avgTimeDiff = 0,
   timeLoopLength = 1, // how many loops before updating the timestamp again/checking in on lag
   catchupCounterbalance = 50.0, timeLoopCurrent = 0,
-  startingY = 0.0,
-  startingX = 0.0,
-  startingZ = 0.0,
+  startingY = 0.0, startingX = 0.0, startingZ = 0.0,
   
   // Player collision animator used to incorporate Copperlicht collision detection
   playerCollisionAnimator, // initialized once scene loaded
@@ -138,12 +136,10 @@ $(function() {
               ktah.characterArray[i] = new ktah.types.Tinkerer({},{sceneNode: protoSoldier});
             }
             
-            // DELETEME just here to test spawning of effects / effect spawn
+            // Setup effects / effect spawn
             ktah.effects = [];
             ktah.effectsMax = 20;
             ktah.effectsCurrent = 0;
-            ktah.abilities.useEffect("start", new CL3D.Vect3d(0,0,0));
-            //ktah.effects[0] = ;//null;//new ktah.types.Effect({type: "architect", pos: ktah.characterArray[i].Pos});
             
             ktah.characterArray[i].playerName = ktah.gamestate.players[i].name;
             ktah.characterArray[i].isAlive = true;
@@ -373,10 +369,7 @@ $(function() {
   // A more complicated key change state event. Uppercase and lowercase
   // letters both referenced due to keydown vs keypress differences
   keyStateChange = function(key, bool) {
-    // Displays key value, for learning new key cases
-    // alert(key);
-    // When pressing w, move forward, s back
-    // a move left, d move right
+    // When pressing w, move forward, s back, a move left, d move right
     switch (key) {
       case 'w':
       case 'W':
@@ -439,40 +432,27 @@ $(function() {
   	}
   },
   
-  // Helper function for animation display
+  // Helper functions for animation display
   animateCharacter = function (characterIndex, animation) {
-    var currentChar = ktah.characterArray[characterIndex].sceneNode;
+    animateBipedal(characterIndex, animation, ktah.characterArray, "aim", "run");
+  },
+  animateMonster = function (characterIndex, animation) {
+    animateBipedal(characterIndex, animation, ktah.monsterArray, "attack", "walk");
+  },
+  animateBipedal = function(index, animation, array, attackAnim, moveAnim) {
+    var currentChar = array[index].sceneNode;
     if (currentChar.currentAnimation !== animation) {
-      currentChar.setLoopMode(animation !== "aim");
-      if (currentChar.currentAnimation !== "aim") {
+      currentChar.setLoopMode(animation !== attackAnim);
+      if (currentChar.currentAnimation !== attackAnim) {
         currentChar.currentAnimation = animation;
         currentChar.setAnimation(animation);
       }
     }
-    if (animation === "aim") {
+    if (animation === attackAnim) {
       setTimeout(function () {
-        currentChar.currentAnimation = "run";
-        animateCharacter(characterIndex, "run");
+        currentChar.currentAnimation = moveAnim;
+        animateCharacter(index, moveAnim);
       }, 600);
-    }
-  },
-  
-  animateMonster = function (monsterIndex, animation) {
-    if (monsterIndex < ktah.monsterArray.length) {
-      var currentMonster = ktah.monsterArray[monsterIndex].sceneNode;
-      if (currentMonster.currentAnimation !== animation) {
-        currentMonster.setLoopMode(animation !== "attack");
-        if (currentMonster.currentAnimation !== "attack") {
-          currentMonster.currentAnimation = animation;
-          currentMonster.setAnimation(animation);
-        }
-      }
-      if (animation === "attack") {
-        setTimeout(function () {
-          currentMonster.currentAnimation = "walk";
-          animateMonster(currentMonster, "walk");
-        }, 600);
-      }
     }
   },
   
@@ -770,11 +750,6 @@ $(function() {
 	      // to try and make the base catchupRate equal to one
 	      catchupRate = avgTimeDiff/((timeLoopLength+1)*catchupCounterbalance);
 	    }
-	    
-	    // If you want to see how various computers compare, just uncomment this line
-	    // and watch the console log. It should reflect how much catchup is needed
-	    // for the characters to appear as synced up  
-      //console.log("catchupRate: " + catchupRate);
 
     } else {
       catchupRate = 1;
@@ -785,12 +760,6 @@ $(function() {
   timeLoop = function() {
     currentTime = (new Date()).getTime();
 	//setTimeout(mainLoop, timeLoopLength);
-  },
-  
-  // Can be called if everyone ever need their collision animators reset
-  updateCollisionAnimators = function() {
-    setPlayerCollision();
-    setMonsterCollision();
   },
   
   // set player collision at start of game
@@ -881,7 +850,6 @@ $(function() {
       }
       updateCatchupRate(currentTime);//currentTime);
       
-      
       // Check to make sure mouse is held down, not just clicked
       if (mouseIsDown) {
         if (mouseClicked) {
@@ -961,14 +929,6 @@ $(function() {
         
         // Collision Detection for players and effects
         ktah.characterArray[playerNumber].checkEffectCollision(ktah.effects, 4, 1/2);
-        
-        /*for (var i = 0; i < playerCount; i++) {
-          if (i !== playerNumber && ktah.characterArray[playerNumber].sceneNode.Pos.getDistanceTo(ktah.characterArray[i].sceneNode.Pos) < 4) {
-            // Classic X/Z movement system
-            playerSceneNode.Pos.X += (playerSceneNode.Pos.X - ktah.characterArray[i].sceneNode.Pos.X)/2;
-            playerSceneNode.Pos.Z += (playerSceneNode.Pos.Z - ktah.characterArray[i].sceneNode.Pos.Z)/2;
-          }
-        }*/
         
         // Finally, update Camera for new positions
         camFollow(cam, playerSceneNode);

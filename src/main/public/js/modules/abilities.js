@@ -61,6 +61,9 @@ $(function () {
     
     // then make effect based on name
     switch(name){
+      case "mud":
+        ktah.abilities.addEffect(new ktah.types.Mud({},{Pos: pos}));
+        break;
       case "path":
         ktah.abilities.addEffect(new ktah.types.Path({},{Pos: pos}));
         break;
@@ -91,15 +94,21 @@ $(function () {
     }, cooldown * 1000);
   };
   
-  // Renders an architect's wall via copperlicht scene node
+  // Pioneer's Path
   ktah.abilities.makePath = function (x, y, z, theta, cooldown) {
     ktah.abilities.useEffect("path", new CL3D.Vect3d(x,y,z));
+  };
+  
+  // Architect's Mud, or "Churn the Earth"
+  ktah.abilities.churnTheEarth = function (x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("mud", new CL3D.Vect3d(x,y,z));
   };
   
   var abilityMap = 
     {
       "simpleWall": ktah.abilities.buildWall,
-      "path": ktah.abilities.makePath
+      "path": ktah.abilities.makePath,
+      "mud": ktah.abilities.churnTheEarth
     };
   
 });
