@@ -148,6 +148,7 @@ $(function() {
             ktah.characterArray[i].walkSpeed = 1.85;
             ktah.characterArray[i].sceneNode.Pos.Z += i * 15;
             ktah.characterArray[i].sceneNode.Pos.Y = 1.3;
+            ktah.characterArray[i].id = i;
             
             // Load textures onto classes here
             ktah.characterArray[i].texturization();
@@ -617,8 +618,6 @@ $(function() {
             
             // Meaning they're the host...
             if (playerNumber === 0) {
-              // *** testing to see if the monsters are being correctly updated.
-              // console.warn("posx: " + ktah.gamestate.monsters[0].posX + "posz: " + ktah.gamestate.monsters[0].posX);
         	    $.ajax({
                 type: 'POST',
                 url: '/monsters/' + gameId,
@@ -808,7 +807,14 @@ $(function() {
           if (playerNumber === 0) {
 
             ktah.monsterArray[i].updateCatchupRate(catchupRate);
-            ktah.monsterArray[i].huntClosest(ktah.characterArray);
+            // If the monster is taunted, set the goal to their current target,
+            // if not, have them just go after the closest player.
+            if (ktah.monsterArray[i].status === "taunted") {
+              ktah.monsterArray[i].setGoal(ktah.characterArray[ktah.monsterArray[i].target].sceneNode.Pos);
+              ktah.monsterArray[i].moveToGoal();
+            } else {
+              ktah.monsterArray[i].huntClosest(ktah.characterArray);
+            }            
           
             // Update gamestate to reflect zombie movement
             monsters[i].posX = ktah.monsterArray[i].sceneNode.Pos.X;
