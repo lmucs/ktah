@@ -81,14 +81,19 @@ $(function () {
       case "start":
         ktah.abilities.addEffect(new ktah.types.Start({},{Pos: pos}));
         break;
+      case "scarecrow":
+        ktah.abilities.addEffect(new ktah.types.Scarecrow({},{Pos: pos}));
+        break;
       default:
         ktah.abilities.addEffect(new ktah.types.Effect());
         break;
     } 
   };
+  
 /*
  * ARCHITECT SKILLS	
 */
+
   // Renders an architect's wall via copperlicht scene node
   ktah.abilities.buildWall = function (caster, x, y, z, theta, cooldown) {
     var wall = ktah.scene.getSceneNodeFromName('wall').createClone(ktah.scene.getRootSceneNode());
@@ -140,13 +145,39 @@ $(function () {
     }
   };
   
+  // the herder blends in to walk with the zombies around him
+  ktah.abilities.blendIn = function (caster, x, y, z, theta, cooldown) {
+    if (ktah.monsterArray) {
+      ktah.characterArray[caster].status = "hidden";
+      setTimeout(function () {
+        ktah.characterArray[caster].status = null;
+      }, 3000);
+    }
+  };
   
+  // the herder sets down a scarecrow to attract zombies
+  ktah.abilities.scarecrow = function (caster, x, y, z, theta, cooldown) {
+    var scarecrowPos = new CL3D.Vect3d(x,y,z)
+    ktah.abilities.useEffect("scarecrow", scarecrowPos);
+    if (ktah.monsterArray) {
+      var monsters = ktah.monsterArray;
+      for (i in monsters) {
+        monsters[i].status = "scarecrowed";
+        monsters[i].setGoal(scarecrowPos);
+      }
+      setTimeout(function () {
+        for (i in monsters) {
+          monsters[i].status = null;
+        }  
+      }, 10000);
+    }
+  };
   
 /*
- * SCIENTIST SKILLS 
+ * CHEMIST SKILLS 
 */
 
-  // Scientist's Maniacal laugh
+  // Chemist's Maniacal laugh
   ktah.abilities.maniacalLaugh = function (caster, x, y, z, theta, cooldown) {
     if (ktah.monsterArray) {
       var monsters = ktah.monsterArray;
@@ -162,7 +193,7 @@ $(function () {
     }
   };
 
-  // Scientist's Chemical, or "Throw Chemical"
+  // Chemist's Chemical, or "Throw Chemical"
   ktah.abilities.throwChemical = function (caster, x, y, z, theta, cooldown) {
     
     posX = x + (50 * (Math.sin(theta * Math.PI / 180))),
@@ -185,6 +216,8 @@ $(function () {
       "path": ktah.abilities.makePath,
       "mud": ktah.abilities.churnTheEarth,
       "taunt": ktah.abilities.taunt,
+      "blendIn": ktah.abilities.blendIn,
+      "scarecrow": ktah.abilities.scarecrow,
       "chemical": ktah.abilities.throwChemical,
       "laugh": ktah.abilities.maniacalLaugh,
       "kpow": ktah.abilities.tinkerKpow,

@@ -433,10 +433,11 @@ $(function() {
     animateBipedal(characterIndex, animation, ktah.characterArray, "aim", "run");
   },
   animateMonster = function (characterIndex, animation) {
+	console.log("Gonna " + animation);
     animateBipedal(characterIndex, animation, ktah.monsterArray, "attack", "walk");
   },
   animateBipedal = function(index, animation, array, attackAnim, moveAnim) {
-    if (!array[index].getAliveness()) { return; }
+    if (array[index].getAliveness() === false) { return; }
     var currentChar = array[index].sceneNode;
     if (currentChar.currentAnimation !== animation) {
       currentChar.setLoopMode(animation !== attackAnim);
@@ -558,6 +559,7 @@ $(function() {
           if (ktah.gamestate.monsters && ktah.monsterArray && ktah.monsterArray.length >= ktah.gamestate.monsters.length) {
             for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
               // Zombies animated here if they move, regardless if host/client
+              console.log("ktah.monsterArray[" + j + "].didMove() is " + ktah.monsterArray[j].didMove());
               animateMonster(j, ktah.monsterArray[j].didMove() ? "walk" : "look");
             }
           }
@@ -813,10 +815,19 @@ $(function() {
      var monsters = ktah.gamestate.monsters;
       
       if (monsters) {
-        for (i in ktah.monsterArray) {
-          // Update the monsters targets, then move the monsters.
-          // This is the "host loop"
-          if (playerNumber === 0) {
+        // Update the monsters targets, then move the monsters.
+        // This is the "host loop"
+        if (playerNumber === 0) {
+          
+          // For the herders "blend in" ability, if he is hidden, we don't want
+          // the zombies to know about him.
+          var playersToHunt = [];
+          for (i in ktah.characterArray) {
+            if (!(ktah.characterArray[i].status === "hidden")) {
+              playersToHunt.push(ktah.characterArray[i]);
+            }
+          }
+          for (i in ktah.monsterArray) {
 
             ktah.monsterArray[i].updateCatchupRate(catchupRate);
             // If the monster is taunted, set the goal to their current target,
@@ -824,10 +835,10 @@ $(function() {
             if (ktah.monsterArray[i].status === "taunted") {
               ktah.monsterArray[i].setGoal(ktah.characterArray[ktah.monsterArray[i].target].sceneNode.Pos);
               ktah.monsterArray[i].moveToGoal();
-            } else if (ktah.monsterArray[i].status === "feared") {
+            } else if (ktah.monsterArray[i].status === "feared" || ktah.monsterArray[i].status === "scarecrowed") {
               ktah.monsterArray[i].moveToGoal();
-            } else {
-              ktah.monsterArray[i].huntClosest(ktah.characterArray);
+            } else {              
+              ktah.monsterArray[i].huntClosest(playersToHunt);
             }            
           
             // Update gamestate to reflect zombie movement
@@ -844,8 +855,9 @@ $(function() {
             
             // Check that still alive
             ktah.monsterArray[i].checkLife();
-          }
           
+          
+          }
         }
       }
       

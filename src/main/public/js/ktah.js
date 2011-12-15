@@ -50,6 +50,7 @@ include.includeInit([
   '/js/types/effects/mud.js',
   '/js/types/effects/chemical.js',
   '/js/types/effects/kpow.js',
+  '/js/types/effects/scarecrow.js',
   
   
   /***** MODULES *****/
