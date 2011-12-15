@@ -125,8 +125,7 @@ $(function () {
   // taunts the surrounding zombies
   ktah.abilities.taunt = function (caster, x, y, z, theta, cooldown) {
     if (ktah.monsterArray) {
-      var monsters = ktah.monsterArray,
-          previouslyTaunted = false;
+      var monsters = ktah.monsterArray;
         for (i in monsters) {
           monsters[i].target = caster;
           monsters[i].status = "taunted";
@@ -141,14 +140,34 @@ $(function () {
     }
   };
   
+  
+  
 /*
  * SCIENTIST SKILLS 
 */
 
+  // Scientist's Maniacal laugh
+  ktah.abilities.maniacalLaugh = function (caster, x, y, z, theta, cooldown) {
+    if (ktah.monsterArray) {
+      var monsters = ktah.monsterArray;
+      for (i in monsters) {
+        monsters[i].status = "feared";
+        monsters[i].setGoal(new CL3D.Vect3d(((Math.random() * 1000) - 500), 1.3, ((Math.random() * 1000) - 500)));
+      }
+      setTimeout(function () {
+        for (i in monsters) {
+          monsters[i].status = null;
+        }  
+      }, 3000);
+    }
+  };
+
   // Scientist's Chemical, or "Throw Chemical"
   ktah.abilities.throwChemical = function (caster, x, y, z, theta, cooldown) {
-    console.log(x + ", " + y + ", " + z);
-    ktah.abilities.useEffect("chemical", new CL3D.Vect3d(x,y,z));
+    var randomTheta = 360 * Math.random();
+        posX = x + (50 * (Math.sin(randomTheta))),
+        posZ = z + (50 * (Math.cos(randomTheta)));
+    ktah.abilities.useEffect("chemical", new CL3D.Vect3d(posX,y,posZ));
   };
   
 /*
@@ -157,7 +176,6 @@ $(function () {
 
   // Tinkerer's K'Pow!, or "Tinkerer Tinkers..."
   ktah.abilities.tinkerKpow = function (caster, x, y, z, theta, cooldown) {
-    console.log(x + ", " + y + ", " + z);
     ktah.abilities.useEffect("kpow", new CL3D.Vect3d(x,y,z));
   };
 
@@ -168,6 +186,7 @@ $(function () {
       "mud": ktah.abilities.churnTheEarth,
       "taunt": ktah.abilities.taunt,
       "chemical": ktah.abilities.throwChemical,
+      "laugh": ktah.abilities.maniacalLaugh,
       "kpow": ktah.abilities.tinkerKpow
     };
   
