@@ -35,7 +35,7 @@ $(function () {
     // Returns the type of scene node it should be
     getSceneNode: function () {
       var billboard = new CL3D.BillboardSceneNode(30);
-      billboard.setSize(20,20);
+      billboard.setSize(15, 15);
       billboard.Pos.Y = 30;
       billboard.getMaterial(0).Tex1 = ktah.engine.getTextureManager().getTexture("../assets/effects/pioneer/bearTrapClosed.png", true);
       billboard.getMaterial(0).Type = CL3D.Material.EMT_TRANSPARENT_ALPHA_CHANNEL;
