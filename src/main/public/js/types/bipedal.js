@@ -264,7 +264,7 @@ $(function () {
     },
     
     die: function() {
-      if (!this.isAlive) { return; }
+      if (this.isAlive === false) { return; }
       this.dontMove();
       
       // Death animation
