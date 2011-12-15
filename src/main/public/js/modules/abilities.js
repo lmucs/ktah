@@ -164,9 +164,9 @@ $(function () {
 
   // Scientist's Chemical, or "Throw Chemical"
   ktah.abilities.throwChemical = function (caster, x, y, z, theta, cooldown) {
-    var randomTheta = 360 * Math.random();
-        posX = x + (50 * (Math.sin(randomTheta))),
-        posZ = z + (50 * (Math.cos(randomTheta)));
+    
+    posX = x + (50 * (Math.sin(theta * Math.PI / 180))),
+    posZ = z + (50 * (Math.cos(theta * Math.PI / 180)));
     ktah.abilities.useEffect("chemical", new CL3D.Vect3d(posX,y,posZ));
   };
   
