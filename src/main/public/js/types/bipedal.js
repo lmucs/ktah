@@ -212,6 +212,19 @@ $(function () {
       return hitSomething;
     },
     
+    bounceOffBy: function(that, amt) {
+    	var bounceRatio = 1;
+        //this.sceneNode.Pos.X -= (that.sceneNode.Pos.X - this.sceneNode.Pos.X)*bounceRatio*this.catchup;
+        //this.sceneNode.Pos.Z -= (that.sceneNode.Pos.Z - this.sceneNode.Pos.Z)*bounceRatio*this.catchup;
+    	if ((this.sceneNode.Pos.Z < that.sceneNode.Pos.Z + amt) && (this.sceneNode.Pos.Z > that.sceneNode.Pos.Z - amt)) {
+    	  if (this.sceneNode.Pos.X < that.sceneNode.Pos.X + amt) { this.sceneNode.Pos.X = that.sceneNode.Pos.X + amt; }
+    	  if (this.sceneNode.Pos.X > that.sceneNode.Pos.X - amt) { this.sceneNode.Pos.X = that.sceneNode.Pos.X - amt; }
+    	} else if ((this.sceneNode.Pos.X < that.sceneNode.Pos.X + amt) && (this.sceneNode.Pos.X > that.sceneNode.Pos.X - amt)){
+    	  if (this.sceneNode.Pos.Z < that.sceneNode.Pos.Z + amt) { this.sceneNode.Pos.Z = that.sceneNode.Pos.Z + amt; }
+    	  if (this.sceneNode.Pos.Z > that.sceneNode.Pos.Z - amt) { this.sceneNode.Pos.Z = that.sceneNode.Pos.Z - amt; }
+    	}
+    },
+    
     checkLife: function() {
       if (this.health <= 0) {
         this.die();
@@ -241,6 +254,9 @@ $(function () {
           break;
         case 'kpow':
           this.health -= Math.ceil(effect.getDamage() * this.catchup);
+          break;
+        case 'woodWall':
+          this.bounceOffBy(effect, effect.collisionDist);
           break;
         default:
           break;

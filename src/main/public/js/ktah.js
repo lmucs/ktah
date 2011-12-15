@@ -51,6 +51,7 @@ include.includeInit([
   '/js/types/effects/chemical.js',
   '/js/types/effects/kpow.js',
   '/js/types/effects/scarecrow.js',
+  '/js/types/effects/woodWall.js',
   
   
   /***** MODULES *****/
