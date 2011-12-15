@@ -436,7 +436,6 @@ $(function() {
     animateBipedal(characterIndex, animation, ktah.characterArray, "aim", "run");
   },
   animateMonster = function (characterIndex, animation) {
-	console.log("Gonna " + animation);
     animateBipedal(characterIndex, animation, ktah.monsterArray, "attack", "walk");
   },
   animateBipedal = function(index, animation, array, attackAnim, moveAnim) {
@@ -562,7 +561,6 @@ $(function() {
           if (ktah.gamestate.monsters && ktah.monsterArray && ktah.monsterArray.length >= ktah.gamestate.monsters.length) {
             for (var j = 0; j < ktah.gamestate.monsters.length; j++) {
               // Zombies animated here if they move, regardless if host/client
-              console.log("ktah.monsterArray[" + j + "].didMove() is " + ktah.monsterArray[j].didMove());
               animateMonster(j, ktah.monsterArray[j].didMove() ? "walk" : "look");
             }
           }

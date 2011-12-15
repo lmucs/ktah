@@ -66,6 +66,12 @@ $(function () {
       case "kpow":
         ktah.abilities.addEffect(new ktah.types.Kpow({},{Pos: pos}));
         break;
+      case "kbam":
+          ktah.abilities.addEffect(new ktah.types.Kbam({},{Pos: pos}));
+          break;
+      case "kboom":
+          ktah.abilities.addEffect(new ktah.types.Kboom({},{Pos: pos}));
+          break;
       case "chemical":
         ktah.abilities.addEffect(new ktah.types.Chemical({},{Pos: pos}));
         break;
@@ -83,6 +89,12 @@ $(function () {
         break;
       case "scarecrow":
         ktah.abilities.addEffect(new ktah.types.Scarecrow({},{Pos: pos}));
+        break;
+      case "woodWall":
+        ktah.abilities.addEffect(new ktah.types.WoodWall({},{Pos: pos}));
+        break;
+      case "stoneWall":
+        ktah.abilities.addEffect(new ktah.types.StoneWall({},{Pos: pos}));
         break;
       default:
         ktah.abilities.addEffect(new ktah.types.Effect());
@@ -108,10 +120,24 @@ $(function () {
       ktah.scene.getRootSceneNode().removeChild(wall);
     }, cooldown * 1000);
   };
-  
+
   // Architect's Mud, or "Churn the Earth"
   ktah.abilities.churnTheEarth = function (caster, x, y, z, theta, cooldown) {
     ktah.abilities.useEffect("mud", new CL3D.Vect3d(x,y,z));
+  };
+
+  // Architect's wood wall
+  ktah.abilities.buildWoodWall = function (caster, x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x+Math.sin((theta+90)/180*Math.PI)*20),y,(z+Math.cos((theta+90)/180*Math.PI)*20)));
+    ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x),y,(z)));
+    ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x+Math.sin((theta-90)/180*Math.PI)*20),y,(z+Math.cos((theta-90)/180*Math.PI)*20)));
+  };
+
+  // Architect's stone wall
+  ktah.abilities.buildStoneWall = function (caster, x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x+Math.sin((theta+90)/180*Math.PI)*20),y,(z+Math.cos((theta+90)/180*Math.PI)*20)));
+    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x),y,(z)));
+    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x+Math.sin((theta-90)/180*Math.PI)*20),y,(z+Math.cos((theta-90)/180*Math.PI)*20)));
   };
 
 /*
@@ -209,20 +235,32 @@ $(function () {
   ktah.abilities.tinkerKpow = function (caster, x, y, z, theta, cooldown) {
     ktah.abilities.useEffect("kpow", new CL3D.Vect3d(x,y,z));
   };
+  // Tinkerer's K'Bam!, or "Tinkerer Tinkers Times Two!"
+  ktah.abilities.tinkerKbam = function (caster, x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("kbam", new CL3D.Vect3d(x,y,z));
+  };
+  // Tinkerer's K'Bam!, or "Tinkerer Tinkers Times Two!"
+  ktah.abilities.tinkerKboom = function (caster, x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("kboom", new CL3D.Vect3d(x,y,z));
+  };
 
   var abilityMap = 
     {
       "simpleWall": ktah.abilities.buildWall,
       "path": ktah.abilities.makePath,
       "mud": ktah.abilities.churnTheEarth,
+      "woodWall": ktah.abilities.buildWoodWall,
+      "stoneWall": ktah.abilities.buildStoneWall,
       "taunt": ktah.abilities.taunt,
       "blendIn": ktah.abilities.blendIn,
       "scarecrow": ktah.abilities.scarecrow,
       "chemical": ktah.abilities.throwChemical,
       "laugh": ktah.abilities.maniacalLaugh,
       "kpow": ktah.abilities.tinkerKpow,
-      "spawnResource": ktah.resources.renderResource,
-      "consumeResource": ktah.resources.removeResource
+      "kbam": ktah.abilities.tinkerKbam,
+      "kboom": ktah.abilities.tinkerKboom,
+      "consumeResource": ktah.resources.removeResource,
+      "spawnResource": ktah.resources.renderResource
     };
   
 });
