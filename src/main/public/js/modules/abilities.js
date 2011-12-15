@@ -128,16 +128,20 @@ $(function () {
 
   // Architect's wood wall
   ktah.abilities.buildWoodWall = function (caster, x, y, z, theta, cooldown) {
-    ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x+Math.sin((theta+90)/180*Math.PI)*20),y,(z+Math.cos((theta+90)/180*Math.PI)*20)));
-    ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x),y,(z)));
-    ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x+Math.sin((theta-90)/180*Math.PI)*20),y,(z+Math.cos((theta-90)/180*Math.PI)*20)));
+    var moveAmountX = (50 * (Math.sin(theta * Math.PI / 180))),
+        moveAmountZ = (50 * (Math.cos(theta * Math.PI / 180)));
+    ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x+Math.sin((theta+90)/180*Math.PI)*20) + moveAmountX,y,(z+Math.cos((theta+90)/180*Math.PI)*20) + moveAmountZ));
+    ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x) + moveAmountX,y,(z) + moveAmountZ));
+    ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x+Math.sin((theta-90)/180*Math.PI)*20) + moveAmountX,y,(z+Math.cos((theta-90)/180*Math.PI)*20) + moveAmountZ));
   };
 
   // Architect's stone wall
   ktah.abilities.buildStoneWall = function (caster, x, y, z, theta, cooldown) {
-    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x+Math.sin((theta+90)/180*Math.PI)*20),y,(z+Math.cos((theta+90)/180*Math.PI)*20)));
-    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x),y,(z)));
-    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x+Math.sin((theta-90)/180*Math.PI)*20),y,(z+Math.cos((theta-90)/180*Math.PI)*20)));
+    var moveAmountX = (50 * (Math.sin(theta * Math.PI / 180))),
+        moveAmountZ = (50 * (Math.cos(theta * Math.PI / 180)));
+    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x+Math.sin((theta+90)/180*Math.PI)*20) + moveAmountX,y,(z+Math.cos((theta+90)/180*Math.PI)*20) + moveAmountZ));
+    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x) + moveAmountX,y,(z) + moveAmountZ));
+    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x+Math.sin((theta-90)/180*Math.PI)*20) + moveAmountX,y,(z+Math.cos((theta-90)/180*Math.PI)*20) + moveAmountZ));
   };
 
 /*
