@@ -33,10 +33,18 @@ $(function () {
         }
       }
       
+      // Bootleg way of making abilities look available
+      this.availableAbilities = [
+        "abilityIconHere",
+        "abilityIconHere",
+        null,
+        null,
+        null
+      ];
+      
       // TODO: Class abilities added based on a person's experience
       var that = this;
       this.abilities = [
-        // Ability 1: Build Wall
         function () {
           var playerPosition = that.sceneNode.Pos,
               abilityNumber = 1,
