@@ -15,7 +15,7 @@ $(function () {
       // do what we need to do whenever we create an Architect
       this.resources = {
         wood: 0,
-        water: 0,
+        stone: 0,
         learningExp: 0,
         expertise: 0
       }

@@ -59,7 +59,7 @@ $(function() {
   cam.addAnimator(animator);
   
   // Gameplay mechanics
-  var beingAttacked = -1,
+  var beingAttacked = false,
       gameId = $("#gameId").attr("data"),
       userName = $("#userName").attr("data"),
       playerNumber = 0,
@@ -208,16 +208,12 @@ $(function() {
             }
             
             // Check for players that are still present
-            for (var i = 0; i < playerCount; i++) {
+            for (var i = 0; i < ktah.gamestate.players.length; i++) {
               for (var j = 0; j < playerCount; j++) {
-                // console.warn("ktah.gamestate.players[i].name " + ktah.gamestate.players[i].name);
-                // console.warn("ktah.characterArray[j].playerName " + ktah.characterArray[j].playerName);
                 if (ktah.gamestate.players[i] && ktah.gamestate.players[i].name === ktah.characterArray[j].playerName) {
                   ktah.characterArray[j].playing = true;
                 }
               }
-              // console.warn("ktah.characterArray[j].name " + ktah.characterArray[j].playerName);
-              // console.warn("ktah.characterArray[j].playing " + ktah.characterArray[j].playing);
             }
             // If the host left, boot all the things!
             if (!ktah.characterArray[0].playing) {
@@ -228,7 +224,6 @@ $(function() {
             for (var m = 0; m < playerCount; m++) {
               currentCharacter = ktah.characterArray[m];
               if (!currentCharacter.playing) {
-                console.warn("I should be removing shit!");
                 ktah.scene.getRootSceneNode().removeChild(currentCharacter.sceneNode);
                 ktah.characterArray[m].isAlive = false;
                 // Report that the player has DC'd
@@ -537,7 +532,7 @@ $(function() {
               currentAbilityQueue;
               
           // Skip the player if they've left the game
-          if (!currentPlayer) {
+          if (!currentPlayer || gameOver) {
             continue;
           }
           
@@ -717,12 +712,12 @@ $(function() {
   
   // Function that periodically checks for players coming or going
   updatePlayers = function (data) {
-    // Update the players if any have come or gone
-    if (ktah.gamestate.players.length !== data.players.length) {
-      updateCharacterArray(playerCount, false);
-      console.warn("here!");
-    }
+    var oldCount = ktah.gamestate.players.length;
     updateGamestate(data);
+    // Update the players if any have come or gone
+    if (oldCount !== data.players.length) {
+      updateCharacterArray(playerCount, false);
+    }
     if (typeof(data) === "undefined") {
       bootMiscreants("You've lost connection with the server!");
       return;
