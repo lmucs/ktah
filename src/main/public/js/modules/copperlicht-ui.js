@@ -835,7 +835,7 @@ $(function() {
             if (ktah.monsterArray[i].status === "taunted") {
               ktah.monsterArray[i].setGoal(ktah.characterArray[ktah.monsterArray[i].target].sceneNode.Pos);
               ktah.monsterArray[i].moveToGoal();
-            } else if (ktah.monsterArray[i].status === "feared") {
+            } else if (ktah.monsterArray[i].status === "feared" || ktah.monsterArray[i].status === "scarecrowed") {
               ktah.monsterArray[i].moveToGoal();
             } else {              
               ktah.monsterArray[i].huntClosest(playersToHunt);

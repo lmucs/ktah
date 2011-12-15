@@ -161,7 +161,7 @@ $(function () {
     if (ktah.monsterArray) {
       var monsters = ktah.monsterArray;
       for (i in monsters) {
-        monsters[i].status = "feared";
+        monsters[i].status = "scarecrowed";
         monsters[i].setGoal(scarecrowPos);
       }
       setTimeout(function () {
