@@ -91,7 +91,7 @@ require('./controllers/lobby-controller.js')(app);
 require('./controllers/chat-controller.js')(app);
 require('./controllers/account-controller.js')(app, client);
 require('./controllers/room-controller.js')(app);
-require('./controllers/test-suite-controller.js')(app);
+require('../test/qunit/test-suite-controller.js')(app);
 
 /*
  * START THE SERVER
