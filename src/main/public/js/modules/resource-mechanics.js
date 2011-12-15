@@ -87,7 +87,7 @@ $(function () {
       $("#" + currentResource + "-container")
         .children()
         .last()
-        .html(currentCharacter.resources[currentResource] + "")
+        .html(currentCharacter.resources[currentResource])
         .prev()
         .progressbar("value", progressBarValue);
     }

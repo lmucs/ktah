@@ -45,7 +45,7 @@ $(function () {
             that.fadeAbilities(abilityNumber, cooldown);
             that.tickCooldown(abilityNumber);
             // Ability point bonus
-            ktah.util.queuedPoints += 10;
+            ktah.util.queuedPoints += 5;
             return -1;
           }
           return that.cooldowns[abilityNumber];
@@ -77,7 +77,7 @@ $(function () {
             that.fadeAbilities(abilityNumber, cooldown);
             that.tickCooldown(abilityNumber);
             // Ability point bonus
-            ktah.util.queuedPoints += 10;
+            ktah.util.queuedPoints += 15;
             return -1;
           }
           return that.cooldowns[abilityNumber];
