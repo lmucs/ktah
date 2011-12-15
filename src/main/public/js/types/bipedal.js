@@ -140,6 +140,7 @@ $(function () {
       
       var oldX = this.sceneNode.Pos.X;
       var oldZ = this.sceneNode.Pos.Z;
+      this.sceneNode.Pos.Y = 1.3;
       
       // Then see if there's a new angle being given for directional movement (not goal movement)
       if (newAngle) { this.angle = (270 - newAngle + 45) / 180 * Math.PI; }
