@@ -224,7 +224,6 @@ $(function() {
             for (var m = 0; m < playerCount; m++) {
               currentCharacter = ktah.characterArray[m];
               if (!currentCharacter.playing) {
-                console.warn("I should be removing shit!");
                 ktah.scene.getRootSceneNode().removeChild(currentCharacter.sceneNode);
                 ktah.characterArray[m].isAlive = false;
                 // Report that the player has DC'd
@@ -533,7 +532,7 @@ $(function() {
               currentAbilityQueue;
               
           // Skip the player if they've left the game
-          if (!currentPlayer) {
+          if (!currentPlayer || gameOver) {
             continue;
           }
           

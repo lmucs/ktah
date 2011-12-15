@@ -98,7 +98,7 @@ $(function () {
                 }
                 
                 if (!inGame) {
-                  alert("You cannot join games by URL. Use the lobby functions!", function () {
+                  alert("You cannot join games by URL. Use the lobby functions! (If you've reached this message in error, try again.)", function () {
                     window.location = '../../lobby';
                   });
                   return;
