@@ -813,10 +813,19 @@ $(function() {
      var monsters = ktah.gamestate.monsters;
       
       if (monsters) {
-        for (i in ktah.monsterArray) {
-          // Update the monsters targets, then move the monsters.
-          // This is the "host loop"
-          if (playerNumber === 0) {
+        // Update the monsters targets, then move the monsters.
+        // This is the "host loop"
+        if (playerNumber === 0) {
+          
+          // For the herders "blend in" ability, if he is hidden, we don't want
+          // the zombies to know about him.
+          var playersToHunt = [];
+          for (i in ktah.characterArray) {
+            if (!(ktah.characterArray[i].status === "hidden")) {
+              playersToHunt.push(ktah.characterArray[i]);
+            }
+          }
+          for (i in ktah.monsterArray) {
 
             ktah.monsterArray[i].updateCatchupRate(catchupRate);
             // If the monster is taunted, set the goal to their current target,
@@ -826,8 +835,8 @@ $(function() {
               ktah.monsterArray[i].moveToGoal();
             } else if (ktah.monsterArray[i].status === "feared") {
               ktah.monsterArray[i].moveToGoal();
-            } else {
-              ktah.monsterArray[i].huntClosest(ktah.characterArray);
+            } else {              
+              ktah.monsterArray[i].huntClosest(playersToHunt);
             }            
           
             // Update gamestate to reflect zombie movement
@@ -844,8 +853,9 @@ $(function() {
             
             // Check that still alive
             ktah.monsterArray[i].checkLife();
-          }
           
+          
+          }
         }
       }
       
