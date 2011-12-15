@@ -96,6 +96,9 @@ $(function () {
       case "stoneWall":
         ktah.abilities.addEffect(new ktah.types.StoneWall({},{Pos: pos}));
         break;
+      case "openBearTrap":
+        ktah.abilities.addEffect(new ktah.types.OpenBearTrap({},{Pos: pos}));
+        break;
       default:
         ktah.abilities.addEffect(new ktah.types.Effect());
         break;
@@ -153,6 +156,10 @@ $(function () {
     ktah.abilities.useEffect("path", new CL3D.Vect3d(x,y,z));
   };
 
+  ktah.abilities.setBearTrap = function (caster, x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("openBearTrap", new CL3D.Vect3d(x,y,z));
+  };
+  
 /*
  * HERDER SKILLS 
 */
@@ -252,6 +259,7 @@ $(function () {
     {
       "simpleWall": ktah.abilities.buildWall,
       "path": ktah.abilities.makePath,
+      "bearTrap": ktah.abilities.setBearTrap,
       "mud": ktah.abilities.churnTheEarth,
       "woodWall": ktah.abilities.buildWoodWall,
       "stoneWall": ktah.abilities.buildStoneWall,
