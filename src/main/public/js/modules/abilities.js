@@ -87,6 +87,9 @@ $(function () {
       case "woodWall":
         ktah.abilities.addEffect(new ktah.types.WoodWall({},{Pos: pos}));
         break;
+      case "stoneWall":
+        ktah.abilities.addEffect(new ktah.types.StoneWall({},{Pos: pos}));
+        break;
       default:
         ktah.abilities.addEffect(new ktah.types.Effect());
         break;
@@ -119,10 +122,16 @@ $(function () {
 
   // Architect's wood wall
   ktah.abilities.buildWoodWall = function (caster, x, y, z, theta, cooldown) {
-	  console.log("Theta " + theta);
     ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x+Math.sin((theta+90)/180*Math.PI)*20),y,(z+Math.cos((theta+90)/180*Math.PI)*20)));
     ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x),y,(z)));
     ktah.abilities.useEffect("woodWall", new CL3D.Vect3d((x+Math.sin((theta-90)/180*Math.PI)*20),y,(z+Math.cos((theta-90)/180*Math.PI)*20)));
+  };
+
+  // Architect's stone wall
+  ktah.abilities.buildStoneWall = function (caster, x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x+Math.sin((theta+90)/180*Math.PI)*20),y,(z+Math.cos((theta+90)/180*Math.PI)*20)));
+    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x),y,(z)));
+    ktah.abilities.useEffect("stoneWall", new CL3D.Vect3d((x+Math.sin((theta-90)/180*Math.PI)*20),y,(z+Math.cos((theta-90)/180*Math.PI)*20)));
   };
 
 /*
@@ -227,6 +236,7 @@ $(function () {
       "path": ktah.abilities.makePath,
       "mud": ktah.abilities.churnTheEarth,
       "woodWall": ktah.abilities.buildWoodWall,
+      "stoneWall": ktah.abilities.buildStoneWall,
       "taunt": ktah.abilities.taunt,
       "blendIn": ktah.abilities.blendIn,
       "scarecrow": ktah.abilities.scarecrow,

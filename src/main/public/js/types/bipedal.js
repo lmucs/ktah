@@ -256,6 +256,7 @@ $(function () {
           this.health -= Math.ceil(effect.getDamage() * this.catchup);
           break;
         case 'woodWall':
+        case 'stoneWall':
           this.bounceOffBy(effect, effect.collisionDist);
           break;
         default:

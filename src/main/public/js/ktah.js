@@ -52,6 +52,7 @@ include.includeInit([
   '/js/types/effects/kpow.js',
   '/js/types/effects/scarecrow.js',
   '/js/types/effects/woodWall.js',
+  '/js/types/effects/stoneWall.js',
   
   
   /***** MODULES *****/

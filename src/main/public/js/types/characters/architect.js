@@ -61,6 +61,19 @@ $(function () {
         },
         
         function () {
+            var playerPosition = that.sceneNode.Pos,
+            abilityNumber = 2,
+            cooldown = 20;
+            if (!that.cooldowns[abilityNumber]) {
+              ktah.abilities.postAbilityUse("stoneWall", that.id, playerPosition.X, playerPosition.Y, playerPosition.Z, that.sceneNode.Rot.Y, cooldown);
+              that.cooldowns[abilityNumber] = cooldown;
+              that.fadeAbilities(abilityNumber, cooldown);
+              that.tickCooldown(abilityNumber);
+              // Ability point bonus
+              ktah.util.queuedPoints += 1;
+              return -1;
+            }
+            return that.cooldowns[abilityNumber];
         },
         
         function () {
