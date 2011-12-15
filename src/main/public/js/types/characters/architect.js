@@ -17,7 +17,6 @@ $(function () {
       this.resources = {
         stone: 0,
         wood: 0,
-        atomicWaste: 0,
         expertise: 0
       }
       
@@ -32,10 +31,10 @@ $(function () {
         function () {
           var playerPosition = that.sceneNode.Pos,
               abilityNumber = 0,
-              cooldown = 10;
+              cooldown = 5;
           if (!that.cooldowns[abilityNumber]) {
             ktah.abilities.postAbilityUse("mud", that.id, playerPosition.X, playerPosition.Y, playerPosition.Z, that.sceneNode.Rot.Y, cooldown);
-            that.cooldowns[abilityNumber] = 0.1; // quick cooldown, almost none!
+            that.cooldowns[abilityNumber] = cooldown;
             that.fadeAbilities(abilityNumber, cooldown);
             that.tickCooldown(abilityNumber);
             // Ability point bonus

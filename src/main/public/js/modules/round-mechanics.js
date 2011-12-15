@@ -18,7 +18,8 @@ $(function () {
       sceneNode,
       gameId,
       playerCollisionRadius,
-      playerSlidingSpeed;
+      playerSlidingSpeed,
+      resourceId = 0;
   
   ktah.util.queuedPoints = 0;
       
@@ -118,6 +119,24 @@ $(function () {
     ktah.util.tickTimer(roundLength - ktah.gamestate.environment.round);
   }
   
+  // Creates resources for all the players to collect at random parts of the map
+  ktah.util.resourceSpawning = function () {
+    // Use the ability framework to spawn a resource, selecting one at random
+    var resourceDeJure;
+    switch (Math.floor(Math.random() * 5)) {
+      case 0: resourceDeJure = "wood"; break;
+      case 1: resourceDeJure = "stone"; break;
+      case 2: resourceDeJure = "toxicWaste"; break;
+      case 3: resourceDeJure = "zombieFlesh"; break;
+      case 4: resourceDeJure = "medKit"; break;
+    }
+    ktah.resources.createResource(resourceId, resourceDeJure);
+    resourceId++;
+    setTimeout(function() {
+      ktah.util.resourceSpawning();
+    }, (20 + (Math.random() * 20)) * 1000);
+  }
+  
   // Removes a monster from the game and shows it being killed off!
   ktah.util.killMonster = function (monster) {
     var sceneRoot = ktah.scene.getRootSceneNode();
@@ -183,6 +202,7 @@ $(function () {
     // Let players set up first and join
     if (playerNumber === 0) {
       ktah.util.reportEndRound();
+      ktah.util.resourceSpawning();
     }
   }
   

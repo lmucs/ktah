@@ -211,6 +211,7 @@ $(function () {
                         game: gameId,
                         readyState: false,
                         abilityQueue: {},
+                        resources: {},
                         round: 0,
                         roundActive: false
                       },

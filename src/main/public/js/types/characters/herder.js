@@ -15,6 +15,7 @@ $(function () {
     initialize: function (attributes, options) {
       // do what we need to do whenever we create an Architect
       this.resources = {
+        wood: 0,
         zombieFlesh: 0,
         atomicWaste: 0,
         expertise: 0

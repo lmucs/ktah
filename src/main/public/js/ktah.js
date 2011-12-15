@@ -11,6 +11,7 @@ var ktah = {
   characterArray: [],
   monsterArray: [],
   abilities: {},
+  resources: {},
   util: {},
   effects: []
 
@@ -41,16 +42,6 @@ include.includeInit([
   '/js/types/monsters/monster.js',
   '/js/types/monsters/basicZombie.js',
   
-  // Resources
-  '/js/types/resources/resource.js',
-  '/js/types/resources/stone.js',
-  '/js/types/resources/atomic-waste.js',
-  '/js/types/resources/metal.js',
-  '/js/types/resources/sand.js',
-  '/js/types/resources/water.js',
-  '/js/types/resources/wood.js',
-  '/js/types/resources/zombie-flesh.js',
-  
   // Effects
   '/js/types/effects/effect.js',
   '/js/types/effects/start.js',
@@ -64,6 +55,9 @@ include.includeInit([
   
   /***** MODULES *****/
   '/js/modules/round-mechanics.js',
+  '/js/types/resources/resources.js',
+  '/js/modules/resource-mechanics.js',
   '/js/modules/copperlicht-ui.js',
   '/js/modules/abilities.js'
+  
 ]);

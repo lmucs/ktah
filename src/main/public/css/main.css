@@ -425,9 +425,29 @@ body {
 
 .character-resource-icon {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   background-color: red;
+}
+
+.resource-icon-stone {
+  background-image: url(../assets/copperlicht/copperlichtdata/default_skyboxbdn.jpg);
+}
+
+.resource-icon-wood {
+  background-image: url(../assets/copperlicht/copperlichtdata/wood_texture.jpg);
+}
+
+.resource-icon-atomicWaste {
+  background-image: url(../assets/copperlicht/copperlichtdata/barrel_texture.jpg);
+}
+
+.resource-icon-zombieFlesh {
+  background-image: url(../assets/copperlicht/copperlichtdata/zombie_flesh_texture.jpg);
+}
+
+.resource-icon-expertise {
+  background-image: url(../assets/icons/expertise-icon.jpg);
 }
 
 .character-resource-bar {
@@ -453,8 +473,8 @@ body {
 
 .character-expertise-icon {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   background-color: blue;
 }
 
