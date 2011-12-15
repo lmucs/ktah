@@ -488,7 +488,6 @@ $(function() {
           bootMiscreants("You tried to access this game illegally. This incident has been reported.");
         }
         updateGamestate(data);
-        console.log("initialize here! " + ktah.gamestate.monsters);
       },
       error: function (jqXHR, textStatus, errorThrown) {
         console.log(jqXHR);

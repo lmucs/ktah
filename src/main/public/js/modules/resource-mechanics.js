@@ -1,7 +1,7 @@
 /**
- * resources.js
+ * resource-mechanics.js
  *
- * Handles resource creation and collection
+ * Handles resource creation, collection, and disposal
  */
 
 $(function () {

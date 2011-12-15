@@ -295,8 +295,9 @@ module.exports = function (app) {
   });
   
   /*
-   * POST /abilities/:gameId
-   *   Updates abilities used
+   * POST /abilityDone/:gameId/:userName
+   *   Updates the personal ability queue with which have been rendered,
+   *   keeping those that have yet to be
    */
   app.post('/abilityDone/:gameId/:userName', function (req, res) {
     var abilityCount = req.body.count,
@@ -326,21 +327,6 @@ module.exports = function (app) {
           GameController.games[req.params.gameId].environment.roundActive = true;
         }
       }, req.body.waitTime * 1000);
-    }
-    res.send({"success": true});
-  });
-  
-  /*
-   * POST /resourceConsumed/:gameId
-   *   Updates resources that were consumed / expired
-   */
-  app.post('/resourceConsumed/:gameId', function (req, res) {
-    var currentGame = GameController.games[req.params.gameId];
-    for (var i = 0; i < currentGame.players.length; i++) {
-      var currentName = currentGame.players[i].name;
-      if (req.params.userName === currentName) {
-        currentGame.environment.abilityQueue[currentName].splice(0, abilityCount);
-      }
     }
     res.send({"success": true});
   });

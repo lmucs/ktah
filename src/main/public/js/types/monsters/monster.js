@@ -26,32 +26,17 @@ $(function () {
           closestPlayer,
           closestMonster,
           closestCondition;
-          //players = ktah.gamestate.players;
       for(var i = 0; i < players.length; i++) {
         closestCondition = closestDistance === null || closestDistance > this.sceneNode.Pos.getDistanceTo(new CL3D.Vect3d(players[i].posX, 1.3, players[i].posZ));
         if (closestCondition) {
           closestDistance = this.sceneNode.Pos.getDistanceTo(new CL3D.Vect3d(players[i].posX, 1.3, players[i].posZ));
-          //this.target = i;
           target = i;
         }
       }
       
-      //get the coords of the chosen target
-      //targetPoint = {x: target.pos.x, y: target.pos.y};
-      
-      //Handle obstacle avoidance:
-      //targetPoint = this.navigate(targetPoint);
-      
-        //test:
-        //for right now, just direct the zombies to (0, 0):
-        //this.
-      
-      //Direct it to the desired point:
-      //this.stepToTarget(targetPoint);
     },
     
     stepToTarget: function () {
-      // console.log("monster " + this.id + " moving to player " + this.target);
       
     },
     

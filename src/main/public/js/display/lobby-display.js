@@ -16,12 +16,7 @@ $(function () {
             health : 100,
             pointsRemaining: 0,
             pointsEarned: 0,
-            attacking: -1,
             beingAttacked: false,
-            posX: 0,
-            posZ: 0,
-            posY: 0,
-            theta: 0,
             timeOut: 0,
             status: "alive",
             readyState: "notReady"
@@ -211,7 +206,6 @@ $(function () {
                         game: gameId,
                         readyState: false,
                         abilityQueue: {},
-                        resources: {},
                         round: 0,
                         roundActive: false
                       },
