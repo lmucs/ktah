@@ -55,6 +55,8 @@ include.includeInit([
   '/js/types/effects/scarecrow.js',
   '/js/types/effects/woodWall.js',
   '/js/types/effects/stoneWall.js',
+  '/js/types/effects/openBearTrap.js',
+  '/js/types/effects/closedBearTrap.js',
   
   
   /***** MODULES *****/

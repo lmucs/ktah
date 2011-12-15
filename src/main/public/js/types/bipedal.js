@@ -261,6 +261,10 @@ $(function () {
         case 'stoneWall':
           this.bounceOffBy(effect, effect.collisionDist);
           break;
+        case 'openBearTrap':
+          this.currentSpeed = 0;
+          this.health = this.health - 55;
+          ktah.abilities.addEffect(new ktah.types.ClosedBearTrap({},{Pos: effect.sceneNode.Pos}));
         default:
           break;
       }
