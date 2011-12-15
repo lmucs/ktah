@@ -37,10 +37,10 @@ $(function () {
         function () {
           var playerPosition = that.sceneNode.Pos,
               abilityNumber = 0,
-              cooldown = 10;
+              cooldown = 2;
           if (!that.cooldowns[abilityNumber]) {
             ktah.abilities.postAbilityUse("path", that.id, playerPosition.X, playerPosition.Y, playerPosition.Z, that.sceneNode.Rot.Y, cooldown);
-            that.cooldowns[abilityNumber] = 0.1;//quick cooldown, almost none! cooldown;
+            that.cooldowns[abilityNumber] = 2;
             that.fadeAbilities(abilityNumber, cooldown);
             that.tickCooldown(abilityNumber);
             // Ability point bonus

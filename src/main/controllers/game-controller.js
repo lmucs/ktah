@@ -329,4 +329,19 @@ module.exports = function (app) {
     }
     res.send({"success": true});
   });
+  
+  /*
+   * POST /resourceConsumed/:gameId
+   *   Updates resources that were consumed / expired
+   */
+  app.post('/resourceConsumed/:gameId', function (req, res) {
+    var currentGame = GameController.games[req.params.gameId];
+    for (var i = 0; i < currentGame.players.length; i++) {
+      var currentName = currentGame.players[i].name;
+      if (req.params.userName === currentName) {
+        currentGame.environment.abilityQueue[currentName].splice(0, abilityCount);
+      }
+    }
+    res.send({"success": true});
+  });
 }

@@ -10,7 +10,7 @@ $(function () {
   
   // Informs the host of the use of an ability, who then
   // reports it to the other players on their respective "gets"
-  ktah.abilities.postAbilityUse = function (ability, caster, posX, posY, posZ, angle, cd) {
+  ktah.abilities.postAbilityUse = function (ability, caster, posX, posY, posZ, angle, cd, options) {
     $.ajax({
       type: 'POST',
       url: '/abilities/' + ktah.gamestate.environment.game,
@@ -22,7 +22,8 @@ $(function () {
           "y": posY,
           "z": posZ,
           "theta": angle,
-          "cooldown": cd
+          "cooldown": cd,
+          "options": options
         }
       ),
       error: function (jqXHR, textStatus, errorThrown) {
@@ -39,7 +40,7 @@ $(function () {
   ktah.abilities.renderAbilities = function (abilityQueue) {
     for (var i = 0; i < abilityQueue.length; i++) {
       var currentAbility = abilityQueue[i];
-      abilityMap[currentAbility.name](currentAbility.caster, currentAbility.x, currentAbility.y, currentAbility.z, currentAbility.theta, currentAbility.cooldown);
+      abilityMap[currentAbility.name](currentAbility.caster, currentAbility.x, currentAbility.y, currentAbility.z, currentAbility.theta, currentAbility.cooldown, currentAbility.options);
     }
   };
   

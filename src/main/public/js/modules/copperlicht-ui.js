@@ -165,7 +165,7 @@ $(function() {
                 }
                 $("#character-resources").append(
                   '<span class="character-' + resourceType + '" value="' + currentResource + '">'
-                  + '<div class="character-' + resourceType + '-icon">&nbsp</div>'
+                  + '<div class="character-' + resourceType + '-icon resource-icon-' + currentResource + '">&nbsp</div>'
                   + '<div class="character-' + resourceType + '-bar"></div>'
                   + '<div class="character-resource-text">0 / 3</div></span>'
                 );
