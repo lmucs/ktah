@@ -59,7 +59,7 @@ $(function() {
   cam.addAnimator(animator);
   
   // Gameplay mechanics
-  var beingAttacked = -1,
+  var beingAttacked = false,
       gameId = $("#gameId").attr("data"),
       userName = $("#userName").attr("data"),
       playerNumber = 0,
