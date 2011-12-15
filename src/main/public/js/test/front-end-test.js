@@ -1,7 +1,7 @@
 /*
  * Unit tests for the K'tah front end.
  * 
- * 
+ * The following tests are run under QUnit. 
  */
 $(function () {
 
@@ -40,28 +40,41 @@ $(function () {
   });
 
   /*
-   * TODO: How to test uris that require that we are logged in?  We can't pass in 
-   * credentials in the test because it is open source.  We don't want interactive
-   * login.  Env variables?  Or perhaps we can mock the controller......
+   * TODO: Test uris that require that we are logged in.
    */
 
-
-
+  /*
+   * Tests some URIs with the POST method.
+   */
   module("Posts");
   
-  module("Monster Behavior");
+  /*
+   * Tests the ktah object.
+   */
+  module("Basics")
   
-  module("Player Behavior");
-    
-  module("For reference only");
-  
-  test("Stub Tests", function () {
-    deepEqual([3, 4, 5], [3, 4, 5], "Array equality WIN!");
-    ok(isNaN(NaN), "NaN is NaN");
+  test("Ktah Tests", function () {
+  	ok(ktah, "ktah is defined");
+    ok(ktah.types && ktah.gamestate && ktah.characterArray && ktah.monsterArray
+    	&& ktah.abilities && ktah.util && ktah.effects, "ktah properties defined");
   });
   
-  test("Arithmetic", function () {
-    same(2 + 2, 4, "Two plus two equals 4");
+  /*
+   * Tests the game objects.
+   */
+  module("Types");
+  
+  test("Character Tests", function () {
+  	// TODO assertions for architect, chemist, etc.
   });
+  
+  test("Monster Tests", function () {
+  	// TODO assertions for monster, basic zombie, etc.
+  });
+  
+  /*
+   * Tests the chat subsystem.
+   */
+  module("Chat");
   
 });
