@@ -80,14 +80,19 @@ $(function () {
       case "start":
         ktah.abilities.addEffect(new ktah.types.Start({},{Pos: pos}));
         break;
+      case "scarecrow":
+        ktah.abilities.addEffect(new ktah.types.Scarecrow({},{Pos: pos}));
+        break;
       default:
         ktah.abilities.addEffect(new ktah.types.Effect());
         break;
     } 
   };
+  
 /*
  * ARCHITECT SKILLS	
 */
+
   // Renders an architect's wall via copperlicht scene node
   ktah.abilities.buildWall = function (caster, x, y, z, theta, cooldown) {
     var wall = ktah.scene.getSceneNodeFromName('wall').createClone(ktah.scene.getRootSceneNode());
@@ -149,6 +154,24 @@ $(function () {
     }
   };
   
+  // the herder sets down a scarecrow to attract zombies
+  ktah.abilities.scarecrow = function (caster, x, y, z, theta, cooldown) {
+    var scarecrowPos = new CL3D.Vect3d(x,y,z)
+    ktah.abilities.useEffect("scarecrow", scarecrowPos);
+    if (ktah.monsterArray) {
+      var monsters = ktah.monsterArray;
+      for (i in monsters) {
+        monsters[i].status = "feared";
+        monsters[i].setGoal(scarecrowPos);
+      }
+      setTimeout(function () {
+        for (i in monsters) {
+          monsters[i].status = null;
+        }  
+      }, 10000);
+    }
+  };
+  
 /*
  * CHEMIST SKILLS 
 */
@@ -193,6 +216,7 @@ $(function () {
       "mud": ktah.abilities.churnTheEarth,
       "taunt": ktah.abilities.taunt,
       "blendIn": ktah.abilities.blendIn,
+      "scarecrow": ktah.abilities.scarecrow,
       "chemical": ktah.abilities.throwChemical,
       "laugh": ktah.abilities.maniacalLaugh,
       "kpow": ktah.abilities.tinkerKpow
