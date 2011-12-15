@@ -253,6 +253,8 @@ $(function () {
           this.health -= Math.ceil(1 * this.catchup);//Math.random(1)*20;
           break;
         case 'kpow':
+        case 'kbam':
+        case 'kboom':
           this.health -= Math.ceil(effect.getDamage() * this.catchup);
           break;
         case 'woodWall':

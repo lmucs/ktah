@@ -66,6 +66,12 @@ $(function () {
       case "kpow":
         ktah.abilities.addEffect(new ktah.types.Kpow({},{Pos: pos}));
         break;
+      case "kbam":
+          ktah.abilities.addEffect(new ktah.types.Kbam({},{Pos: pos}));
+          break;
+      case "kboom":
+          ktah.abilities.addEffect(new ktah.types.Kboom({},{Pos: pos}));
+          break;
       case "chemical":
         ktah.abilities.addEffect(new ktah.types.Chemical({},{Pos: pos}));
         break;
@@ -229,6 +235,14 @@ $(function () {
   ktah.abilities.tinkerKpow = function (caster, x, y, z, theta, cooldown) {
     ktah.abilities.useEffect("kpow", new CL3D.Vect3d(x,y,z));
   };
+  // Tinkerer's K'Bam!, or "Tinkerer Tinkers Times Two!"
+  ktah.abilities.tinkerKbam = function (caster, x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("kbam", new CL3D.Vect3d(x,y,z));
+  };
+  // Tinkerer's K'Bam!, or "Tinkerer Tinkers Times Two!"
+  ktah.abilities.tinkerKboom = function (caster, x, y, z, theta, cooldown) {
+    ktah.abilities.useEffect("kboom", new CL3D.Vect3d(x,y,z));
+  };
 
   var abilityMap = 
     {
@@ -243,6 +257,8 @@ $(function () {
       "chemical": ktah.abilities.throwChemical,
       "laugh": ktah.abilities.maniacalLaugh,
       "kpow": ktah.abilities.tinkerKpow,
+      "kbam": ktah.abilities.tinkerKbam,
+      "kboom": ktah.abilities.tinkerKboom,
       "spawnResource": ktah.resources.renderResource
     };
   
