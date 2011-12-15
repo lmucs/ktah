@@ -601,3 +601,8 @@ body {
   font-weight: bold;
   color: #FFC000;
 }
+
+audio {
+  margin-left: auto;
+  margin-right: auto;
+}
