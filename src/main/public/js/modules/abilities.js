@@ -187,7 +187,8 @@ $(function () {
       "taunt": ktah.abilities.taunt,
       "chemical": ktah.abilities.throwChemical,
       "laugh": ktah.abilities.maniacalLaugh,
-      "kpow": ktah.abilities.tinkerKpow
+      "kpow": ktah.abilities.tinkerKpow,
+      "spawnResource": ktah.resources.renderResource
     };
   
 });

@@ -53,8 +53,10 @@ include.includeInit([
   
   
   /***** MODULES *****/
-  '/js/modules/resources.js',
   '/js/modules/round-mechanics.js',
+  '/js/types/resources/resources.js',
+  '/js/modules/resource-mechanics.js',
   '/js/modules/copperlicht-ui.js',
   '/js/modules/abilities.js'
+  
 ]);
