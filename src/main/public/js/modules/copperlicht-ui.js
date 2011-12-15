@@ -164,10 +164,10 @@ $(function() {
                   resourceType = "expertise";
                 }
                 $("#character-resources").append(
-                  '<span class="character-' + resourceType + '" value="' + currentResource + '">'
+                  '<span id="' + currentResource + '-container" class="character-' + resourceType + '">'
                   + '<div class="character-' + resourceType + '-icon resource-icon-' + currentResource + '">&nbsp</div>'
                   + '<div class="character-' + resourceType + '-bar"></div>'
-                  + '<div class="character-resource-text">0 / 3</div></span>'
+                  + '<div class="character-resource-text">0</div></span>'
                 );
               }
               
@@ -293,6 +293,9 @@ $(function() {
       setInterval(gameEndCheck, 5000);
       
       $("#round-timer").progressbar();
+      
+      // Check for resource gain
+      ktah.resources.checkForResourcePickup(playerNumber);
       
       // Remove the loading screen
       $("#loadingScreen").fadeOut(3000);
@@ -537,13 +540,13 @@ $(function() {
             continue;
           }
           
-          healthBarWidth = (currentPlayer.health / 100) * 148 + "px";
+          healthBarWidth = Math.min((currentPlayer.health / 100) * 148, 148) + "px";
           currentAbilityQueue = ktah.gamestate.environment.abilityQueue[currentPlayer.name];
           
           // Update health bars
           $("#" + currentPlayer.name + "-health-num-box")
             .children(":nth-child(2)")
-            .text(currentPlayer.health + " / 100");
+            .text(currentPlayer.health);
             
           $("#" + currentPlayer.name + "-health-bar")
             .css({width: healthBarWidth});
@@ -855,8 +858,6 @@ $(function() {
             
             // Check that still alive
             ktah.monsterArray[i].checkLife();
-          
-          
           }
         }
       }

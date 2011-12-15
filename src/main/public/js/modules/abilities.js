@@ -221,7 +221,8 @@ $(function () {
       "chemical": ktah.abilities.throwChemical,
       "laugh": ktah.abilities.maniacalLaugh,
       "kpow": ktah.abilities.tinkerKpow,
-      "spawnResource": ktah.resources.renderResource
+      "spawnResource": ktah.resources.renderResource,
+      "consumeResource": ktah.resources.removeResource
     };
   
 });

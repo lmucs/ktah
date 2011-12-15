@@ -18,7 +18,7 @@ $(function () {
         stone: 0,
         wood: 0,
         zombieFlesh: 0,
-        atomicWaste: 0,
+        toxicWaste: 0,
         expertise: 0
       }
       
