@@ -296,7 +296,7 @@ module.exports = function (app) {
   
   /*
    * POST /abilityDone/:gameId/:userName
-   *   Updates the personal ability queue with which have been rendered,
+   *   Updates the personal ability queue with those that have been rendered,
    *   keeping those that have yet to be
    */
   app.post('/abilityDone/:gameId/:userName', function (req, res) {

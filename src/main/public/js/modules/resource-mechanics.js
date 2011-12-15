@@ -21,11 +21,6 @@ $(function () {
     var resourceSpawned = new ktah.types.Resource({resourceType: options.resourceType, posX: x, posZ: z, id: options.resourceId},
           {sceneNode: ktah.scene.getSceneNodeFromName(options.resourceType)});
     ktah.resources.resourcesPresent.push(resourceSpawned);
-    
-    // Set a timeout for resources that are inaccessible or neglected
-    setTimeout(function() {
-      
-    }, cooldown * 500);
   };
   
   // Runs through collision with resources
@@ -45,6 +40,8 @@ $(function () {
   ktah.resources.consumeResource = function (playerNumber, resourceType, resourceId) {
     ktah.abilities.postAbilityUse("consumeResource", "host", 0, 1.3, 0, 0, 60, 
       {"id": resourceId, "resourceType": resourceType});
+    // Nuke the resource locally, in the meantime (sloppy)
+    ktah.resources.removeResource(null, null, null, null, null, null, {id: resourceId});
     
     var currentCharacter = ktah.characterArray[playerNumber],
         currentResource = currentCharacter.resources[resourceType];
@@ -69,7 +66,7 @@ $(function () {
     for (var i = 0; i < resourcesPresent.length; i++) {
       if (resourcesPresent[i].id === options.id) {
         ktah.scene.getRootSceneNode().removeChild(resourcesPresent[i].sceneNode);
-        resourcesPresent.splice(i, 1);
+        ktah.resources.resourcesPresent.splice(i, 1);
         return;
       }
     }

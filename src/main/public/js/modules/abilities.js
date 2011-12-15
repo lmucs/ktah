@@ -239,7 +239,7 @@ $(function () {
   ktah.abilities.tinkerKbam = function (caster, x, y, z, theta, cooldown) {
     ktah.abilities.useEffect("kbam", new CL3D.Vect3d(x,y,z));
   };
-  // Tinkerer's K'Bam!, or "Tinkerer Tinkers Times Two!"
+  // Tinkerer's K'Boom!, or "Tinkerer Tinkers Times Three!"
   ktah.abilities.tinkerKboom = function (caster, x, y, z, theta, cooldown) {
     ktah.abilities.useEffect("kboom", new CL3D.Vect3d(x,y,z));
   };
