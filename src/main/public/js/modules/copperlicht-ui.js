@@ -188,8 +188,12 @@ $(function() {
               
               // Bind click events to the abilities
               $("#character-abilities").children().each(function(index) {
+                var abilityLocked = 'ui-icon-locked';
+                if (ktah.characterArray[i].availableAbilities[index]) {
+                  abilityLocked = null;
+                }
                 $(this)
-                  .button({icons: {secondary:'ui-icon-locked'}})
+                  .button({icons: {secondary: abilityLocked}})
                   .click(function () {
                     usingAbility = index + 1;
                   });

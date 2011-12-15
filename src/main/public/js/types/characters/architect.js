@@ -23,6 +23,15 @@ $(function () {
       this.sceneNode = options.sceneNode.createClone(ktah.scene.getRootSceneNode());
       this.characterClass = "architect";
       
+      // Bootleg way of making abilities look available
+      this.availableAbilities = [
+        "abilityIconHere",
+        "abilityIconHere",
+        "abilityIconHere",
+        null,
+        null
+      ];
+      
       // Set the abilities with their defaults
       // TODO: Class abilities added based on a person's experience
       var that = this;
