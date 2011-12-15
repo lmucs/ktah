@@ -65,7 +65,7 @@ $(function () {
   
   // Performs the clean-up for a consumed resource
   ktah.resources.removeResource = function (caster, x, y, z, theta, cooldown, options) {
-    resourcesPresent = ktah.resources.resourcesPresent;
+    var resourcesPresent = ktah.resources.resourcesPresent;
     for (var i = 0; i < resourcesPresent.length; i++) {
       if (resourcesPresent[i].id === options.id) {
         ktah.scene.getRootSceneNode().removeChild(resourcesPresent[i].sceneNode);

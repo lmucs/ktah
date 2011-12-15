@@ -33,6 +33,14 @@ body {
   background-clip: padding-box;
 }
 
+.ktah-logo {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  width: 800px;
+  height: 366px;
+}
+
 .main-frame {
 	width: 800px;
 }
@@ -125,6 +133,7 @@ body {
 .login-frame, .register-frame {
   width: 400px;
   text-align: center;
+  margin-top: 10px !important;
 }
 
 .login-page-button {
