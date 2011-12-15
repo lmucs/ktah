@@ -140,14 +140,18 @@ $(function () {
     }
   };
   
+  
+  
 /*
  * SCIENTIST SKILLS 
 */
 
   // Scientist's Chemical, or "Throw Chemical"
   ktah.abilities.throwChemical = function (caster, x, y, z, theta, cooldown) {
-    console.log(x + ", " + y + ", " + z);
-    ktah.abilities.useEffect("chemical", new CL3D.Vect3d(x,y,z));
+    var randomTheta = 360 * Math.random();
+        posX = x + (50 * (Math.sin(randomTheta))),
+        posZ = z + (50 * (Math.cos(randomTheta)));
+    ktah.abilities.useEffect("chemical", new CL3D.Vect3d(posX,y,posZ));
   };
   
 /*
@@ -156,7 +160,6 @@ $(function () {
 
   // Tinkerer's K'Pow!, or "Tinkerer Tinkers..."
   ktah.abilities.tinkerKpow = function (caster, x, y, z, theta, cooldown) {
-    console.log(x + ", " + y + ", " + z);
     ktah.abilities.useEffect("kpow", new CL3D.Vect3d(x,y,z));
   };
 
