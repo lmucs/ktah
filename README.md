@@ -9,5 +9,5 @@ amongst them?
 This project was developed as part of the LMU course CMSI 401. See the
 associated [Prezi](http://prezi.com/ej02b-8u5xyo/ktah/). 
  
-K'tah is in no way, shape or form associated with katah (Գաթա). Please do not mistake this game for 
+K'tah is in no way, shape, or form associated with katah (Գաթա). Please do not mistake this game for 
 the Armenian bread.
