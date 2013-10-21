@@ -72,13 +72,19 @@ app.configure('production', function () {
 
 var mysql = require('mysql');
 
-var client = mysql.createClient({
-  ACCOUNTS_TABLE: 'ktah_accounts',
+var client = mysql.createConnection({
   host: process.env.KTAH_DB_HOST,
   database: process.env.KTAH_DB_DATABASE,
   user: process.env.KTAH_DB_USER,
   password: process.env.KTAH_DB_PASS
 });
+client.connect(function (err) {
+  if (err) {
+    console.log('Not connected: ' + err);
+  } else {
+    console.log('Connected to database')
+  }
+})
 
 require('./conf/db-config.js')(client);
 
