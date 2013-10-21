@@ -17,7 +17,7 @@
 input(type='hidden', id='userName', data="#{userName}")
 input(type='hidden', id='gameId', data="#{gameId}")
 input(type='hidden', id='round', data="#{round}")
-script
+script.
   var data = !{JSON.stringify(score)};
 script(src='../js/modules/chat/client.js')
 script(src='../js/display/score-screen-display.js')
