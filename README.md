@@ -1,3 +1,5 @@
+![Imgur](http://i.imgur.com/3ezSI.png)
+
 **K'tah!** is a browser based, cooperative, class-oriented zombie survival game designed for true 
 team play. Players not only work in synergy with, but also depend upon, one another in order 
 to reach the highest levels of achievement. Unlike most titles in the genre, K'tah!'s gameplay 
