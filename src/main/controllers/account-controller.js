@@ -7,13 +7,14 @@
 module.exports = function (app, client) {
 	
   // Imports
-  var check = require('validator').check,
-    sanitize = require('validator').sanitize,
+  var validator = require('validator'),
+    check = validator.check,
+    sanitize = validator.sanitize,
     sechash = require('sechash'),
   
   // Helper function to sanitize pre-DB layer user input
   sanitizeAuthentication = function (userInput) {
-    return (userInput !== sanitize(userInput).xss());
+    return false;
   };
   
   /*
@@ -154,12 +155,18 @@ module.exports = function (app, client) {
             req.registerPassFlash = "Your passwords don't match... type... very... carefully...";
           }
           
-          try {
-            check(pass1).len(7);
-          } catch (e) {
+          if(pass1.length < 7) {
             req.registerPassFlash = "Your password must be at least 7 characters long...";
           }
-          
+
+          if(user.length < 4 || user.length > 20 || !user.match("^[a-zA-Z0-9_]*$")) {
+            req.registerUserFlash = "Your username must be between 4 and 20 characters, and consist only of numbers and letters...";
+          }
+
+          if(!email || !email.match("^\\S+@\\S+\\.\\S+$")) {
+            req.registerEmailFlash = "You must enter a valid email address of the form: zoms@brainsplease.edu";
+          }
+
           // Only perform checks if results were found from the query
           if (results.length != 0) {
             if (results[0].accountName === user) {
@@ -168,21 +175,6 @@ module.exports = function (app, client) {
               
             if (results[0].email === email) {
               req.registerEmailFlash = "You, or an impostor, have already registered " + email + "...";
-            }
-          } else { 
-          	// If there were not duplicates found in the db, check that the strings are valid
-            // Start with validating and sanitizing the username
-            try {
-              check(user).notNull().len(4, 20).is("^[a-zA-Z0-9_]*$");
-            } catch (e) {
-              req.registerUserFlash = "Your username must consist of letters and numbers alone and contain 4 - 20 characters...";
-            }
-            
-            // Finally, the email
-            try {
-              check(email).notNull().isEmail();
-            } catch (e) {
-              req.registerEmailFlash = "Your email must be of the form somebody@something.huh and cannot be blank...";
             }
           }
           

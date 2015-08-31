@@ -70,6 +70,7 @@ app.configure('production', function () {
  * DATABASE CONFIGURATION
  */
 
+
 var mysql = require('mysql');
 
 var client = mysql.createConnection({
@@ -88,6 +89,7 @@ client.connect(function (err) {
 
 require('./conf/db-config.js')(client);
 
+
 /*
  * CONTROLLERS
  */
@@ -103,6 +105,6 @@ require('../test/qunit/test-suite-controller.js')(app);
  * START THE SERVER
  */
 
-app.listen(3000);
+app.listen(80);
 console.log('Express server listening on port %d in %s mode', 
     app.address().port, app.settings.env);
